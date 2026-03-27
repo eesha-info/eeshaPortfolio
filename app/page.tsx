@@ -13,6 +13,7 @@ import {
   education,
   achievements,
 } from "@/app/lib/data";
+import Image from "next/image";
 
 export default function Home() {
   return (
@@ -169,10 +170,13 @@ export default function Home() {
             {/* Profile photo */}
             <div className="profile-photo-wrapper animate-fade-in-up" style={{ flexShrink: 0 }}>
               <div className="profile-photo-ring">
-                <img
+                <Image
                   src="/profile.jpeg"
                   alt="Mohammad Eesha"
                   className="profile-photo"
+                  width={400}
+                  height={400}
+                  priority
                 />
               </div>
             </div>
