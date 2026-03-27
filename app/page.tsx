@@ -14,6 +14,7 @@ import {
   achievements,
 } from "@/app/lib/data";
 import Image from "next/image";
+import profilePic from "../public/profile.jpeg";
 
 export default function Home() {
   return (
@@ -171,7 +172,7 @@ export default function Home() {
             <div className="profile-photo-wrapper animate-fade-in-up" style={{ flexShrink: 0 }}>
               <div className="profile-photo-ring">
                 <Image
-                  src="/profile.jpeg"
+                  src={profilePic}
                   alt="Mohammad Eesha"
                   className="profile-photo"
                   width={400}
