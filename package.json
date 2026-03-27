@@ -1,6 +1,7 @@
 {
-  "name": "my-app",
-  "version": "0.1.0",
+  "name": "eesha-portfolio",
+  "version": "1.0.0",
+  "description": "Professional portfolio of Mohammad Eesha, a Full-Stack Software Engineer specializing in Node.js and AWS.",
   "private": true,
   "scripts": {
     "dev": "next dev",

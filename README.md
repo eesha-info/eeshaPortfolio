@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mohammad Eesha — Portfolio
 
-## Getting Started
+A professional portfolio showcasing the work and experience of **Mohammad Eesha**, a Full-Stack Software Engineer specialized in Node.js, AWS, and modern web technologies.
 
-First, run the development server:
+## 🚀 Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+This application is a modern, responsive, and high-performance portfolio website built with **Next.js 16**, **Tailwind CSS 4**, and **TypeScript**. It features a glassmorphic design, smooth animations, and a structured showcase of professional experience and projects.
+
+## 🛠️ Tech Stack
+
+- **Framework:** [Next.js 16](https://nextjs.org/) (App Router)
+- **Styling:** [Tailwind CSS 4](https://tailwindcss.com/)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **Backend:** Node.js, Express.js, Koa.js
+- **Cloud & DevOps:** AWS (S3, EC2, CloudFront, Lambda), Docker
+- **Databases:** MongoDB, PostgreSQL, MySQL
+- **ORM/ODM:** Prisma, Mongoose, Sequelize
+
+## ✨ Key Features
+
+- **Professional Timeline:** An interactive career journey showcasing roles at IQVIA (NextGen), ThinkJS, and Chicmic.
+- **Project Showcase:** Detailed cards for featured projects like Lifedemy, KnowThyWithin, and DLF Booking.
+- **Skill Highlights:** A categorized tech stack overview with a focus on Backend, Frontend, and Cloud.
+- **Responsive Design:** Fully optimized for mobile, tablet, and desktop viewing.
+- **Premium Aesthetics:** Custom glassmorphism, floating orbs, and fade-in-up animations.
+
+## 📁 Project Structure
+
+```text
+├── app/
+│   ├── components/      # Reusable UI components (Navbar, Cards, etc.)
+│   ├── lib/             # Data and utility functions
+│   ├── globals.css      # Core styling and design tokens
+│   └── page.tsx         # Main portfolio landing page
+├── public/              # Static assets (images, profile photo)
+└── tailwind.config.ts   # Styling configuration
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🏁 Getting Started
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Prerequisites
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Node.js (Latest LTS version recommended)
+- npm, yarn, pnpm, or bun
 
-## Learn More
+### Setup
 
-To learn more about Next.js, take a look at the following resources:
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd Eesha-Portfolio
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
 
-## Deploy on Vercel
+4. **Build for production:**
+   ```bash
+   npm run build
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📧 Contact
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Email:** [mdeesha.info@gmail.com](mailto:mdeesha.info@gmail.com)
+- **LinkedIn:** [md-eesha](https://linkedin.com/in/md-eesha)
+- **GitHub:** [eeshadev](https://github.com/eeshadev)
+- **Location:** Bengaluru, Karnataka (India)
+
+---
+
+Built with ❤️ by Mohammad Eesha
