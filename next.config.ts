@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+  basePath: "/eeshaPortfolio",
+  assetPrefix: "/eeshaPortfolio/",
 };
 
 export default nextConfig;
