@@ -267,7 +267,7 @@ export const skills: Skill[] = [
 ];
 
 export const socialLinks = {
-  github: "https://github.com/eeshadev",
+  github: "https://github.com/eesha-info",
   linkedin: "https://linkedin.com/in/md-eesha",
   email: "mdeesha.info@gmail.com",
   twitter: "https://twitter.com",
@@ -285,7 +285,7 @@ export const experienceYears = (totalMonths / 12).toFixed(1);
 export const personalInfo = {
   name: "Mohammad Eesha",
   title: "NodeJS Backend Developer",
-  tagline: `AWS-Node.js developer with ${experienceYears} years of experience creating scalable, efficient web applications. Expert in leveraging AWS services, optimizing performance, and building modern frontends with React.js and Next.js.`,
+  tagline: `Full Stack Developer (AWS | Node.js | React.js | Next.js) with ${experienceYears} years of experience building scalable, high-performance web applications. Skilled in designing backend services using Node.js and AWS, and developing modern, responsive frontends with React.js and Next.js. Experienced in optimizing performance, system design, and delivering end-to-end solutions`,
   experience: `${experienceYears}+`,
   projectsCount: "5+",
   aboutParagraphs: [
