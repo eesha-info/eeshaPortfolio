@@ -287,7 +287,7 @@ export const personalInfo = {
   title: "NodeJS Backend Developer",
   tagline: `Full Stack Developer (AWS | Node.js | React.js | Next.js) with ${experienceYears} years of experience building scalable, high-performance web applications. Skilled in designing backend services using Node.js and AWS, and developing modern, responsive frontends with React.js and Next.js. Experienced in optimizing performance, system design, and delivering end-to-end solutions`,
   experience: `${experienceYears}+`,
-  projectsCount: "5+",
+  projectsCount: "10+",
   aboutParagraphs: [
     `AWS-Node.js developer with ${experienceYears} years of experience creating scalable, efficient web applications. Expert in leveraging AWS services, optimizing performance, ensuring security, and implementing best practices.`,
     "Proficient in frontend technologies like React.js, Next.js, Angular, HTML, and CSS — I can work across the full stack. From building scalable CMS platforms and IQVIA healthcare systems to integrating payment gateways and deploying on AWS, I bring real-world impact to every project.",
