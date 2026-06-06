@@ -92,8 +92,8 @@ export type Experience = {
 
 export const experiences: Experience[] = [
   {
-    company: "Mission G3",
-    role: "Full Stack Engineer (Lead Engineer)",
+    company: "G3 Digital Innovation Private Limited",
+    role: "SDE-3 (Lead Engineer)",
     period: "Mar 2026 — Present",
     projects: [
       {
