@@ -284,12 +284,15 @@ export const experienceYears = (totalMonths / 12).toFixed(1);
 
 export const personalInfo = {
   name: "Mohammad Eesha",
-  title: "NodeJS Backend Developer",
-  tagline: `Full Stack Developer (AWS | Node.js | React.js | Next.js) with ${experienceYears} years of experience building scalable, high-performance web applications. Skilled in designing backend services using Node.js and AWS, and developing modern, responsive frontends with React.js and Next.js. Experienced in optimizing performance, system design, and delivering end-to-end solutions`,
+  title: "SDE-3 Lead | Full Stack Architect",
+  tagline: `Senior Software Development Engineer (SDE-3 Lead) with ${experienceYears}+ years of experience designing and leading scalable cloud-native applications. Expertise in AWS, Node.js, React.js, and Next.js, with a strong focus on system architecture, distributed systems, performance optimization, and engineering leadership. Proven track record of delivering high-impact products, mentoring teams, and driving end-to-end software development from design to production.`,
+
   experience: `${experienceYears}+`,
   projectsCount: "10+",
+
   aboutParagraphs: [
-    `AWS-Node.js developer with ${experienceYears} years of experience creating scalable, efficient web applications. Expert in leveraging AWS services, optimizing performance, ensuring security, and implementing best practices.`,
-    "Proficient in frontend technologies like React.js, Next.js, Angular, HTML, and CSS — I can work across the full stack. From building scalable CMS platforms and IQVIA healthcare systems to integrating payment gateways and deploying on AWS, I bring real-world impact to every project.",
+    `Experienced SDE-3 Lead specializing in building highly scalable backend systems and modern web applications. Skilled in designing microservices, cloud infrastructure on AWS, API architecture, security best practices, and performance optimization for enterprise-scale applications.`,
+
+    `Beyond hands-on development, I lead technical initiatives, mentor engineers, conduct architecture reviews, and collaborate with cross-functional stakeholders to deliver reliable, business-critical solutions. My experience spans healthcare, CMS platforms, payment integrations, and large-scale cloud deployments using Node.js, React.js, Next.js, and AWS.`,
   ],
 };
