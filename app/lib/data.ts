@@ -272,7 +272,7 @@ export const socialLinks = {
   email: "mdeesha.info@gmail.com",
   twitter: "https://twitter.com",
   phone: "+91-9463258394",
-  location: "Bengaluru, Karnataka (India)",
+  location: "Hyderabad, Telangana (India)",
 };
 
 const careerStartDate = new Date(2021, 8); // September 2021
