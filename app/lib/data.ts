@@ -93,7 +93,7 @@ export type Experience = {
 export const experiences: Experience[] = [
   {
     company: "G3 Digital Innovation Private Limited",
-    role: "SDE-3 (Lead Engineer)",
+    role: "SDE-2 (Lead Engineer)",
     period: "Mar 2026 — Present",
     projects: [
       {
@@ -284,14 +284,14 @@ export const experienceYears = (totalMonths / 12).toFixed(1);
 
 export const personalInfo = {
   name: "Mohammad Eesha",
-  title: "SDE-3 Lead | Full Stack Architect",
-  tagline: `Senior Software Development Engineer (SDE-3 Lead) with ${experienceYears}+ years of experience designing and leading scalable cloud-native applications. Expertise in AWS, Node.js, React.js, and Next.js, with a strong focus on system architecture, distributed systems, performance optimization, and engineering leadership. Proven track record of delivering high-impact products, mentoring teams, and driving end-to-end software development from design to production.`,
+  title: "SDE-2 Lead | Full Stack Architect",
+  tagline: `Senior Software Development Engineer (SDE-2 Lead) with ${experienceYears}+ years of experience designing and leading scalable cloud-native applications. Expertise in AWS, Node.js, React.js, and Next.js, with a strong focus on system architecture, distributed systems, performance optimization, and engineering leadership. Proven track record of delivering high-impact products, mentoring teams, and driving end-to-end software development from design to production.`,
 
   experience: `${experienceYears}+`,
   projectsCount: "10+",
 
   aboutParagraphs: [
-    `Experienced SDE-3 Lead specializing in building highly scalable backend systems and modern web applications. Skilled in designing microservices, cloud infrastructure on AWS, API architecture, security best practices, and performance optimization for enterprise-scale applications.`,
+    `Experienced SDE-2 Lead specializing in building highly scalable backend systems and modern web applications. Skilled in designing microservices, cloud infrastructure on AWS, API architecture, security best practices, and performance optimization for enterprise-scale applications.`,
 
     `Beyond hands-on development, I lead technical initiatives, mentor engineers, conduct architecture reviews, and collaborate with cross-functional stakeholders to deliver reliable, business-critical solutions. My experience spans healthcare, CMS platforms, payment integrations, and large-scale cloud deployments using Node.js, React.js, Next.js, and AWS.`,
   ],
