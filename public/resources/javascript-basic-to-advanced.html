@@ -1,0 +1,2627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>JavaScript, Basic to Advanced</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root {
+  --bg: #f6f6f2;
+  --surface: #ffffff;
+  --surface-2: #eef0e6;
+  --surface-3: #e3e6d8;
+  --border: #dee2d2;
+  --ink: #1b1c16;
+  --ink-soft: #565a4a;
+  --ink-faint: #8a8e7b;
+  --accent: #caa000;
+  --accent-strong: #9c7d00;
+  --accent-tint: rgba(202, 160, 0, 0.14);
+  --accent-glow: rgba(247, 223, 30, 0.35);
+  --link: #2454b8;
+  --success: #227a4d;
+  --success-bg: rgba(34, 122, 77, 0.10);
+  --danger: #b8402b;
+  --danger-bg: rgba(184, 64, 43, 0.10);
+  --warn: #9c6a0a;
+  --warn-bg: rgba(156, 106, 10, 0.12);
+  --shadow: 0 10px 30px rgba(27, 28, 22, 0.08);
+  --shadow-lg: 0 24px 64px rgba(27, 28, 22, 0.22);
+  --focus-ring: #caa000;
+
+  /* code editor: fixed dark identity in both themes */
+  --code-bg: #1e1e1c;
+  --code-bg-2: #181816;
+  --code-chrome: #262622;
+  --code-border: #34342f;
+  --code-ink: #e6e6e0;
+  --code-ink-soft: #9a9a90;
+  --code-accent: #f7df1e;
+  --console-bg: #141412;
+  --console-ink: #dcdcd4;
+  --console-error: #ff8a71;
+  --console-warn: #f7df1e;
+  --console-log: #7ec8ff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14150f;
+    --surface: #1b1c15;
+    --surface-2: #22241a;
+    --surface-3: #2b2e20;
+    --border: #363826;
+    --ink: #f1f1e8;
+    --ink-soft: #b7bba5;
+    --ink-faint: #82866f;
+    --accent: #f7df1e;
+    --accent-strong: #ffe95c;
+    --accent-tint: rgba(247, 223, 30, 0.12);
+    --link: #7fa8f0;
+    --success: #5cd08a;
+    --success-bg: rgba(92, 208, 138, 0.14);
+    --danger: #ff8a71;
+    --danger-bg: rgba(255, 138, 113, 0.14);
+    --warn: #f7df1e;
+    --warn-bg: rgba(247, 223, 30, 0.12);
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.6);
+    --focus-ring: #f7df1e;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14150f;
+  --surface: #1b1c15;
+  --surface-2: #22241a;
+  --surface-3: #2b2e20;
+  --border: #363826;
+  --ink: #f1f1e8;
+  --ink-soft: #b7bba5;
+  --ink-faint: #82866f;
+  --accent: #f7df1e;
+  --accent-strong: #ffe95c;
+  --accent-tint: rgba(247, 223, 30, 0.12);
+  --link: #7fa8f0;
+  --success: #5cd08a;
+  --success-bg: rgba(92, 208, 138, 0.14);
+  --danger: #ff8a71;
+  --danger-bg: rgba(255, 138, 113, 0.14);
+  --warn: #f7df1e;
+  --warn-bg: rgba(247, 223, 30, 0.12);
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.6);
+  --focus-ring: #f7df1e;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Source Sans 3", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 { font-family: "Sora", system-ui, sans-serif; text-wrap: balance; margin: 0; color: var(--ink); }
+p { margin: 0 0 14px; max-width: 72ch; }
+a { color: var(--link); }
+code, pre, .mono, textarea.pg-input { font-family: "JetBrains Mono", ui-monospace, monospace; }
+::selection { background: var(--accent-tint); }
+:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 4px; }
+img, svg { max-width: 100%; }
+
+code.inline {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 1px 6px;
+  font-size: 0.88em;
+  color: var(--accent-strong);
+}
+
+/* ============================================================
+   TOP BAR (mobile) + LAYOUT
+   ============================================================ */
+.topbar {
+  display: none;
+  position: sticky; top: 0; z-index: 40;
+  align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+.topbar .brand { font-family: "Sora", sans-serif; font-weight: 700; font-size: 15px; }
+.topbar .brand span { color: var(--accent-strong); }
+.menu-btn {
+  width: 36px; height: 36px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--surface-2); color: var(--ink);
+  font-size: 16px; cursor: pointer;
+}
+
+.shell { display: flex; align-items: flex-start; max-width: 1360px; margin: 0 auto; }
+
+.sidebar {
+  position: sticky; top: 0;
+  width: 268px; flex-shrink: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 26px 18px 60px;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  scrollbar-width: thin;
+}
+.sidebar .brand {
+  font-family: "Sora", sans-serif;
+  font-weight: 800;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px 20px;
+}
+.sidebar .brand .badge-js {
+  width: 26px; height: 26px; border-radius: 6px;
+  background: var(--accent);
+  color: #1b1c16;
+  display: flex; align-items: center; justify-content: center;
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 700; font-size: 13px;
+  flex-shrink: 0;
+}
+.nav-group { margin-bottom: 6px; }
+.nav-group-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+  font-weight: 600;
+  padding: 14px 8px 6px;
+}
+.nav-link {
+  display: block;
+  padding: 7px 10px;
+  margin: 1px 0;
+  border-radius: 7px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 13.5px;
+  border-left: 2px solid transparent;
+}
+.nav-link:hover { background: var(--surface-2); color: var(--ink); }
+.nav-link.active {
+  background: var(--accent-tint);
+  color: var(--ink);
+  font-weight: 600;
+  border-left: 2px solid var(--accent);
+}
+
+.content { flex: 1; min-width: 0; padding: 46px clamp(20px, 5vw, 64px) 120px; }
+
+.cover-page {
+  text-align: center;
+  padding: 64px 20px 46px;
+  margin-bottom: 44px;
+  border-bottom: 1px solid var(--border);
+}
+.cover-page .cover-badge {
+  width: 62px; height: 62px;
+  margin: 0 auto 22px;
+  border-radius: 14px;
+  background: var(--accent);
+  color: #1b1c16;
+  display: flex; align-items: center; justify-content: center;
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 800;
+  font-size: 24px;
+  box-shadow: 0 10px 26px var(--accent-glow, rgba(247,223,30,0.3));
+}
+.cover-page .cover-eyebrow {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+  font-weight: 700;
+}
+.cover-page h1 {
+  font-size: clamp(32px, 5vw, 48px);
+  margin-top: 14px;
+}
+.cover-page .cover-sub {
+  margin: 14px auto 0;
+  max-width: 56ch;
+  font-size: 16.5px;
+  color: var(--ink-soft);
+}
+.cover-page .cover-stats {
+  display: flex; justify-content: center; flex-wrap: wrap; gap: 8px;
+  margin-top: 24px;
+}
+.cover-page .cover-stat {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  color: var(--ink-soft);
+  padding: 6px 13px;
+  border-radius: 999px;
+}
+.cover-page .cover-stat b { color: var(--ink); }
+.cover-page .cover-credit {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  margin-top: 34px;
+  padding: 16px 34px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.cover-page .cover-credit .label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+  font-weight: 700;
+}
+.cover-page .cover-credit .name {
+  font-family: "Sora", sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: 4px;
+}
+.cover-page .cover-credit .role {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
+.doc-hero {
+  margin-bottom: 48px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+.doc-hero .eyebrow {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+  font-weight: 600;
+  display: flex; align-items: center; gap: 8px;
+}
+.doc-hero .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.doc-hero h1 { font-size: clamp(30px, 4vw, 42px); margin-top: 14px; line-height: 1.1; }
+.doc-hero h1 em { font-style: normal; color: var(--accent-strong); }
+.doc-hero .lede { margin-top: 14px; font-size: 17px; color: var(--ink-soft); max-width: 62ch; }
+.doc-hero .howto {
+  margin-top: 22px;
+  display: flex; align-items: flex-start; gap: 10px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  max-width: 62ch;
+}
+.doc-hero .howto b { color: var(--ink); }
+.howto .icon {
+  flex-shrink: 0; width: 20px; height: 20px; border-radius: 5px;
+  background: var(--accent); color: #1b1c16;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; font-family: "JetBrains Mono", monospace;
+}
+
+section.topic { margin-bottom: 60px; scroll-margin-top: 24px; }
+section.topic .topic-kicker {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11.5px;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+section.topic h2 { font-size: 25px; margin-bottom: 14px; }
+section.topic h3 { font-size: 17px; margin: 26px 0 10px; color: var(--ink); }
+section.topic .lede { font-size: 16px; color: var(--ink-soft); max-width: 70ch; }
+
+.callout {
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 14px 18px;
+  margin: 18px 0;
+  font-size: 14px;
+  color: var(--ink-soft);
+  max-width: 70ch;
+}
+.callout b { color: var(--ink); }
+.callout.warn { border-left-color: var(--warn); }
+.callout.warn .callout-label { color: var(--warn); }
+.callout-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--accent-strong);
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* reference tables (e.g., array/string methods) */
+.ref-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow); margin: 18px 0; }
+table.ref-table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 560px; }
+table.ref-table th {
+  background: var(--surface-2);
+  text-align: left;
+  padding: 10px 14px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--border);
+}
+table.ref-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  color: var(--ink-soft);
+}
+table.ref-table tr:last-child td { border-bottom: none; }
+table.ref-table td:first-child { font-family: "JetBrains Mono", monospace; color: var(--ink); font-weight: 600; white-space: nowrap; }
+table.ref-table tr:hover td { background: var(--accent-tint); }
+
+/* ============================================================
+   PLAYGROUND COMPONENT
+   ============================================================ */
+.playground {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--code-border);
+  box-shadow: var(--shadow);
+  margin: 18px 0 26px;
+  background: var(--code-bg);
+}
+.pg-chrome {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  background: var(--code-chrome);
+  border-bottom: 1px solid var(--code-border);
+}
+.pg-dots { display: flex; gap: 6px; }
+.pg-dots span { width: 9px; height: 9px; border-radius: 50%; background: #4a4a44; }
+.pg-filename {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  color: var(--code-ink-soft);
+  flex: 1;
+  text-align: center;
+}
+.pg-actions { display: flex; gap: 6px; }
+.pg-btn {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11.5px;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 5px 11px;
+  cursor: pointer;
+  border: 1px solid var(--code-border);
+  background: #26261f;
+  color: var(--code-ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.pg-btn:hover { background: #302f26; }
+.pg-btn.run { background: var(--code-accent); color: #1b1c16; border-color: var(--code-accent); }
+.pg-btn.run:hover { background: #ffe95c; }
+
+.pg-body { display: block; }
+.pg-editor-wrap { position: relative; }
+textarea.pg-input {
+  display: block;
+  width: 100%;
+  resize: vertical;
+  border: none;
+  outline: none;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  font-size: 13.5px;
+  line-height: 1.6;
+  padding: 14px 16px;
+  min-height: 60px;
+  tab-size: 2;
+}
+.pg-preview-wrap {
+  border-top: 1px solid var(--code-border);
+  background: #fff;
+}
+.pg-preview-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--code-ink-soft);
+  background: var(--code-bg-2);
+  padding: 6px 12px;
+  border-top: 1px solid var(--code-border);
+}
+iframe.pg-frame {
+  display: block;
+  width: 100%;
+  height: 160px;
+  border: none;
+  background: #fff;
+}
+iframe.pg-frame-hidden { position: absolute; width: 0; height: 0; border: 0; opacity: 0; pointer-events: none; }
+.pg-console-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--code-ink-soft);
+  background: var(--console-bg);
+  padding: 7px 16px 0;
+}
+pre.pg-console {
+  margin: 0;
+  background: var(--console-bg);
+  color: var(--console-ink);
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 8px 16px 14px;
+  min-height: 42px;
+  max-height: 260px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border-top: 1px solid var(--code-border);
+}
+.pg-line { padding: 1px 0; }
+.pg-line.pg-error { color: var(--console-error); }
+.pg-line.pg-warn { color: var(--console-warn); }
+.pg-line.pg-log, .pg-line.pg-info { color: var(--console-log); }
+.pg-placeholder { color: var(--code-ink-soft); font-style: italic; }
+
+.code-static {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--code-border);
+  box-shadow: var(--shadow);
+  margin: 18px 0 26px;
+  background: var(--code-bg);
+}
+.code-static .pg-chrome { cursor: default; }
+.code-static pre {
+  margin: 0;
+  padding: 16px;
+  color: var(--code-ink);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13.5px;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+.diagram-card {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--code-border);
+  box-shadow: var(--shadow);
+  margin: 18px 0 26px;
+  background: var(--code-bg);
+}
+.diagram-card .pg-chrome { cursor: default; }
+.diagram-body {
+  padding: 22px 18px 10px;
+  background: var(--surface);
+}
+.diagram-body svg { display: block; margin: 0 auto; }
+.diagram-caption {
+  margin: 0;
+  padding: 4px 18px 18px;
+  background: var(--surface);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+.diagram-caption code.inline { font-size: 12.5px; }
+
+/* Shared diagram SVG node styles (event loop, control flow, loops, functions) */
+.diagram-body svg .el-box { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
+.diagram-body svg .el-title { fill: var(--ink); font: 700 14.5px "IBM Plex Sans", system-ui, sans-serif; }
+.diagram-body svg .el-sub { fill: var(--ink-faint); font: 600 10px "JetBrains Mono", monospace; letter-spacing: 0.06em; }
+.diagram-body svg .el-frame { fill: var(--surface-3); stroke: var(--border); stroke-width: 1; }
+.diagram-body svg .el-frame-text { fill: var(--ink-soft); font: 500 12px "JetBrains Mono", monospace; }
+.diagram-body svg .el-arrow { fill: none; stroke: var(--ink-faint); stroke-width: 2; }
+.diagram-body svg .el-arrow-accent { fill: none; stroke: var(--link); stroke-width: 2.25; }
+.diagram-body svg .el-label { fill: var(--ink-soft); font: 500 11.5px "IBM Plex Sans", sans-serif; }
+.diagram-body svg .el-label-accent { fill: var(--link); font: 600 11.5px "IBM Plex Sans", sans-serif; }
+.diagram-body svg .el-ring { fill: var(--bg); stroke: var(--accent); stroke-width: 2.5; }
+.diagram-body svg .el-ring-text { fill: var(--accent-strong); font: 700 13px "JetBrains Mono", monospace; }
+.diagram-body svg .el-ring-sub { fill: var(--ink-faint); font: 500 10px "IBM Plex Sans", sans-serif; }
+.diagram-body svg .el-step { fill: var(--bg); stroke: var(--accent); stroke-width: 1.5; }
+.diagram-body svg .el-step-text { fill: var(--accent-strong); font: 700 12px "JetBrains Mono", monospace; text-anchor: middle; }
+/* Flowchart-specific nodes (if/else, loops) */
+.diagram-body svg .fc-start { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.5; }
+.diagram-body svg .fc-decision { fill: var(--surface-2); stroke: var(--accent); stroke-width: 1.5; }
+.diagram-body svg .fc-terminal { fill: var(--success-bg); stroke: var(--success); stroke-width: 1.5; }
+.diagram-body svg .fc-update { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.5; }
+.diagram-body svg .fc-node-text { fill: var(--ink); font: 600 12px "JetBrains Mono", monospace; text-anchor: middle; }
+.diagram-body svg .fc-terminal-text { fill: var(--success); font: 700 12px "JetBrains Mono", monospace; text-anchor: middle; }
+.diagram-body svg .fc-yes { fill: var(--success); font: 700 11.5px "IBM Plex Sans", sans-serif; }
+.diagram-body svg .fc-no { fill: var(--ink-faint); font: 700 11.5px "IBM Plex Sans", sans-serif; }
+
+footer.doc-footer {
+  border-top: 1px solid var(--border);
+  margin-top: 60px;
+  padding: 32px 0 12px;
+  text-align: center;
+}
+footer.doc-footer .label {
+  font-family: "JetBrains Mono", monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 10px;
+  color: var(--accent-strong);
+  font-weight: 700;
+}
+footer.doc-footer .name { font-size: 17px; font-weight: 700; margin-top: 6px; font-family: "Sora", sans-serif; }
+footer.doc-footer .role { font-size: 12.5px; color: var(--ink-soft); margin-top: 2px; }
+
+@media (max-width: 920px) {
+  .topbar { display: flex; }
+  .sidebar {
+    position: fixed; inset: 0 auto 0 0;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    z-index: 50;
+    width: 78vw;
+    max-width: 300px;
+    box-shadow: var(--shadow-lg);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-scrim {
+    display: none;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 45;
+  }
+  .sidebar-scrim.show { display: block; }
+  .content { padding: 30px 18px 100px; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="Open navigation">☰</button>
+  <div class="brand">JS<span>::</span>DOCS</div>
+  <span style="width:36px;"></span>
+</div>
+<div class="sidebar-scrim" id="sidebarScrim"></div>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><span class="badge-js">JS</span> JavaScript Docs</div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Start Here</div>
+      <a class="nav-link" href="#intro">Introduction</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Fundamentals</div>
+      <a class="nav-link" href="#variables">Variables</a>
+      <a class="nav-link" href="#data-types">Data Types</a>
+      <a class="nav-link" href="#operators">Operators</a>
+      <a class="nav-link" href="#control-flow">Control Flow</a>
+      <a class="nav-link" href="#loops">Loops</a>
+      <a class="nav-link" href="#functions">Functions</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Core Data Structures</div>
+      <a class="nav-link" href="#strings">Strings</a>
+      <a class="nav-link" href="#numbers-math">Numbers &amp; Math</a>
+      <a class="nav-link" href="#arrays">Arrays</a>
+      <a class="nav-link" href="#array-methods">Array Methods</a>
+      <a class="nav-link" href="#objects">Objects</a>
+      <a class="nav-link" href="#destructuring">Destructuring</a>
+      <a class="nav-link" href="#spread-rest">Spread &amp; Rest</a>
+      <a class="nav-link" href="#template-literals">Template Literals</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Intermediate</div>
+      <a class="nav-link" href="#scope-hoisting">Scope &amp; Hoisting</a>
+      <a class="nav-link" href="#closures">Closures</a>
+      <a class="nav-link" href="#this-keyword">The "this" Keyword</a>
+      <a class="nav-link" href="#higher-order-functions">Higher-Order Functions</a>
+      <a class="nav-link" href="#error-handling">Error Handling</a>
+      <a class="nav-link" href="#json">JSON</a>
+      <a class="nav-link" href="#date">Date Object</a>
+      <a class="nav-link" href="#regexp">Regular Expressions</a>
+      <a class="nav-link" href="#map-set">Map &amp; Set</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Browser &amp; DOM</div>
+      <a class="nav-link" href="#dom">DOM Manipulation</a>
+      <a class="nav-link" href="#events">Events</a>
+      <a class="nav-link" href="#storage">Local &amp; Session Storage</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Advanced &amp; Async</div>
+      <a class="nav-link" href="#prototypes">Prototypes &amp; Inheritance</a>
+      <a class="nav-link" href="#classes">Classes</a>
+      <a class="nav-link" href="#promises">Promises</a>
+      <a class="nav-link" href="#async-await">Async / Await</a>
+      <a class="nav-link" href="#fetch">Fetch API</a>
+      <a class="nav-link" href="#event-loop">The Event Loop</a>
+      <a class="nav-link" href="#modules">Modules</a>
+      <a class="nav-link" href="#generators">Generators &amp; Iterators</a>
+    </div>
+  </aside>
+
+  <main class="content" id="content">
+    <div class="cover-page">
+      <div class="cover-badge">JS</div>
+      <div class="cover-eyebrow">JavaScript Documentation</div>
+      <h1>The Complete JavaScript Guide</h1>
+      <p class="cover-sub">Basic to Advanced — every core language concept explained in detail, with a live, editable code example under each one.</p>
+      <div class="cover-stats">
+        <span class="cover-stat"><b>35</b> topics</span>
+        <span class="cover-stat"><b>63</b> live examples</span>
+        <span class="cover-stat"><b>5</b> sections</span>
+      </div>
+      <div class="cover-credit">
+        <span class="label">Documented By</span>
+        <span class="name">MD Eesha</span>
+        <span class="role">Sr. Software Engineer</span>
+      </div>
+    </div>
+
+    <div class="doc-hero">
+      <div class="eyebrow">Complete Language Reference</div>
+      <h1>JavaScript, Basic to <em>Advanced</em></h1>
+      <p class="lede">A hands-on JavaScript reference covering every core concept from your first variable to async programming and the event loop — with a live editor under every example so you can run, break, and rewrite the code right here.</p>
+      <div class="howto"><span class="icon">▶</span><span><b>How to use this doc:</b> every code block below is editable. Change anything you like and press <b>Run</b> to execute it and see the output in the console panel underneath. Press <b>Reset</b> to restore the original example.</span></div>
+    </div>
+
+    <!-- SECTIONS_START -->
+
+    <section class="topic" id="intro">
+      <div class="topic-kicker">Getting Started</div>
+      <h2>What Is JavaScript?</h2>
+      <p class="lede">JavaScript is the programming language of the web. Every button click, form validation, animation, and live update you see in a browser is driven by it — and thanks to Node.js, the same language now runs servers, command-line tools, and even mobile apps. It's dynamically typed (you don't declare a variable's type up front), interpreted (no separate compile step), and single-threaded with a clever concurrency model called the <a href="#event-loop">event loop</a> that lets it stay responsive while waiting on slow things like network requests.</p>
+
+      <h3>Where does JavaScript run?</h3>
+      <p>Three places you'll use constantly: inside a <code class="inline">&lt;script&gt;</code> tag in an HTML page, directly in your browser's DevTools console (right-click → Inspect → Console), or on a server via <a href="https://nodejs.org" target="_blank" rel="noopener">Node.js</a> by running <code class="inline">node file.js</code> in a terminal. This document uses a fourth option: a live sandbox, so you never have to leave the page.</p>
+
+      <h3>Your first line of JavaScript</h3>
+      <p>The function you'll use more than any other while learning is <code class="inline">console.log()</code> — it prints a value so you can see what your code is doing. Try editing the message below and pressing <b>Run</b>.</p>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">console.log("Hello, JavaScript!");
+
+// console.log can print multiple things at once, separated by commas
+console.log("2 + 2 =", 2 + 2);</script>
+      </div>
+
+      <div class="callout">
+        <span class="callout-label">Tip</span>
+        Every playground in this document auto-runs once so you can see the expected output immediately. Edit the code and press <b>Run</b> as many times as you like — nothing you do here affects anything outside this page.
+      </div>
+    </section>
+
+    <section class="topic" id="variables">
+      <div class="topic-kicker">01 · Fundamentals</div>
+      <h2>Variables</h2>
+      <p class="lede">A variable is a named container for a value you want to store and reuse. JavaScript gives you three keywords to create one — <code class="inline">let</code>, <code class="inline">const</code>, and the older <code class="inline">var</code> — and the difference between them is almost entirely about scope, reassignment, and hoisting behavior.</p>
+
+      <h3>var vs. let vs. const — quick comparison</h3>
+      <div class="ref-table-wrap">
+        <table class="ref-table">
+          <thead><tr><th>Feature</th><th>var</th><th>let</th><th>const</th></tr></thead>
+          <tbody>
+            <tr><td>Scope</td><td>Function or Global</td><td>Block (<code class="inline">{ }</code>)</td><td>Block (<code class="inline">{ }</code>)</td></tr>
+            <tr><td>Reassignment</td><td>Allowed</td><td>Allowed</td><td>Forbidden</td></tr>
+            <tr><td>Redeclaration</td><td>Allowed (same scope)</td><td>Forbidden (same scope)</td><td>Forbidden (same scope)</td></tr>
+            <tr><td>Hoisting behavior</td><td>Hoisted, initialized as <code class="inline">undefined</code></td><td>Hoisted, but unusable until declared (TDZ)</td><td>Hoisted, but unusable until declared (TDZ)</td></tr>
+            <tr><td>Initial value required</td><td>No</td><td>No</td><td>Yes</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        <span class="callout-label">TDZ?</span>
+        Short for "Temporal Dead Zone" — the gap between when a <code class="inline">let</code>/<code class="inline">const</code> variable is hoisted and when its declaration line actually runs. Accessing it during that gap throws a <code class="inline">ReferenceError</code> instead of silently returning <code class="inline">undefined</code>. See <a href="#scope-hoisting">Scope &amp; Hoisting</a> for a runnable example.
+      </div>
+
+      <h3>let — for values that will change</h3>
+      <p>Use <code class="inline">let</code> when you know the variable's value needs to be updated later, like a counter or a running total. It's block-scoped, meaning it only exists inside the <code class="inline">{ }</code> it was declared in.</p>
+
+      <h3>const — for values that won't be reassigned</h3>
+      <p>Use <code class="inline">const</code> by default for everything else. It prevents the variable itself from being reassigned — though if it holds an object or array, the contents can still be modified; only the reference is locked.</p>
+
+      <h3>var — the legacy keyword</h3>
+      <p>You'll still see <code class="inline">var</code> in older code. It's function-scoped instead of block-scoped (so it "leaks" out of <code class="inline">if</code> blocks and loops) and can be redeclared, which causes subtle bugs. Modern JavaScript style guides recommend avoiding it entirely in favor of <code class="inline">let</code> and <code class="inline">const</code>.</p>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">let score = 10;
+score = score + 5;       // let can be reassigned
+console.log("score:", score);
+
+const MAX_PLAYERS = 4;
+console.log("max players:", MAX_PLAYERS);
+// MAX_PLAYERS = 5;      // uncomment this line — it will throw an error!
+
+const player = { name: "Ava" };
+player.name = "Maya";    // allowed: we're changing a property, not the reference
+console.log("player:", player);
+
+if (true) {
+  var leaky = "I escape the block";
+  let contained = "I stay in the block";
+}
+console.log(leaky);       // works — var ignores block scope
+// console.log(contained); // uncomment — ReferenceError, contained doesn't exist here</script>
+      </div>
+
+      <div class="callout warn">
+        <span class="callout-label">Naming rules</span>
+        Variable names must start with a letter, <code class="inline">$</code>, or <code class="inline">_</code>, can't start with a digit, and are case-sensitive (<code class="inline">age</code> and <code class="inline">Age</code> are different variables). By convention, JavaScript uses <code class="inline">camelCase</code> for variables and functions.
+      </div>
+    </section>
+
+    <section class="topic" id="data-types">
+      <div class="topic-kicker">02 · Fundamentals</div>
+      <h2>Data Types</h2>
+      <p class="lede">Every value in JavaScript is one of two kinds: a <b>primitive</b> (immutable, copied by value) or an <b>object</b> (mutable, copied by reference). Understanding which is which explains a lot of behavior that otherwise looks like magic.</p>
+
+      <div class="ref-table-wrap">
+        <table class="ref-table">
+          <thead><tr><th>Type</th><th>Category</th><th>Example</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>String</td><td>Primitive</td><td><code class="inline">"hello"</code></td><td>Text, wrapped in quotes or backticks</td></tr>
+            <tr><td>Number</td><td>Primitive</td><td><code class="inline">42</code>, <code class="inline">3.14</code></td><td>Both integers and decimals — one type for both</td></tr>
+            <tr><td>BigInt</td><td>Primitive</td><td><code class="inline">42n</code></td><td>For integers larger than Number can safely hold</td></tr>
+            <tr><td>Boolean</td><td>Primitive</td><td><code class="inline">true</code>, <code class="inline">false</code></td><td>Logical yes/no</td></tr>
+            <tr><td>undefined</td><td>Primitive</td><td><code class="inline">undefined</code></td><td>A variable that's been declared but not assigned</td></tr>
+            <tr><td>null</td><td>Primitive</td><td><code class="inline">null</code></td><td>An intentional "no value", set explicitly</td></tr>
+            <tr><td>Symbol</td><td>Primitive</td><td><code class="inline">Symbol("id")</code></td><td>A guaranteed-unique value, often used as an object key</td></tr>
+            <tr><td>Object</td><td>Reference</td><td><code class="inline">{ name: "Ava" }</code></td><td>Key-value collections — arrays and functions are objects too</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Checking a type with typeof</h3>
+      <p>The <code class="inline">typeof</code> operator tells you what kind of value you're dealing with — essential for debugging and validating input.</p>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">console.log(typeof "hello");     // "string"
+console.log(typeof 42);          // "number"
+console.log(typeof true);        // "boolean"
+console.log(typeof undefined);   // "undefined"
+console.log(typeof { a: 1 });    // "object"
+console.log(typeof [1, 2, 3]);   // "object" — arrays are objects!
+console.log(typeof function(){});// "function"
+console.log(typeof null);        // "object" — a famous, decades-old JS bug</script>
+      </div>
+
+      <h3>Primitives vs. objects: copy by value vs. reference</h3>
+      <p>This is one of the most important mental models in the language. Copying a primitive copies its value; copying an object copies a <i>reference</i> to the same underlying data.</p>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">let a = 5;
+let b = a;   // b gets a COPY of the value
+b = 10;
+console.log("a:", a, "b:", b); // a is untouched
+
+let obj1 = { count: 5 };
+let obj2 = obj1;   // obj2 points to the SAME object as obj1
+obj2.count = 10;
+console.log("obj1.count:", obj1.count); // changed too — same object!</script>
+      </div>
+
+      <h3>Type conversion</h3>
+      <p>JavaScript will often convert types for you automatically ("coercion"), which is convenient but a common source of bugs. It's usually safer to convert explicitly.</p>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">console.log("5" + 1);        // "51" — number coerced to string (+ means concatenate)
+console.log("5" - 1);        // 4   — string coerced to number (- only means subtract)
+console.log(Number("42"));   // 42  — explicit conversion to number
+console.log(String(42));     // "42" — explicit conversion to string
+console.log(Boolean(""));    // false — empty string is "falsy"
+console.log(Boolean("0"));   // true — a non-empty string is "truthy", even "0"!
+console.log(1 == "1");       // true  — loose equality coerces types
+console.log(1 === "1");      // false — strict equality checks type too (always prefer this)</script>
+      </div>
+    </section>
+
+    <section class="topic" id="operators">
+      <div class="topic-kicker">03 · Fundamentals</div>
+      <h2>Operators</h2>
+      <p class="lede">Operators combine and compare values. Beyond the arithmetic you already know, JavaScript has a few operators worth learning deliberately because they show up constantly in real code.</p>
+
+      <div class="ref-table-wrap">
+        <table class="ref-table">
+          <thead><tr><th>Operator</th><th>Category</th><th>Example</th><th>Result</th></tr></thead>
+          <tbody>
+            <tr><td>+ - * / %</td><td>Arithmetic</td><td><code class="inline">7 % 2</code></td><td><code class="inline">1</code> (remainder)</td></tr>
+            <tr><td>** </td><td>Exponent</td><td><code class="inline">2 ** 8</code></td><td><code class="inline">256</code></td></tr>
+            <tr><td>=, +=, -=</td><td>Assignment</td><td><code class="inline">x += 5</code></td><td>same as <code class="inline">x = x + 5</code></td></tr>
+            <tr><td>=== / !==</td><td>Strict equality</td><td><code class="inline">1 === "1"</code></td><td><code class="inline">false</code></td></tr>
+            <tr><td>&amp;&amp; / || / !</td><td>Logical</td><td><code class="inline">true &amp;&amp; false</code></td><td><code class="inline">false</code></td></tr>
+            <tr><td>?:</td><td>Ternary</td><td><code class="inline">age &gt;= 18 ? "adult" : "minor"</code></td><td>inline if/else</td></tr>
+            <tr><td>??</td><td>Nullish coalescing</td><td><code class="inline">value ?? "default"</code></td><td>fallback only for <code class="inline">null</code>/<code class="inline">undefined</code></td></tr>
+            <tr><td>?.</td><td>Optional chaining</td><td><code class="inline">user?.address?.city</code></td><td><code class="inline">undefined</code> instead of a crash</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const age = 20;
+console.log(age >= 18 ? "adult" : "minor");   // ternary
+
+let username;
+console.log(username ?? "Guest");              // ?? only falls back on null/undefined
+console.log(0 ?? "fallback");                  // 0 — 0 is NOT null/undefined, so it's kept
+console.log(0 || "fallback");                  // "fallback" — || treats 0 as falsy too!
+
+const user = { profile: null };
+console.log(user.profile?.email);              // undefined, no crash
+// console.log(user.profile.email);            // uncomment: throws — can't read property of null</script>
+      </div>
+
+      <div class="callout">
+        <span class="callout-label">?? vs ||</span>
+        <code class="inline">||</code> falls back whenever the left side is any "falsy" value (<code class="inline">0</code>, <code class="inline">""</code>, <code class="inline">null</code>, <code class="inline">undefined</code>, <code class="inline">NaN</code>). <code class="inline">??</code> only falls back for <code class="inline">null</code> or <code class="inline">undefined</code> — use it whenever <code class="inline">0</code> or <code class="inline">""</code> should count as a valid value.
+      </div>
+    </section>
+
+    <section class="topic" id="control-flow">
+      <div class="topic-kicker">04 · Fundamentals</div>
+      <h2>Control Flow</h2>
+      <p class="lede">Control flow statements decide which code runs, based on a condition. <code class="inline">if/else</code> handles most cases; <code class="inline">switch</code> is a cleaner alternative when you're comparing one value against many possibilities.</p>
+
+      <h3>if / else if / else</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">function describeTemp(celsius) {
+  if (celsius <= 0) {
+    return "freezing";
+  } else if (celsius < 15) {
+    return "cold";
+  } else if (celsius < 25) {
+    return "mild";
+  } else {
+    return "hot";
+  }
+}
+
+console.log(describeTemp(-5));
+console.log(describeTemp(10));
+console.log(describeTemp(20));
+console.log(describeTemp(30));</script>
+      </div>
+
+      <div class="diagram-card">
+        <div class="pg-chrome">
+          <div class="pg-dots"><span></span><span></span><span></span></div>
+          <div class="pg-filename">if-else-flow.svg</div>
+        </div>
+        <div class="diagram-body">
+          <svg viewBox="0 0 560 670" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flowchart of the describeTemp if/else if/else chain, showing each condition checked in order and the return value it leads to">
+            <defs>
+              <marker id="cfArrowNeutral" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" />
+              </marker>
+              <marker id="cfArrowYes" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 Z" fill="var(--success)" />
+              </marker>
+            </defs>
+
+            <!-- Start -->
+            <rect class="fc-start" x="20" y="18" width="240" height="44" rx="22" />
+            <text class="fc-node-text" x="140" y="45">describeTemp(celsius)</text>
+            <path class="el-arrow" d="M 140 62 L 140 83" marker-end="url(#cfArrowNeutral)" />
+
+            <!-- Diamond 1 -->
+            <polygon class="fc-decision" points="140,85 210,140 140,195 70,140" />
+            <text class="fc-node-text" x="140" y="144">celsius &lt;= 0?</text>
+
+            <path class="el-arrow-accent" d="M 210 140 L 288 140" marker-end="url(#cfArrowYes)" />
+            <text class="fc-yes" x="222" y="130">Yes</text>
+            <rect class="fc-terminal" x="290" y="112" width="230" height="56" rx="10" />
+            <text class="fc-terminal-text" x="405" y="145">return "freezing"</text>
+
+            <path class="el-arrow" d="M 140 195 L 140 253" marker-end="url(#cfArrowNeutral)" />
+            <text class="fc-no" x="150" y="228">No</text>
+
+            <!-- Diamond 2 -->
+            <polygon class="fc-decision" points="140,255 210,310 140,365 70,310" />
+            <text class="fc-node-text" x="140" y="314">celsius &lt; 15?</text>
+
+            <path class="el-arrow-accent" d="M 210 310 L 288 310" marker-end="url(#cfArrowYes)" />
+            <text class="fc-yes" x="222" y="300">Yes</text>
+            <rect class="fc-terminal" x="290" y="282" width="230" height="56" rx="10" />
+            <text class="fc-terminal-text" x="405" y="315">return "cold"</text>
+
+            <path class="el-arrow" d="M 140 365 L 140 423" marker-end="url(#cfArrowNeutral)" />
+            <text class="fc-no" x="150" y="398">No</text>
+
+            <!-- Diamond 3 -->
+            <polygon class="fc-decision" points="140,425 210,480 140,535 70,480" />
+            <text class="fc-node-text" x="140" y="484">celsius &lt; 25?</text>
+
+            <path class="el-arrow-accent" d="M 210 480 L 288 480" marker-end="url(#cfArrowYes)" />
+            <text class="fc-yes" x="222" y="470">Yes</text>
+            <rect class="fc-terminal" x="290" y="452" width="230" height="56" rx="10" />
+            <text class="fc-terminal-text" x="405" y="485">return "mild"</text>
+
+            <path class="el-arrow" d="M 140 535 L 140 588" marker-end="url(#cfArrowNeutral)" />
+            <text class="fc-no" x="150" y="565">No (else)</text>
+
+            <!-- Final else terminal -->
+            <rect class="fc-terminal" x="20" y="590" width="240" height="56" rx="10" />
+            <text class="fc-terminal-text" x="140" y="623">return "hot"</text>
+          </svg>
+        </div>
+        <p class="diagram-caption">
+          Each diamond is one condition, checked top to bottom. The moment a condition is <b>true</b>, its <code class="inline">Yes</code> branch fires and the function returns immediately — the rest of the chain is never checked. Only if every condition is false do you fall through to the final <code class="inline">else</code>.
+        </p>
+      </div>
+
+      <h3>switch</h3>
+      <p>Each <code class="inline">case</code> falls through to the next unless you <code class="inline">break</code> — a common source of bugs, so don't forget it.</p>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">function dayName(dayNumber) {
+  switch (dayNumber) {
+    case 1:
+      return "Monday";
+    case 2:
+      return "Tuesday";
+    case 3:
+      return "Wednesday";
+    default:
+      return "Some other day";
+  }
+}
+
+console.log(dayName(1));
+console.log(dayName(3));
+console.log(dayName(9));</script>
+      </div>
+    </section>
+
+    <section class="topic" id="loops">
+      <div class="topic-kicker">05 · Fundamentals</div>
+      <h2>Loops</h2>
+      <p class="lede">Loops repeat a block of code. Pick the loop that matches your data: a counted <code class="inline">for</code> loop for numeric ranges, <code class="inline">for...of</code> for iterating values in arrays/strings, and <code class="inline">while</code> when you don't know the number of iterations ahead of time.</p>
+
+      <h3>for</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">for (let i = 1; i <= 5; i++) {
+  console.log("count:", i);
+}</script>
+      </div>
+
+      <div class="diagram-card">
+        <div class="pg-chrome">
+          <div class="pg-dots"><span></span><span></span><span></span></div>
+          <div class="pg-filename">loop-cycle.svg</div>
+        </div>
+        <div class="diagram-body">
+          <svg viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram of a for loop's cycle: initialize, check the condition, run the body, update the counter, then re-check the condition until it is false">
+            <defs>
+              <marker id="loopArrowNeutral" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" />
+              </marker>
+              <marker id="loopArrowYes" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 Z" fill="var(--success)" />
+              </marker>
+              <marker id="loopArrowAccent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 Z" fill="var(--accent)" />
+              </marker>
+            </defs>
+
+            <!-- Init -->
+            <rect class="fc-start" x="40" y="20" width="200" height="48" rx="10" />
+            <text class="fc-node-text" x="140" y="48">let i = 1</text>
+            <circle class="el-step" cx="255" cy="44" r="12" />
+            <text class="el-step-text" x="255" y="48">1</text>
+            <path class="el-arrow" d="M 140 68 L 140 103" marker-end="url(#loopArrowNeutral)" />
+
+            <!-- Condition diamond -->
+            <polygon class="fc-decision" points="140,105 230,160 140,215 50,160" />
+            <text class="fc-node-text" x="140" y="164">i &lt;= 5?</text>
+            <circle class="el-step" cx="50" cy="105" r="12" />
+            <text class="el-step-text" x="50" y="109">2</text>
+
+            <!-- Yes -> body -->
+            <path class="el-arrow-accent" d="M 230 160 L 278 160" marker-end="url(#loopArrowYes)" />
+            <text class="fc-yes" x="240" y="150">Yes</text>
+            <rect class="el-box" x="280" y="132" width="260" height="56" rx="10" />
+            <text class="fc-node-text" x="410" y="164">console.log("count:", i)</text>
+            <circle class="el-step" cx="555" cy="160" r="12" />
+            <text class="el-step-text" x="555" y="164">3</text>
+
+            <!-- body -> update -->
+            <path class="el-arrow" d="M 410 188 L 410 208" marker-end="url(#loopArrowNeutral)" />
+            <rect class="fc-update" x="280" y="210" width="260" height="48" rx="10" />
+            <text class="fc-node-text" x="410" y="238">i++</text>
+            <circle class="el-step" cx="555" cy="234" r="12" />
+            <text class="el-step-text" x="555" y="238">4</text>
+
+            <!-- update -> back to condition (loop back) -->
+            <path class="el-arrow-accent" d="M 280 234 C 150 234, 50 210, 50 165" marker-end="url(#loopArrowAccent)" />
+            <text class="el-label-accent" x="30" y="195">repeat</text>
+
+            <!-- No -> exit -->
+            <path class="el-arrow" d="M 140 215 L 140 273" marker-end="url(#loopArrowNeutral)" />
+            <text class="fc-no" x="150" y="248">No</text>
+            <rect class="fc-terminal" x="40" y="275" width="200" height="48" rx="10" />
+            <text class="fc-terminal-text" x="140" y="303">Exit loop</text>
+          </svg>
+        </div>
+        <p class="diagram-caption">
+          Every loop shares this same shape: <b>①</b> set up a starting value once, <b>②</b> check the condition, <b>③</b> run the body while it's true, <b>④</b> update the counter, then jump back to <b>②</b> and check again. The loop only ends once the condition finally comes back <code class="inline">false</code>.
+        </p>
+      </div>
+
+      <h3>while &amp; do...while</h3>
+      <p><code class="inline">while</code> checks the condition before each pass; <code class="inline">do...while</code> always runs at least once because it checks after.</p>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">let energy = 3;
+while (energy > 0) {
+  console.log("energy left:", energy);
+  energy--;
+}
+
+let attempts = 0;
+do {
+  console.log("attempt", attempts + 1);
+  attempts++;
+} while (attempts < 2);</script>
+      </div>
+
+      <h3>for...of and for...in</h3>
+      <p><code class="inline">for...of</code> loops over the <i>values</i> of an iterable (arrays, strings, Maps, Sets). <code class="inline">for...in</code> loops over the <i>keys</i> of an object — avoid using it on arrays.</p>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const fruits = ["apple", "banana", "cherry"];
+for (const fruit of fruits) {
+  console.log("fruit:", fruit);
+}
+
+const car = { brand: "Toyota", model: "Corolla" };
+for (const key in car) {
+  console.log(key, "=", car[key]);
+}</script>
+      </div>
+
+      <h3>break and continue</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">for (let i = 1; i <= 10; i++) {
+  if (i === 6) break;          // stop the loop entirely
+  if (i % 2 === 0) continue;   // skip even numbers
+  console.log(i);
+}</script>
+      </div>
+    </section>
+
+    <section class="topic" id="functions">
+      <div class="topic-kicker">06 · Fundamentals</div>
+      <h2>Functions</h2>
+      <p class="lede">A function is a reusable block of code you define once and call as many times as you need. JavaScript gives you three main ways to write one, plus a rich set of parameter features.</p>
+
+      <h3>Function declarations vs. expressions vs. arrow functions</h3>
+      <p>A <b>declaration</b> is hoisted (usable before its definition in the file). An <b>expression</b> assigns a function to a variable and is not hoisted. An <b>arrow function</b> is a shorter expression syntax that also doesn't bind its own <code class="inline">this</code> (see <a href="#this-keyword">The "this" Keyword</a>).</p>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">// Function declaration
+function add(a, b) {
+  return a + b;
+}
+
+// Function expression
+const subtract = function (a, b) {
+  return a - b;
+};
+
+// Arrow function
+const multiply = (a, b) => a * b;
+
+console.log(add(2, 3));
+console.log(subtract(5, 2));
+console.log(multiply(4, 3));</script>
+      </div>
+
+      <div class="diagram-card">
+        <div class="pg-chrome">
+          <div class="pg-dots"><span></span><span></span><span></span></div>
+          <div class="pg-filename">function-call-return.svg</div>
+        </div>
+        <div class="diagram-body">
+          <svg viewBox="0 0 660 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram of calling add(2, 3): arguments travel into the function's parameters, the function body runs, and the return value travels back to the caller">
+            <defs>
+              <marker id="fnArrowCall" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 Z" fill="var(--link)" />
+              </marker>
+              <marker id="fnArrowReturn" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 Z" fill="var(--success)" />
+              </marker>
+            </defs>
+
+            <!-- Caller -->
+            <rect class="el-box" x="20" y="70" width="230" height="140" rx="14" />
+            <text class="el-title" x="40" y="98">Caller</text>
+            <text class="el-sub" x="40" y="113">YOUR CODE</text>
+            <rect class="el-frame" x="40" y="124" width="190" height="32" rx="6" />
+            <text class="el-frame-text" x="52" y="145">add(2, 3)</text>
+            <rect class="el-frame" x="40" y="164" width="190" height="32" rx="6" />
+            <text class="el-frame-text" x="52" y="185">sum = 5</text>
+            <circle class="el-step" cx="253" cy="98" r="12" />
+            <text class="el-step-text" x="253" y="102">1</text>
+            <circle class="el-step" cx="253" cy="180" r="12" />
+            <text class="el-step-text" x="253" y="184">4</text>
+
+            <!-- Function -->
+            <rect class="el-box" x="410" y="40" width="230" height="200" rx="14" />
+            <text class="el-title" x="430" y="68">function add(a, b)</text>
+            <text class="el-sub" x="430" y="83">PARAMETERS RECEIVED</text>
+            <rect class="el-frame" x="430" y="94" width="190" height="32" rx="6" />
+            <text class="el-frame-text" x="442" y="115">a = 2, b = 3</text>
+            <rect class="el-frame" x="430" y="134" width="190" height="32" rx="6" />
+            <text class="el-frame-text" x="442" y="155">return a + b;</text>
+            <rect class="el-frame" x="430" y="174" width="190" height="32" rx="6" />
+            <text class="el-frame-text" x="442" y="195">evaluates to 5</text>
+            <circle class="el-step" cx="645" cy="110" r="12" />
+            <text class="el-step-text" x="645" y="114">2</text>
+            <circle class="el-step" cx="645" cy="190" r="12" />
+            <text class="el-step-text" x="645" y="194">3</text>
+
+            <!-- Call arrow -->
+            <path class="el-arrow-accent" d="M 250 140 C 320 140, 350 112, 408 110" marker-end="url(#fnArrowCall)" />
+            <text class="el-label-accent" x="270" y="128">call: 2 → a, 3 → b</text>
+
+            <!-- Return arrow -->
+            <path class="el-arrow" d="M 408 190 C 350 190, 320 180, 250 180" marker-end="url(#fnArrowReturn)" style="stroke: var(--success);" />
+            <text class="fc-yes" x="290" y="210">return: 5 travels back</text>
+          </svg>
+        </div>
+        <p class="diagram-caption">
+          <b>①</b> Calling <code class="inline">add(2, 3)</code> sends its arguments across into the function's parameters — <code class="inline">a</code> and <code class="inline">b</code>. <b>②③</b> The function body runs using only those parameters and computes <code class="inline">a + b</code>. <b>④</b> The result travels back out through <code class="inline">return</code> and becomes the value of the call itself — that's why <code class="inline">sum = add(2, 3)</code> ends up holding <code class="inline">5</code>.
+        </p>
+      </div>
+
+      <h3>Default and rest parameters</h3>
+      <p>Default parameters fill in a value when the caller doesn't provide one. Rest parameters collect any number of extra arguments into a real array.</p>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">function greet(name = "friend") {
+  return `Hello, ${name}!`;
+}
+console.log(greet());
+console.log(greet("Priya"));
+
+function sumAll(...numbers) {   // "...numbers" collects every argument
+  return numbers.reduce((total, n) => total + n, 0);
+}
+console.log(sumAll(1, 2, 3, 4, 5));</script>
+      </div>
+
+      <h3>Every function returns something</h3>
+      <p>If there's no explicit <code class="inline">return</code>, a function returns <code class="inline">undefined</code>. This trips up beginners more than almost anything else.</p>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">function noReturn(x) {
+  x * 2; // calculated, but never returned!
+}
+console.log(noReturn(5)); // undefined
+
+function withReturn(x) {
+  return x * 2;
+}
+console.log(withReturn(5)); // 10</script>
+      </div>
+
+      <div class="callout">
+        <span class="callout-label">When to use which</span>
+        Reach for a <b>declaration</b> for top-level, named functions you want available anywhere in the file. Use an <b>arrow function</b> for short callbacks (passed to <code class="inline">map</code>, event handlers, etc.) and anywhere you need to preserve the surrounding <code class="inline">this</code>.
+      </div>
+    </section>
+
+    <section class="topic" id="strings">
+      <div class="topic-kicker">07 · Core Data Structures</div>
+      <h2>Strings &amp; String Methods</h2>
+      <p class="lede">Strings represent text and are immutable — every "modifying" method actually returns a brand-new string rather than changing the original.</p>
+
+      <div class="ref-table-wrap">
+        <table class="ref-table">
+          <thead><tr><th>Method</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>.length</td><td>Number of characters (a property, not a method)</td></tr>
+            <tr><td>.toUpperCase() / .toLowerCase()</td><td>Change case</td></tr>
+            <tr><td>.trim()</td><td>Remove whitespace from both ends</td></tr>
+            <tr><td>.slice(start, end)</td><td>Extract a section; accepts negative indexes</td></tr>
+            <tr><td>.split(separator)</td><td>Break a string into an array</td></tr>
+            <tr><td>.includes(text)</td><td>Check whether a substring exists</td></tr>
+            <tr><td>.replace(old, new)</td><td>Replace the first match (use a /g regex for all)</td></tr>
+            <tr><td>.indexOf(text)</td><td>Position of the first match, or -1</td></tr>
+            <tr><td>.padStart(len, char)</td><td>Pad the start until it reaches a length</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const raw = "  Hello, World!  ";
+
+console.log(raw.trim());                 // "Hello, World!"
+console.log(raw.trim().toUpperCase());   // "HELLO, WORLD!"
+console.log(raw.length);                 // includes the spaces
+console.log(raw.includes("World"));      // true
+console.log(raw.trim().slice(0, 5));     // "Hello"
+console.log(raw.trim().split(", "));     // ["Hello", "World!"]
+console.log(raw.replace("World", "JS")); // "  Hello, JS!  "
+console.log("7".padStart(3, "0"));       // "007"</script>
+      </div>
+
+      <div class="callout">
+        <span class="callout-label">Template literals for building strings</span>
+        Instead of chaining <code class="inline">+</code>, use backtick strings with <code class="inline">${expression}</code> — see the <a href="#template-literals">Template Literals</a> section.
+      </div>
+    </section>
+
+    <section class="topic" id="numbers-math">
+      <div class="topic-kicker">08 · Core Data Structures</div>
+      <h2>Numbers &amp; Math</h2>
+      <p class="lede">JavaScript has a single <code class="inline">Number</code> type for both integers and decimals, built on 64-bit floating point — which is why decimal math can look slightly "off," and why the built-in <code class="inline">Math</code> object exists for everything beyond basic arithmetic.</p>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">console.log(0.1 + 0.2);              // 0.30000000000000004 — floating point quirk
+console.log((0.1 + 0.2).toFixed(2));  // "0.30" — round to 2 decimals for display
+
+console.log(Math.round(4.6));   // 5
+console.log(Math.floor(4.9));   // 4
+console.log(Math.ceil(4.1));    // 5
+console.log(Math.max(3, 7, 2)); // 7
+console.log(Math.min(3, 7, 2)); // 2
+console.log(Math.random());     // a random number between 0 and 1
+console.log(Math.floor(Math.random() * 6) + 1); // simulate a dice roll (1–6)
+
+console.log(Number.isInteger(4));   // true
+console.log(Number.isInteger(4.5)); // false
+console.log(Number("3.14"));        // 3.14
+console.log(isNaN("hello" * 2));    // true — "hello" * 2 is Not a Number</script>
+      </div>
+    </section>
+
+    <section class="topic" id="arrays">
+      <div class="topic-kicker">09 · Core Data Structures</div>
+      <h2>Arrays</h2>
+      <p class="lede">An array is an ordered list of values, indexed from zero. Arrays are objects under the hood, which is why <code class="inline">typeof []</code> reports <code class="inline">"object"</code> — but they come with a huge set of purpose-built methods, covered next.</p>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const colors = ["red", "green", "blue"];
+
+console.log(colors[0]);        // "red" — indexes start at 0
+console.log(colors.length);    // 3
+console.log(colors[colors.length - 1]); // "blue" — last item
+
+colors.push("yellow");         // add to the end
+console.log(colors);
+
+colors.pop();                  // remove from the end
+console.log(colors);
+
+colors.unshift("purple");      // add to the start
+console.log(colors);
+
+colors.shift();                // remove from the start
+console.log(colors);
+
+console.log(Array.isArray(colors));   // true — the reliable way to check
+console.log(Array.isArray("red"));    // false</script>
+      </div>
+    </section>
+
+    <section class="topic" id="array-methods">
+      <div class="topic-kicker">10 · Core Data Structures</div>
+      <h2>Array Methods</h2>
+      <p class="lede">These higher-order methods are how array data is actually processed in modern JavaScript — they replace most manual <code class="inline">for</code> loops over arrays and read more like a description of intent than a mechanical procedure.</p>
+
+      <div class="ref-table-wrap">
+        <table class="ref-table">
+          <thead><tr><th>Method</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td>.map()</td><td>Transforms every item, returns a new array of the same length</td></tr>
+            <tr><td>.filter()</td><td>Keeps only items that pass a test, returns a shorter (or equal) array</td></tr>
+            <tr><td>.reduce()</td><td>Folds the whole array down into a single value</td></tr>
+            <tr><td>.forEach()</td><td>Runs a function per item; returns nothing (for side effects only)</td></tr>
+            <tr><td>.find() / .findIndex()</td><td>Returns the first matching item, or its index</td></tr>
+            <tr><td>.some() / .every()</td><td>Returns true if any / all items pass a test</td></tr>
+            <tr><td>.sort()</td><td>Sorts in place — always pass a compare function for numbers</td></tr>
+            <tr><td>.includes()</td><td>True if the array contains a given value</td></tr>
+            <tr><td>.slice() / .splice()</td><td>slice copies a range; splice mutates the array in place</td></tr>
+            <tr><td>.concat() / spread</td><td>Combine arrays without mutating either one</td></tr>
+            <tr><td>.flat()</td><td>Flattens nested arrays by a given depth</td></tr>
+            <tr><td>.join()</td><td>Combines items into a single string with a separator</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>map — transform every item</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const prices = [10, 20, 30];
+const withTax = prices.map(price => price * 1.1);
+console.log(withTax);</script>
+      </div>
+
+      <h3>filter — keep only what matches</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const ages = [12, 19, 45, 8, 30];
+const adults = ages.filter(age => age >= 18);
+console.log(adults);</script>
+      </div>
+
+      <h3>reduce — fold into one value</h3>
+      <p><code class="inline">reduce</code> is the most flexible (and most confusing at first) array method: it walks the array carrying an "accumulator" forward.</p>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const cart = [12.5, 4, 9.99];
+const total = cart.reduce((sum, price) => sum + price, 0); // 0 is the starting value
+console.log("total:", total.toFixed(2));
+
+// reduce can build objects too, not just numbers
+const votes = ["yes", "no", "yes", "yes", "no"];
+const tally = votes.reduce((counts, vote) => {
+  counts[vote] = (counts[vote] || 0) + 1;
+  return counts;
+}, {});
+console.log(tally);</script>
+      </div>
+
+      <h3>forEach vs. map</h3>
+      <p><code class="inline">forEach</code> is for side effects (like logging); it always returns <code class="inline">undefined</code>. If you need a new array back, use <code class="inline">map</code> instead.</p>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">["a", "b", "c"].forEach((item, index) => {
+  console.log(index, "->", item);
+});</script>
+      </div>
+
+      <h3>find, some, every</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const users = [
+  { name: "Ava", active: true },
+  { name: "Ben", active: false },
+  { name: "Cy", active: true },
+];
+
+console.log(users.find(u => !u.active));        // first inactive user
+console.log(users.some(u => !u.active));        // true — at least one inactive
+console.log(users.every(u => u.active));        // false — not all are active</script>
+      </div>
+
+      <h3>sort — always pass a compare function for numbers</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const nums = [40, 1, 5, 200];
+
+console.log([...nums].sort());                      // [1, 200, 40, 5] — sorted as TEXT, wrong!
+console.log([...nums].sort((a, b) => a - b));        // [1, 5, 40, 200] — ascending
+console.log([...nums].sort((a, b) => b - a));        // [200, 40, 5, 1] — descending</script>
+      </div>
+
+      <h3>slice, splice, concat, flat, join</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const letters = ["a", "b", "c", "d", "e"];
+
+console.log(letters.slice(1, 3));   // ["b","c"] — original untouched, end index excluded
+console.log(letters);               // unchanged
+
+const copy = [...letters];
+copy.splice(1, 2, "X");             // at index 1, remove 2, insert "X" — MUTATES
+console.log(copy);
+
+console.log([1, 2].concat([3, 4])); // [1,2,3,4]
+console.log([...[1, 2], ...[3, 4]]); // same result using spread
+
+console.log([1, [2, 3], [4, [5, 6]]].flat(2)); // flatten 2 levels deep
+console.log(["2024", "01", "15"].join("-"));   // "2024-01-15"</script>
+      </div>
+    </section>
+
+    <section class="topic" id="objects">
+      <div class="topic-kicker">11 · Core Data Structures</div>
+      <h2>Objects</h2>
+      <p class="lede">An object stores data as key-value pairs. It's the closest thing JavaScript has to a general-purpose "record" — most real-world data (a user, a product, an API response) ends up modeled as one.</p>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const user = {
+  name: "Priya",
+  age: 28,
+  isAdmin: false,
+  greet() {                 // shorthand method syntax
+    return `Hi, I'm ${this.name}`;
+  },
+};
+
+console.log(user.name);        // dot notation
+console.log(user["age"]);      // bracket notation — needed for dynamic keys
+console.log(user.greet());
+
+user.email = "priya@example.com"; // add a new property any time
+delete user.isAdmin;              // remove one
+console.log(user);
+
+console.log(Object.keys(user));    // ["name","age","greet","email"]
+console.log(Object.values(user));
+console.log(Object.entries(user)); // [ [key, value], [key, value], ... ]
+
+const merged = Object.assign({}, { a: 1 }, { b: 2 }); // shallow-merge into a new object
+console.log(merged);
+
+const dynamicKey = "score";
+const withComputed = { [dynamicKey]: 100 }; // computed property name
+console.log(withComputed);</script>
+      </div>
+
+      <div class="callout">
+        <span class="callout-label">Equality on objects</span>
+        <code class="inline">{} === {}</code> is always <code class="inline">false</code> — two different objects are never equal, even with identical contents, because <code class="inline">===</code> compares references, not structure. Only comparing an object to itself (the same reference) returns true.
+      </div>
+    </section>
+
+    <section class="topic" id="destructuring">
+      <div class="topic-kicker">12 · Core Data Structures</div>
+      <h2>Destructuring</h2>
+      <p class="lede">Destructuring unpacks values from arrays or objects into standalone variables in one line — instead of accessing each property individually.</p>
+
+      <h3>Object destructuring</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const user = { name: "Leo", age: 34, city: "Austin" };
+
+const { name, city } = user;           // pull out just what you need
+console.log(name, city);
+
+const { age: userAge = 0 } = user;     // rename with `:` and default with `=`
+console.log(userAge);
+
+function printUser({ name, age }) {    // destructure directly in parameters
+  console.log(`${name} is ${age}`);
+}
+printUser(user);</script>
+      </div>
+
+      <h3>Array destructuring</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const coordinates = [10, 20, 30];
+const [x, y, z] = coordinates;
+console.log(x, y, z);
+
+const [first, , third] = coordinates;  // skip an item with an empty slot
+console.log(first, third);
+
+let a = 1, b = 2;
+[a, b] = [b, a];                        // classic swap, no temp variable
+console.log(a, b);</script>
+      </div>
+    </section>
+
+    <section class="topic" id="spread-rest">
+      <div class="topic-kicker">13 · Core Data Structures</div>
+      <h2>Spread &amp; Rest Operators</h2>
+      <p class="lede">Both use the same <code class="inline">...</code> syntax but do opposite jobs: <b>spread</b> expands a collection out into individual elements; <b>rest</b> gathers individual elements back into a collection. Which one you're looking at depends on where it appears.</p>
+
+      <h3>Spread — expand a collection</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const nums = [1, 2, 3];
+console.log(Math.max(...nums));       // spreads into Math.max(1, 2, 3)
+
+const arr1 = [1, 2];
+const arr2 = [3, 4];
+console.log([...arr1, ...arr2]);      // combine arrays without mutating
+
+const base = { theme: "dark", size: "md" };
+const overridden = { ...base, size: "lg" }; // shallow-copy + override
+console.log(overridden);</script>
+      </div>
+
+      <h3>Rest — gather into a collection</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">function sum(...numbers) {         // rest parameter: gathers all args into an array
+  return numbers.reduce((a, b) => a + b, 0);
+}
+console.log(sum(1, 2, 3, 4));
+
+const [first, ...rest] = [10, 20, 30, 40]; // rest in destructuring
+console.log(first, rest);
+
+const { id, ...otherFields } = { id: 1, name: "Kit", role: "admin" };
+console.log(id, otherFields);</script>
+      </div>
+    </section>
+
+    <section class="topic" id="template-literals">
+      <div class="topic-kicker">14 · Core Data Structures</div>
+      <h2>Template Literals</h2>
+      <p class="lede">Backtick-delimited strings let you embed expressions directly with <code class="inline">${ }</code>, and span multiple lines without escape characters — a big readability upgrade over string concatenation with <code class="inline">+</code>.</p>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const name = "Zara";
+const itemCount = 3;
+
+// old way
+console.log("Hello " + name + ", you have " + itemCount + " items.");
+
+// template literal
+console.log(`Hello ${name}, you have ${itemCount} items.`);
+
+// expressions work inside ${}, not just variables
+console.log(`Total with tax: $${(itemCount * 9.99 * 1.08).toFixed(2)}`);
+
+// multi-line strings, no \n needed
+const address = `123 Main St.
+Springfield, USA`;
+console.log(address);</script>
+      </div>
+    </section>
+
+    <section class="topic" id="scope-hoisting">
+      <div class="topic-kicker">15 · Intermediate</div>
+      <h2>Scope &amp; Hoisting</h2>
+      <p class="lede">Scope determines where a variable is visible. Hoisting describes how JavaScript sets up variables and functions <i>before</i> running your code line-by-line — which explains some surprising ordering behavior.</p>
+
+      <h3>Block scope vs. function scope</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">function demo() {
+  if (true) {
+    let blockScoped = "only visible in this block";
+    var functionScoped = "visible in the whole function";
+  }
+  // console.log(blockScoped);   // ReferenceError if uncommented
+  console.log(functionScoped);   // works — var ignores the if-block
+}
+demo();</script>
+      </div>
+
+      <h3>Hoisting &amp; the Temporal Dead Zone</h3>
+      <p>Function declarations are hoisted completely (you can call them before they appear in the file). <code class="inline">var</code> declarations are hoisted but start as <code class="inline">undefined</code>. <code class="inline">let</code> and <code class="inline">const</code> are hoisted too, but stay in a "Temporal Dead Zone" — unusable until their line actually runs — which is why they throw instead of silently returning <code class="inline">undefined</code>.</p>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">console.log(hoistedFn());  // works — function declarations hoist fully
+function hoistedFn() { return "I work before my definition"; }
+
+console.log(varExample);   // undefined, not an error
+var varExample = "hi";
+
+// console.log(letExample); // ReferenceError: Cannot access before initialization
+let letExample = "hi";</script>
+      </div>
+    </section>
+
+    <section class="topic" id="closures">
+      <div class="topic-kicker">16 · Intermediate</div>
+      <h2>Closures</h2>
+      <p class="lede">A closure is a function that "remembers" the variables from the scope it was created in, even after that outer function has finished running. It's how JavaScript implements private state without classes — and it powers patterns like counters, memoization, and event handler factories.</p>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">function makeCounter() {
+  let count = 0;               // private to this closure
+  return function () {
+    count++;
+    return count;
+  };
+}
+
+const counterA = makeCounter();
+const counterB = makeCounter(); // a totally separate closure/count
+
+console.log(counterA()); // 1
+console.log(counterA()); // 2
+console.log(counterA()); // 3
+console.log(counterB()); // 1 — independent from counterA</script>
+      </div>
+
+      <h3>A practical use: function factories</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">function makeMultiplier(factor) {
+  return (number) => number * factor; // "remembers" factor forever
+}
+
+const double = makeMultiplier(2);
+const triple = makeMultiplier(3);
+
+console.log(double(5));  // 10
+console.log(triple(5));  // 15</script>
+      </div>
+
+      <div class="callout">
+        <span class="callout-label">Why it matters</span>
+        Closures are what let a variable stay "alive" and private after its enclosing function returns. Every time you write a callback that references an outer variable, you're using a closure — it's one of the most-asked-about interview topics for a reason.
+      </div>
+    </section>
+
+    <section class="topic" id="this-keyword">
+      <div class="topic-kicker">17 · Intermediate</div>
+      <h2>The "this" Keyword</h2>
+      <p class="lede"><code class="inline">this</code> refers to "whatever object is calling the function" — and unlike most languages, that's determined by <i>how a function is called</i>, not where it's defined. This is the single most common source of JavaScript bugs for people coming from other languages.</p>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const person = {
+  name: "Mira",
+  regularFunction: function () {
+    return `Regular: ${this.name}`;   // "this" = whatever calls it (person)
+  },
+  arrowFunction: () => {
+    return `Arrow: ${this.name}`;      // arrow functions don't have their own "this"
+  },
+};
+
+console.log(person.regularFunction()); // "Regular: Mira" — called as person.method()
+console.log(person.arrowFunction());   // "Arrow: undefined" — inherits outer "this"
+
+const detached = person.regularFunction;
+// console.log(detached());   // "this" is now undefined/global — loses its binding!
+
+console.log(detached.call(person)); // .call() lets you explicitly set "this"</script>
+      </div>
+
+      <div class="callout warn">
+        <span class="callout-label">Rule of thumb</span>
+        Use a regular <code class="inline">function</code> for object methods (so <code class="inline">this</code> refers to the object). Use an <b>arrow function</b> for callbacks nested inside a method, so <code class="inline">this</code> correctly stays pointed at the outer object instead of becoming <code class="inline">undefined</code>.
+      </div>
+    </section>
+
+    <section class="topic" id="higher-order-functions">
+      <div class="topic-kicker">18 · Intermediate</div>
+      <h2>Higher-Order Functions &amp; Callbacks</h2>
+      <p class="lede">In JavaScript, functions are values — they can be stored in variables, passed as arguments, and returned from other functions. A <b>higher-order function</b> is any function that does at least one of those things. A <b>callback</b> is simply a function passed in to be called later.</p>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">function processOrder(item, onSuccess, onError) {
+  if (!item) {
+    onError("No item provided");
+    return;
+  }
+  onSuccess(`${item} processed!`);
+}
+
+processOrder(
+  "Laptop",
+  (message) => console.log("✅", message),   // callback for success
+  (error) => console.log("❌", error)         // callback for failure
+);
+
+processOrder(null, () => {}, (error) => console.log("❌", error));
+
+// map, filter, and reduce (covered earlier) are the most common
+// higher-order functions you'll use day to day:
+const doubled = [1, 2, 3].map(n => n * 2); // map takes a callback
+console.log(doubled);</script>
+      </div>
+    </section>
+
+    <section class="topic" id="error-handling">
+      <div class="topic-kicker">19 · Intermediate</div>
+      <h2>Error Handling</h2>
+      <p class="lede"><code class="inline">try/catch</code> lets your program recover from a runtime error instead of crashing entirely. Use it around code that can realistically fail — parsing data, calling an API, reading user input — not around every single line.</p>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">function parseAge(input) {
+  try {
+    const age = JSON.parse(input);
+    if (typeof age !== "number") {
+      throw new TypeError("Age must be a number");
+    }
+    return age;
+  } catch (error) {
+    console.log("Failed to parse age:", error.message);
+    return null;
+  } finally {
+    console.log("Parsing attempt finished"); // always runs, error or not
+  }
+}
+
+console.log(parseAge("25"));
+console.log(parseAge('"twenty-five"'));
+console.log(parseAge("not valid json"));</script>
+      </div>
+
+      <h3>Custom error types</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">class ValidationError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "ValidationError";
+  }
+}
+
+function setUsername(name) {
+  if (name.length < 3) {
+    throw new ValidationError("Username must be at least 3 characters");
+  }
+  return name;
+}
+
+try {
+  setUsername("ab");
+} catch (error) {
+  console.log(`${error.name}: ${error.message}`);
+}</script>
+      </div>
+    </section>
+
+    <section class="topic" id="json">
+      <div class="topic-kicker">20 · Intermediate</div>
+      <h2>JSON</h2>
+      <p class="lede">JSON (JavaScript Object Notation) is the universal text format for exchanging data between a browser and a server. It looks almost identical to a JS object literal, but it's a separate format with stricter rules (keys must be double-quoted strings, no functions or <code class="inline">undefined</code> allowed).</p>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const user = { name: "Devon", age: 25, active: true };
+
+const jsonString = JSON.stringify(user);         // object -> JSON text
+console.log(jsonString, typeof jsonString);
+
+const pretty = JSON.stringify(user, null, 2);    // pretty-print with 2-space indent
+console.log(pretty);
+
+const parsedBack = JSON.parse(jsonString);       // JSON text -> object
+console.log(parsedBack.name, typeof parsedBack);
+
+// This is exactly what happens under the hood when you call
+// response.json() on a fetch() result — see the Fetch API section.</script>
+      </div>
+    </section>
+
+    <section class="topic" id="date">
+      <div class="topic-kicker">21 · Intermediate</div>
+      <h2>Date Object</h2>
+      <p class="lede">The built-in <code class="inline">Date</code> object handles dates and times. Its API predates modern conventions in a few places (months are zero-indexed!), which is worth knowing before it surprises you.</p>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const now = new Date();
+console.log(now.toString());
+
+const specific = new Date(2024, 0, 15); // January 15, 2024 — month 0 = January!
+console.log(specific.toDateString());
+
+console.log(specific.getFullYear());  // 2024
+console.log(specific.getMonth());     // 0 (January)
+console.log(specific.getDate());      // 15
+console.log(specific.getDay());       // day of week, 0 = Sunday
+
+const later = new Date(specific);
+later.setDate(later.getDate() + 30);  // add 30 days
+console.log(later.toDateString());
+
+console.log(Date.now());              // milliseconds since Jan 1, 1970 (epoch)</script>
+      </div>
+
+      <div class="callout warn">
+        <span class="callout-label">Heads up</span>
+        For anything beyond basic date math (timezones, formatting, durations), most real projects reach for a library like <code class="inline">date-fns</code> or <code class="inline">Intl.DateTimeFormat</code> rather than hand-rolling it.
+      </div>
+    </section>
+
+    <section class="topic" id="regexp">
+      <div class="topic-kicker">22 · Intermediate</div>
+      <h2>Regular Expressions</h2>
+      <p class="lede">A regular expression (regex) is a pattern for matching text — used for validation (is this a valid email?), searching, and find-and-replace operations that are too flexible for plain string methods.</p>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const emailPattern = /^[\w.-]+@[\w.-]+\.\w{2,}$/;
+
+console.log(emailPattern.test("hello@example.com")); // true
+console.log(emailPattern.test("not-an-email"));       // false
+
+const text = "Call 555-1234 or 555-5678";
+const phoneNumbers = text.match(/\d{3}-\d{4}/g); // "g" = find all matches
+console.log(phoneNumbers);
+
+console.log("2024-01-15".replace(/(\d+)-(\d+)-(\d+)/, "$2/$3/$1")); // reorder with groups
+
+console.log("  spaced   out  ".replace(/\s+/g, " ").trim()); // collapse whitespace</script>
+      </div>
+
+      <div class="ref-table-wrap">
+        <table class="ref-table">
+          <thead><tr><th>Pattern</th><th>Matches</th></tr></thead>
+          <tbody>
+            <tr><td><code class="inline">\d</code></td><td>Any digit</td></tr>
+            <tr><td><code class="inline">\w</code></td><td>Any word character (letter, digit, underscore)</td></tr>
+            <tr><td><code class="inline">\s</code></td><td>Any whitespace</td></tr>
+            <tr><td><code class="inline">+ * ?</code></td><td>One-or-more / zero-or-more / zero-or-one</td></tr>
+            <tr><td><code class="inline">^ $</code></td><td>Start / end of the string</td></tr>
+            <tr><td><code class="inline">g</code> flag</td><td>Match globally, not just the first occurrence</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="topic" id="map-set">
+      <div class="topic-kicker">23 · Intermediate</div>
+      <h2>Map &amp; Set</h2>
+      <p class="lede">Two collection types introduced in ES6 that solve problems plain objects and arrays handle awkwardly: <code class="inline">Map</code> is a key-value store that allows <i>any</i> value as a key, and <code class="inline">Set</code> is a list that automatically enforces uniqueness.</p>
+
+      <h3>Map — key-value pairs, any key type</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const userRoles = new Map();
+userRoles.set("alice", "admin");
+userRoles.set("bob", "editor");
+
+console.log(userRoles.get("alice")); // "admin"
+console.log(userRoles.has("bob"));   // true
+console.log(userRoles.size);         // 2
+
+for (const [user, role] of userRoles) {
+  console.log(user, "->", role);
+}</script>
+      </div>
+
+      <h3>Set — a list of unique values</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const uniqueTags = new Set(["js", "css", "js", "html", "css"]);
+console.log(uniqueTags);            // duplicates are dropped automatically
+console.log(uniqueTags.size);       // 3
+console.log(uniqueTags.has("css")); // true
+
+// a common one-liner: de-duplicate an array
+const nums = [1, 2, 2, 3, 3, 3];
+const unique = [...new Set(nums)];
+console.log(unique);</script>
+      </div>
+    </section>
+
+    <section class="topic" id="dom">
+      <div class="topic-kicker">24 · Browser &amp; DOM</div>
+      <h2>DOM Manipulation</h2>
+      <p class="lede">The DOM (Document Object Model) is the browser's live, in-memory representation of your HTML page as a tree of objects. JavaScript's DOM API lets you read and change that tree — which is how a page updates without a full reload. These examples run in a real mini-page below the editor, not just the console.</p>
+
+      <h3>Selecting elements</h3>
+      <div class="playground" data-mode="dom">
+        <script type="text/plain" class="pg-html"><h4 id="title">Original Title</h4>
+<p class="note">A paragraph with a class.</p></script>
+        <script type="text/plain" class="pg-code">const title = document.getElementById("title");
+const note = document.querySelector(".note");   // CSS-selector based, most flexible
+
+console.log("title text:", title.textContent);
+console.log("note text:", note.textContent);
+
+title.textContent = "Selected via getElementById!";
+note.style.color = "#2454b8";</script>
+      </div>
+
+      <h3>Creating and changing elements</h3>
+      <div class="playground" data-mode="dom">
+        <script type="text/plain" class="pg-html"><ul id="list"><li>Existing item</li></ul></script>
+        <script type="text/plain" class="pg-code">const list = document.getElementById("list");
+
+const newItem = document.createElement("li"); // build a new element
+newItem.textContent = "Created with JavaScript";
+list.appendChild(newItem);                     // insert it into the page
+
+const items = document.querySelectorAll("li"); // NodeList of all matches
+console.log("total items:", items.length);
+
+items[0].style.fontWeight = "bold";
+items[0].classList.add("highlight");           // add a CSS class</script>
+      </div>
+
+      <h3>Attributes vs. properties</h3>
+      <div class="playground" data-mode="dom">
+        <script type="text/plain" class="pg-html"><a id="link" href="#">Visit site</a></script>
+        <script type="text/plain" class="pg-code">const link = document.getElementById("link");
+
+link.setAttribute("href", "https://example.com");
+link.setAttribute("target", "_blank");
+console.log(link.getAttribute("href"));
+
+link.textContent = "Now linking to example.com";</script>
+      </div>
+    </section>
+
+    <section class="topic" id="events">
+      <div class="topic-kicker">25 · Browser &amp; DOM</div>
+      <h2>Events</h2>
+      <p class="lede">Events are how a page responds to what a user does — clicks, typing, scrolling, submitting a form. <code class="inline">addEventListener</code> is the standard way to react to them: it attaches a callback that runs whenever the event fires.</p>
+
+      <h3>Listening for a click</h3>
+      <div class="playground" data-mode="dom">
+        <script type="text/plain" class="pg-html"><button id="likeBtn">🤍 Like</button><p id="count">0 likes</p></script>
+        <script type="text/plain" class="pg-code">let likes = 0;
+const button = document.getElementById("likeBtn");
+const countLabel = document.getElementById("count");
+
+button.addEventListener("click", () => {
+  likes++;
+  countLabel.textContent = `${likes} like${likes === 1 ? "" : "s"}`;
+  button.textContent = "❤️ Liked";
+  console.log("like count:", likes);
+});</script>
+      </div>
+
+      <h3>The event object</h3>
+      <p>The callback receives an event object describing what happened — which key was pressed, where the mouse was, which element was the target, and so on.</p>
+      <div class="playground" data-mode="dom">
+        <script type="text/plain" class="pg-html"><input id="nameInput" type="text" placeholder="Type your name" /></script>
+        <script type="text/plain" class="pg-code">const input = document.getElementById("nameInput");
+
+input.addEventListener("input", (event) => {
+  console.log("current value:", event.target.value);
+});</script>
+      </div>
+
+      <h3>Event delegation</h3>
+      <p>Instead of attaching a listener to every single button (expensive, and misses buttons added later), attach one listener to a shared parent and check <code class="inline">event.target</code>.</p>
+      <div class="playground" data-mode="dom">
+        <script type="text/plain" class="pg-html"><div id="menu">
+  <button data-item="Home">Home</button>
+  <button data-item="About">About</button>
+  <button data-item="Contact">Contact</button>
+</div></script>
+        <script type="text/plain" class="pg-code">const menu = document.getElementById("menu");
+
+menu.addEventListener("click", (event) => {
+  if (event.target.tagName === "BUTTON") {
+    console.log("navigated to:", event.target.dataset.item);
+  }
+});
+// one listener handles all three buttons — and any added later</script>
+      </div>
+    </section>
+
+    <section class="topic" id="storage">
+      <div class="topic-kicker">26 · Browser &amp; DOM</div>
+      <h2>Local &amp; Session Storage</h2>
+      <p class="lede">Both let you save key-value data directly in the browser, no server needed. <code class="inline">localStorage</code> persists until explicitly cleared (even after closing the tab); <code class="inline">sessionStorage</code> disappears when the tab closes. Both only store strings — objects must be serialized with <code class="inline">JSON.stringify</code>.</p>
+
+      <div class="playground" data-mode="dom">
+        <script type="text/plain" class="pg-html"><button id="saveBtn">Save preferences</button>
+<button id="loadBtn">Load preferences</button>
+<p id="result">—</p></script>
+        <script type="text/plain" class="pg-code">document.getElementById("saveBtn").addEventListener("click", () => {
+  const prefs = { theme: "dark", fontSize: 16 };
+  localStorage.setItem("prefs", JSON.stringify(prefs)); // must stringify objects
+  console.log("saved:", prefs);
+});
+
+document.getElementById("loadBtn").addEventListener("click", () => {
+  const raw = localStorage.getItem("prefs");
+  const prefs = raw ? JSON.parse(raw) : null;           // must parse it back
+  document.getElementById("result").textContent = raw
+    ? `theme: ${prefs.theme}, fontSize: ${prefs.fontSize}`
+    : "nothing saved yet";
+  console.log("loaded:", prefs);
+});
+
+// localStorage.removeItem("prefs")  removes one key
+// localStorage.clear()              wipes everything</script>
+      </div>
+    </section>
+
+    <section class="topic" id="prototypes">
+      <div class="topic-kicker">27 · Advanced &amp; Async</div>
+      <h2>Prototypes &amp; Inheritance</h2>
+      <p class="lede">Every JavaScript object has a hidden link to another object called its <b>prototype</b>, which it can borrow properties and methods from. This "prototype chain" is how inheritance worked in JavaScript long before the <code class="inline">class</code> keyword existed — and classes (next section) are really just a friendlier syntax built on top of it.</p>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const animal = {
+  eat() { return `${this.name} is eating`; },
+};
+
+const dog = Object.create(animal);   // dog's prototype is `animal`
+dog.name = "Rex";
+
+console.log(dog.eat());                        // borrowed from the prototype
+console.log(Object.getPrototypeOf(dog) === animal); // true
+console.log(dog.hasOwnProperty("name"));        // true — own property
+console.log(dog.hasOwnProperty("eat"));         // false — inherited, not own</script>
+      </div>
+
+      <div class="callout">
+        <span class="callout-label">Why this matters</span>
+        When you call a method on an object and JavaScript can't find it directly on that object, it walks up the prototype chain looking for it. This is also how built-ins work — every array inherits <code class="inline">.map()</code>, <code class="inline">.push()</code>, etc. from <code class="inline">Array.prototype</code>.
+      </div>
+    </section>
+
+    <section class="topic" id="classes">
+      <div class="topic-kicker">28 · Advanced &amp; Async</div>
+      <h2>Classes</h2>
+      <p class="lede">ES6 classes are syntax sugar over prototypal inheritance — a cleaner, more familiar way (especially if you know other languages) to define a blueprint for creating objects with shared behavior.</p>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">class Animal {
+  constructor(name) {
+    this.name = name;
+  }
+  speak() {
+    return `${this.name} makes a sound.`;
+  }
+}
+
+class Dog extends Animal {           // inheritance
+  speak() {                          // override the parent method
+    return `${super.speak()} Specifically, a bark!`; // call the parent version too
+  }
+}
+
+const generic = new Animal("Creature");
+const rex = new Dog("Rex");
+
+console.log(generic.speak());
+console.log(rex.speak());
+console.log(rex instanceof Animal); // true — Dog extends Animal</script>
+      </div>
+
+      <h3>Getters, setters, and static members</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">class Circle {
+  #radius; // private field — only accessible inside this class
+
+  constructor(radius) {
+    this.#radius = radius;
+  }
+
+  get area() {                       // computed property, accessed WITHOUT ()
+    return (Math.PI * this.#radius ** 2).toFixed(2);
+  }
+
+  set radius(value) {                // runs validation on assignment
+    if (value <= 0) throw new Error("Radius must be positive");
+    this.#radius = value;
+  }
+
+  static describe() {                // called on the class itself, not an instance
+    return "A Circle has a radius and an area.";
+  }
+}
+
+const c = new Circle(5);
+console.log(c.area);          // accessed like a property
+c.radius = 10;
+console.log(c.area);
+console.log(Circle.describe());
+// console.log(c.#radius);    // SyntaxError — private fields can't be accessed outside</script>
+      </div>
+    </section>
+
+    <section class="topic" id="promises">
+      <div class="topic-kicker">29 · Advanced &amp; Async</div>
+      <h2>Promises</h2>
+      <p class="lede">A Promise represents a value that isn't ready yet but will be — the result of something asynchronous like a network request or a timer. It's always in one of three states: <i>pending</i>, <i>fulfilled</i>, or <i>rejected</i>, and it replaced the deeply-nested "callback hell" pattern from early JavaScript.</p>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">function wait(ms, shouldFail = false) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (shouldFail) {
+        reject(new Error("Something went wrong"));
+      } else {
+        resolve(`Waited ${ms}ms`);
+      }
+    }, ms);
+  });
+}
+
+wait(300)
+  .then((result) => {
+    console.log("success:", result);
+    return wait(200); // chain another promise
+  })
+  .then((result) => console.log("chained:", result))
+  .catch((error) => console.log("caught:", error.message))
+  .finally(() => console.log("done, either way"));</script>
+      </div>
+
+      <h3>Running promises in parallel</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const taskA = new Promise(resolve => setTimeout(() => resolve("A done"), 200));
+const taskB = new Promise(resolve => setTimeout(() => resolve("B done"), 100));
+const taskC = new Promise(resolve => setTimeout(() => resolve("C done"), 300));
+
+Promise.all([taskA, taskB, taskC]).then((results) => {
+  console.log("all finished together:", results); // waits for the slowest
+});
+
+Promise.race([taskA, taskB, taskC]).then((first) => {
+  console.log("first to finish:", first); // "B done" — it's fastest
+});</script>
+      </div>
+
+      <div class="callout">
+        <span class="callout-label">.all vs .race vs .allSettled</span>
+        <code class="inline">Promise.all</code> waits for every promise and rejects immediately if any one fails. <code class="inline">Promise.race</code> settles as soon as the first one finishes, win or lose. <code class="inline">Promise.allSettled</code> waits for all of them and never short-circuits, giving you a status report for each.
+      </div>
+    </section>
+
+    <section class="topic" id="async-await">
+      <div class="topic-kicker">30 · Advanced &amp; Async</div>
+      <h2>Async / Await</h2>
+      <p class="lede"><code class="inline">async</code>/<code class="inline">await</code> is syntax that lets promise-based code read top-to-bottom like synchronous code, instead of a chain of <code class="inline">.then()</code> calls. Under the hood it's still promises — this is just a more readable way to write them.</p>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">function wait(ms, value) {
+  return new Promise(resolve => setTimeout(() => resolve(value), ms));
+}
+
+async function loadDashboard() {
+  console.log("loading started...");
+  const user = await wait(200, { name: "Kai" });     // pauses here until resolved
+  console.log("got user:", user);
+  const stats = await wait(200, { visits: 42 });      // then pauses here
+  console.log("got stats:", stats);
+  return { user, stats };                             // async functions always return a Promise
+}
+
+loadDashboard().then((data) => console.log("dashboard ready:", data));</script>
+      </div>
+
+      <h3>Error handling with try/catch</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">function riskyOperation(shouldFail) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      shouldFail ? reject(new Error("It failed!")) : resolve("It worked!");
+    }, 200);
+  });
+}
+
+async function run() {
+  try {
+    const result = await riskyOperation(true);
+    console.log(result);
+  } catch (error) {
+    console.log("caught in async function:", error.message);
+  }
+}
+
+run();</script>
+      </div>
+    </section>
+
+    <section class="topic" id="fetch">
+      <div class="topic-kicker">31 · Advanced &amp; Async</div>
+      <h2>Fetch API</h2>
+      <p class="lede"><code class="inline">fetch()</code> is the standard browser function for making HTTP requests — calling an API, loading data, submitting a form without a page reload. It returns a Promise that resolves to a <code class="inline">Response</code> object, which you then read with <code class="inline">.json()</code> (also a Promise, since parsing the body is async).</p>
+
+      <div class="callout warn">
+        <span class="callout-label">About this playground</span>
+        This sandboxed page has no real network access, so the examples below use <code class="inline">mockFetch</code> — a stand-in with the exact same shape as the real thing. In your own project, replace it with the real <code class="inline">fetch(url)</code> and the rest of the code is identical.
+      </div>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">function mockFetch(url) {
+  console.log("requesting:", url);
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({ id: 1, name: "Ada Lovelace" }),
+      });
+    }, 300);
+  });
+}
+
+// Promise-chain style — identical to real fetch("https://api.example.com/users/1")
+mockFetch("https://api.example.com/users/1")
+  .then(response => response.json())
+  .then(data => console.log("user:", data))
+  .catch(error => console.log("request failed:", error.message));</script>
+      </div>
+
+      <h3>fetch with async/await</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">function mockFetch(url, fail = false) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (fail) return reject(new Error("Network error"));
+      resolve({ ok: true, json: () => Promise.resolve({ items: ["a", "b", "c"] }) });
+    }, 300);
+  });
+}
+
+async function loadItems() {
+  try {
+    const response = await mockFetch("https://api.example.com/items");
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    console.log("items:", data.items);
+  } catch (error) {
+    console.log("failed to load items:", error.message);
+  }
+}
+
+loadItems();</script>
+      </div>
+    </section>
+
+    <section class="topic" id="event-loop">
+      <div class="topic-kicker">32 · Advanced &amp; Async</div>
+      <h2>The Event Loop</h2>
+      <p class="lede">JavaScript runs on a single thread, so it can't truly do two things at once — yet it handles timers, network requests, and UI events without freezing. The <b>event loop</b> is the mechanism that makes this possible: it constantly checks whether the call stack is empty, and if so, pulls the next queued callback in to run.</p>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">console.log("1: synchronous — runs first");
+
+setTimeout(() => console.log("4: setTimeout — a macrotask"), 0);
+
+Promise.resolve().then(() => console.log("3: Promise.then — a microtask"));
+
+console.log("2: synchronous — runs second");
+
+// Output order: 1, 2, 3, 4 — even though setTimeout has a 0ms delay!</script>
+      </div>
+
+      <div class="diagram-card">
+        <div class="pg-chrome">
+          <div class="pg-dots"><span></span><span></span><span></span></div>
+          <div class="pg-filename">event-loop.svg</div>
+        </div>
+        <div class="diagram-body">
+          <svg viewBox="0 0 920 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram of the JavaScript event loop showing the call stack, Web APIs, microtask queue, macrotask queue, and how the event loop moves callbacks back onto the call stack">
+            <defs>
+              <marker id="elArrowNeutral" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" />
+              </marker>
+              <marker id="elArrowAccent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 Z" fill="var(--link)" />
+              </marker>
+            </defs>
+
+            <!-- Call Stack -->
+            <rect class="el-box" x="310" y="30" width="300" height="140" rx="14" />
+            <text class="el-title" x="330" y="58">Call Stack</text>
+            <text class="el-sub" x="330" y="74">LIFO · SINGLE THREAD</text>
+            <rect class="el-frame" x="330" y="84" width="260" height="30" rx="6" />
+            <text class="el-frame-text" x="342" y="104">console.log(...) — sync</text>
+            <rect class="el-frame" x="330" y="122" width="260" height="30" rx="6" />
+            <text class="el-frame-text" x="342" y="142">main()</text>
+            <circle class="el-step" cx="300" cy="99" r="12" />
+            <text class="el-step-text" x="300" y="103">1</text>
+            <circle class="el-step" cx="300" cy="137" r="12" />
+            <text class="el-step-text" x="300" y="141">2</text>
+
+            <!-- Web APIs -->
+            <rect class="el-box" x="670" y="220" width="220" height="110" rx="14" />
+            <text class="el-title" x="690" y="248">Web APIs</text>
+            <text class="el-sub" x="690" y="264">BROWSER / NODE</text>
+            <rect class="el-frame" x="690" y="274" width="180" height="30" rx="6" />
+            <text class="el-frame-text" x="702" y="294">setTimeout(fn, 0)</text>
+
+            <!-- Microtask Queue -->
+            <rect class="el-box" x="40" y="410" width="280" height="130" rx="14" />
+            <text class="el-title" x="60" y="438">Microtask Queue</text>
+            <text class="el-sub" x="60" y="454">PROMISE CALLBACKS</text>
+            <rect class="el-frame" x="60" y="464" width="240" height="30" rx="6" />
+            <text class="el-frame-text" x="72" y="484">Promise.then callback</text>
+            <circle class="el-step" cx="290" cy="479" r="12" />
+            <text class="el-step-text" x="290" y="483">3</text>
+
+            <!-- Macrotask Queue -->
+            <rect class="el-box" x="600" y="410" width="280" height="130" rx="14" />
+            <text class="el-title" x="620" y="438">Macrotask Queue</text>
+            <text class="el-sub" x="620" y="454">TIMERS · I/O · UI EVENTS</text>
+            <rect class="el-frame" x="620" y="464" width="240" height="30" rx="6" />
+            <text class="el-frame-text" x="632" y="484">setTimeout callback</text>
+            <circle class="el-step" cx="850" cy="479" r="12" />
+            <text class="el-step-text" x="850" y="483">4</text>
+
+            <!-- Event Loop ring -->
+            <circle class="el-ring" cx="460" cy="300" r="58" />
+            <path class="el-arrow-accent" d="M 430 272 A 34 34 0 1 1 428 330" marker-end="url(#elArrowAccent)" />
+            <text class="el-ring-text" x="460" y="296" text-anchor="middle">EVENT LOOP</text>
+            <text class="el-ring-sub" x="460" y="312" text-anchor="middle">stack empty?</text>
+
+            <!-- Call Stack -> Web APIs -->
+            <path class="el-arrow" d="M 610 90 C 660 90, 700 150, 730 220" marker-end="url(#elArrowNeutral)" />
+            <text class="el-label" x="615" y="150">setTimeout() call</text>
+            <text class="el-label" x="615" y="165">registers a timer</text>
+
+            <!-- Web APIs -> Macrotask Queue -->
+            <path class="el-arrow" d="M 770 330 C 770 365, 770 385, 760 410" marker-end="url(#elArrowNeutral)" />
+            <text class="el-label" x="783" y="365">timer elapses,</text>
+            <text class="el-label" x="783" y="380">callback queued</text>
+
+            <!-- Call Stack -> Microtask Queue (Promise scheduled directly) -->
+            <path class="el-arrow" d="M 330 165 C 260 230, 200 330, 180 410" marker-end="url(#elArrowNeutral)" />
+            <text class="el-label" x="180" y="230">Promise.then()</text>
+            <text class="el-label" x="180" y="245">queued directly</text>
+
+            <!-- Microtask Queue -> Event Loop (priority) -->
+            <path class="el-arrow-accent" d="M 320 445 C 380 410, 400 380, 415 340" marker-end="url(#elArrowAccent)" />
+            <text class="el-label-accent" x="330" y="400">drained first,</text>
+            <text class="el-label-accent" x="330" y="414">every tick</text>
+
+            <!-- Macrotask Queue -> Event Loop (secondary) -->
+            <path class="el-arrow" d="M 600 445 C 540 410, 520 380, 505 340" marker-end="url(#elArrowNeutral)" />
+            <text class="el-label" x="520" y="400">then one macrotask,</text>
+            <text class="el-label" x="520" y="414">only if empty</text>
+
+            <!-- Event Loop -> Call Stack -->
+            <path class="el-arrow-accent" d="M 460 242 L 460 172" marker-end="url(#elArrowAccent)" />
+            <text class="el-label-accent" x="470" y="205">pushes next</text>
+            <text class="el-label-accent" x="470" y="219">callback onto stack</text>
+          </svg>
+        </div>
+        <p class="diagram-caption">
+          Reading the diagram against the example above: <code class="inline">①②</code> the two synchronous <code class="inline">console.log</code> calls run directly on the call stack. <code class="inline">③</code> <code class="inline">Promise.then()</code> schedules its callback straight onto the <b>microtask queue</b>. <code class="inline">④</code> <code class="inline">setTimeout</code> hands off to a <b>Web API</b>, which only pushes the callback onto the <b>macrotask queue</b> once the timer elapses. Once the call stack is empty, the event loop drains the <i>entire</i> microtask queue first, and only then pulls a single macrotask — which is why the output lands in the order 1, 2, 3, 4.
+        </p>
+      </div>
+
+      <div class="callout">
+        <span class="callout-label">Why the order looks strange</span>
+        All synchronous code runs first, in order, to completion. Then, before the next "macrotask" (like a <code class="inline">setTimeout</code> callback) is allowed to run, the entire microtask queue (Promise callbacks) is fully drained. That's why a <code class="inline">Promise.then</code> always jumps ahead of a <code class="inline">setTimeout(fn, 0)</code>, no matter the order they were written in.
+      </div>
+    </section>
+
+    <section class="topic" id="modules">
+      <div class="topic-kicker">33 · Advanced &amp; Async</div>
+      <h2>Modules</h2>
+      <p class="lede">Modules let you split code across multiple files and explicitly choose what each file shares (<code class="inline">export</code>) and pulls in from elsewhere (<code class="inline">import</code>), instead of everything living in one giant global scope. Because modules only work across real files loaded by a browser or Node (not inside a single embedded sandbox like this document), the example below is a reference, not a live playground.</p>
+
+      <div class="code-static">
+        <div class="pg-chrome">
+          <div class="pg-dots"><span></span><span></span><span></span></div>
+          <div class="pg-filename">math.js</div>
+        </div>
+        <pre>// Named exports — a file can have as many as it needs
+export function add(a, b) {
+  return a + b;
+}
+export const PI = 3.14159;
+
+// Default export — a file can only have one
+export default function multiply(a, b) {
+  return a * b;
+}</pre>
+      </div>
+
+      <div class="code-static">
+        <div class="pg-chrome">
+          <div class="pg-dots"><span></span><span></span><span></span></div>
+          <div class="pg-filename">app.js</div>
+        </div>
+        <pre>import multiply, { add, PI } from "./math.js";
+
+console.log(add(2, 3));       // 5
+console.log(multiply(2, 3));  // 6
+console.log(PI);              // 3.14159</pre>
+      </div>
+
+      <div class="callout">
+        <span class="callout-label">In the browser</span>
+        Load a module with <code class="inline">&lt;script type="module" src="app.js"&gt;&lt;/script&gt;</code>. In Node.js, either use this same <code class="inline">import</code>/<code class="inline">export</code> syntax in a <code class="inline">.mjs</code> file (or a project with <code class="inline">"type": "module"</code> in package.json), or use the older CommonJS <code class="inline">require()</code>/<code class="inline">module.exports</code> style still common in existing codebases.
+      </div>
+    </section>
+
+    <section class="topic" id="generators">
+      <div class="topic-kicker">34 · Advanced &amp; Async</div>
+      <h2>Generators &amp; Iterators</h2>
+      <p class="lede">A generator is a special function that can pause itself with <code class="inline">yield</code> and resume later, producing a sequence of values on demand instead of computing them all up front. They're the mechanism <code class="inline">for...of</code> loops rely on under the hood, and they're handy for lazy sequences and custom iteration.</p>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">function* countUpTo(max) {   // the * marks this as a generator function
+  for (let i = 1; i <= max; i++) {
+    yield i;                  // pause here, hand back `i`
+  }
+}
+
+const counter = countUpTo(3);
+console.log(counter.next()); // { value: 1, done: false }
+console.log(counter.next()); // { value: 2, done: false }
+console.log(counter.next()); // { value: 3, done: false }
+console.log(counter.next()); // { value: undefined, done: true }
+
+// generators are iterable, so for...of just works
+for (const n of countUpTo(5)) {
+  console.log("n =", n);
+}</script>
+      </div>
+
+      <h3>An infinite sequence, consumed lazily</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">function* idGenerator() {
+  let id = 1;
+  while (true) {       // this would hang forever in a normal loop —
+    yield id++;         // but a generator only computes the next value when asked
+  }
+}
+
+const ids = idGenerator();
+console.log(ids.next().value); // 1
+console.log(ids.next().value); // 2
+console.log(ids.next().value); // 3
+// the generator is paused here — it hasn't produced id 4 yet, and never
+// will unless .next() is called again</script>
+      </div>
+    </section>
+
+    <!-- SECTIONS_END -->
+
+    <footer class="doc-footer">
+      <div class="label">Documented By</div>
+      <div class="name">MD Eesha</div>
+      <div class="role">Sr. Software Engineer</div>
+    </footer>
+  </main>
+</div>
+
+<script>
+/* ============================================================
+   PLAYGROUND ENGINE
+   ============================================================ */
+const PLAYGROUNDS = {};
+let pgCounter = 0;
+
+function escapeHtml(str) {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function buildPlaygroundMarkup(mode) {
+  const isDom = mode === "dom";
+  return `
+    <div class="pg-chrome">
+      <div class="pg-dots"><span></span><span></span><span></span></div>
+      <div class="pg-filename">example.js</div>
+      <div class="pg-actions">
+        <button class="pg-btn reset" type="button">↺ Reset</button>
+        <button class="pg-btn run" type="button">▶ Run</button>
+      </div>
+    </div>
+    <div class="pg-body">
+      <div class="pg-editor-wrap">
+        <textarea class="pg-input" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+      </div>
+      ${isDom ? `
+      <div class="pg-preview-label">Preview</div>
+      <div class="pg-preview-wrap"><iframe class="pg-frame"></iframe></div>
+      ` : ""}
+      <div class="pg-console-label">Console</div>
+      <pre class="pg-console"><span class="pg-placeholder">Output will appear here — press Run.</span></pre>
+      <iframe class="pg-frame-hidden" title="sandbox"></iframe>
+    </div>
+  `;
+}
+
+function countLines(text) {
+  return text.split("\n").length;
+}
+
+function initPlayground(el) {
+  const mode = el.dataset.mode || "console";
+  const codeTag = el.querySelector(".pg-code");
+  const htmlTag = el.querySelector(".pg-html");
+  const initialCode = codeTag ? codeTag.textContent.replace(/^\n/, "").replace(/\n$/, "") : "";
+  const starterHtml = htmlTag ? htmlTag.textContent : "";
+  const id = "pg" + (pgCounter++);
+  el.id = id;
+  el.innerHTML = buildPlaygroundMarkup(mode);
+
+  const textarea = el.querySelector(".pg-input");
+  textarea.value = initialCode;
+  const lines = Math.min(Math.max(countLines(initialCode), 4), 18);
+  textarea.rows = lines;
+
+  const consoleEl = el.querySelector(".pg-console");
+  const visibleFrame = mode === "dom" ? el.querySelector(".pg-frame") : null;
+  const hiddenFrame = el.querySelector(".pg-frame-hidden");
+  const frame = mode === "dom" ? visibleFrame : hiddenFrame;
+  if (mode === "dom") { hiddenFrame.remove(); }
+
+  PLAYGROUNDS[id] = { textarea, consoleEl, frame, initialCode, starterHtml, mode };
+
+  textarea.addEventListener("keydown", (e) => {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const start = textarea.selectionStart, end = textarea.selectionEnd;
+      textarea.value = textarea.value.slice(0, start) + "  " + textarea.value.slice(end);
+      textarea.selectionStart = textarea.selectionEnd = start + 2;
+    }
+  });
+
+  el.querySelector(".pg-btn.run").addEventListener("click", () => runPlayground(id));
+  el.querySelector(".pg-btn.reset").addEventListener("click", () => resetPlayground(id));
+
+  runPlayground(id);
+}
+
+function runPlayground(id) {
+  const state = PLAYGROUNDS[id];
+  if (!state) return;
+  state.consoleEl.innerHTML = "";
+  const code = state.textarea.value;
+  const srcdoc = `<!doctype html><html><head><meta charset="utf-8"><style>
+    body{font-family:'Source Sans 3',system-ui,sans-serif;margin:14px;color:#1b1c16;font-size:14px;}
+    button{font-family:inherit;}
+  </style></head><body>${state.starterHtml}
+<script>
+(function(){
+  function post(type, args){ parent.postMessage({ pgId: "${id}", type: type, args: args }, "*"); }
+  function fmt(a){
+    if (a === undefined) return "undefined";
+    if (a === null) return "null";
+    if (typeof a === "object") { try { return JSON.stringify(a); } catch(e) { return String(a); } }
+    return String(a);
+  }
+  ["log","info","warn","error"].forEach(function(m){
+    console[m] = function(){ post(m, Array.prototype.map.call(arguments, fmt)); };
+  });
+  window.onerror = function(msg){ post("error", [String(msg)]); return true; };
+  try {
+    ${code}
+  } catch (e) {
+    post("error", [e && e.message ? e.message : String(e)]);
+  }
+})();
+<\/script>
+</body></html>`;
+  state.frame.srcdoc = srcdoc;
+}
+
+function resetPlayground(id) {
+  const state = PLAYGROUNDS[id];
+  if (!state) return;
+  state.textarea.value = state.initialCode;
+  runPlayground(id);
+}
+
+window.addEventListener("message", (e) => {
+  const data = e.data;
+  if (!data || !data.pgId) return;
+  const state = PLAYGROUNDS[data.pgId];
+  if (!state) return;
+  const line = document.createElement("div");
+  line.className = "pg-line pg-" + data.type;
+  const prefix = data.type === "error" ? "✕ " : data.type === "warn" ? "⚠ " : "";
+  line.textContent = prefix + data.args.join(" ");
+  state.consoleEl.appendChild(line);
+  state.consoleEl.scrollTop = state.consoleEl.scrollHeight;
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".playground").forEach(initPlayground);
+});
+
+/* ============================================================
+   NAV: scroll-spy + mobile sidebar
+   ============================================================ */
+const navLinks = Array.from(document.querySelectorAll(".nav-link"));
+const sections = navLinks.map(a => document.querySelector(a.getAttribute("href"))).filter(Boolean);
+
+function updateActiveNav() {
+  let activeIdx = 0;
+  const scrollPos = window.scrollY + 120;
+  sections.forEach((sec, i) => {
+    if (sec.offsetTop <= scrollPos) activeIdx = i;
+  });
+  navLinks.forEach((a, i) => a.classList.toggle("active", i === activeIdx));
+}
+document.addEventListener("scroll", () => window.requestAnimationFrame(updateActiveNav), { passive: true });
+window.addEventListener("load", updateActiveNav);
+
+const sidebar = document.getElementById("sidebar");
+const scrim = document.getElementById("sidebarScrim");
+const menuBtn = document.getElementById("menuBtn");
+function closeSidebar() { sidebar.classList.remove("open"); scrim.classList.remove("show"); }
+menuBtn && menuBtn.addEventListener("click", () => {
+  sidebar.classList.toggle("open");
+  scrim.classList.toggle("show");
+});
+scrim && scrim.addEventListener("click", closeSidebar);
+navLinks.forEach(a => a.addEventListener("click", closeSidebar));
+</script>
+</body>
+</html>

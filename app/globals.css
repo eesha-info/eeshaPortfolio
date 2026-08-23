@@ -661,6 +661,171 @@ body {
   box-shadow: var(--shadow-glow);
 }
 
+/* ─── Tech Stack Page ─── */
+.category-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.category-pill:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+}
+.category-pill.active {
+  background: var(--gradient-accent);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: var(--shadow-glow);
+}
+
+.tech-stack-card {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  transition: var(--transition);
+  opacity: 0;
+  animation: scaleIn 0.5s ease-out forwards;
+  overflow: hidden;
+}
+.tech-stack-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-accent);
+  opacity: 0;
+  transition: var(--transition);
+}
+.tech-stack-card:hover {
+  border-color: rgba(99, 102, 241, 0.35);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-glow);
+}
+.tech-stack-card:hover::before {
+  opacity: 1;
+}
+.tech-stack-card .tech-icon-badge {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  border-radius: var(--radius-sm);
+  background: var(--gradient-card);
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.badge-coming-soon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  color: #fbbf24;
+}
+
+.read-docs-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-cyan);
+  text-decoration: none;
+  transition: var(--transition);
+}
+.read-docs-link:hover {
+  gap: 10px;
+  color: var(--accent-primary);
+}
+
+.tech-detail-icon {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  border-radius: var(--radius);
+  background: var(--gradient-card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-glow);
+}
+
+.concept-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  opacity: 0;
+  animation: slideUp 0.4s ease-out forwards;
+}
+.concept-item:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+  background: var(--bg-card-hover);
+  transform: translateX(4px);
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: var(--transition);
+}
+.back-link:hover {
+  color: var(--accent-primary);
+  gap: 10px;
+}
+
+/* Staggered tech stack card entrance */
+.tech-stack-card:nth-child(1) { animation-delay: 0.05s; }
+.tech-stack-card:nth-child(2) { animation-delay: 0.1s; }
+.tech-stack-card:nth-child(3) { animation-delay: 0.15s; }
+.tech-stack-card:nth-child(4) { animation-delay: 0.2s; }
+.tech-stack-card:nth-child(5) { animation-delay: 0.25s; }
+.tech-stack-card:nth-child(6) { animation-delay: 0.3s; }
+.tech-stack-card:nth-child(7) { animation-delay: 0.35s; }
+.tech-stack-card:nth-child(8) { animation-delay: 0.4s; }
+.tech-stack-card:nth-child(9) { animation-delay: 0.45s; }
+.tech-stack-card:nth-child(10) { animation-delay: 0.5s; }
+
+.concept-item:nth-child(1) { animation-delay: 0.1s; }
+.concept-item:nth-child(2) { animation-delay: 0.2s; }
+.concept-item:nth-child(3) { animation-delay: 0.3s; }
+.concept-item:nth-child(4) { animation-delay: 0.4s; }
+
 /* ─── Achievement Card ─── */
 .achievement-card {
   background: var(--gradient-card);
