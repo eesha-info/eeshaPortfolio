@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sequelize — Complete Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS ============ */
+  :root {
+    --bg: #f2f5f9;
+    --surface: #ffffff;
+    --surface-2: #eaeff6;
+    --surface-3: #dfe6f0;
+    --border: #dbe2ec;
+    --ink: #0d1b2e;
+    --ink-soft: #4b5872;
+    --ink-faint: #8492a8;
+    --navy: #142B40;
+    --navy-2: #1c3c58;
+    --amber: #52B0E7;
+    --amber-strong: #2F8EC9;
+    --amber-tint: rgba(82, 176, 231, 0.12);
+    --link: #1d5fa8;
+    --danger: #b8402b;
+    --danger-bg: rgba(184, 64, 43, 0.10);
+    --warn: #9c6a0a;
+    --warn-bg: rgba(156, 106, 10, 0.12);
+    --calm: #1f7a5c;
+    --calm-bg: rgba(31, 122, 92, 0.12);
+    --focus-ring: #52B0E7;
+    --shadow: 0 12px 32px rgba(13, 27, 46, 0.10);
+    --shadow-lg: 0 24px 64px rgba(13, 27, 46, 0.28);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0a1220;
+      --surface: #111d30;
+      --surface-2: #17253c;
+      --surface-3: #1f3049;
+      --border: #26395a;
+      --ink: #ecf1f8;
+      --ink-soft: #a7b6cd;
+      --ink-faint: #71829e;
+      --navy: #173a5c;
+      --navy-2: #204d78;
+      --amber: #8FCFF2;
+      --amber-strong: #AEDDF5;
+      --amber-tint: rgba(143, 207, 242, 0.14);
+      --link: #7fb3f5;
+      --danger: #ff8a71;
+      --danger-bg: rgba(255, 138, 113, 0.14);
+      --warn: #ffc766;
+      --warn-bg: rgba(255, 199, 102, 0.14);
+      --calm: #5cdcb0;
+      --calm-bg: rgba(92, 220, 176, 0.14);
+      --focus-ring: #8FCFF2;
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0a1220;
+    --surface: #111d30;
+    --surface-2: #17253c;
+    --surface-3: #1f3049;
+    --border: #26395a;
+    --ink: #ecf1f8;
+    --ink-soft: #a7b6cd;
+    --ink-faint: #71829e;
+    --navy: #173a5c;
+    --navy-2: #204d78;
+    --amber: #8FCFF2;
+    --amber-strong: #AEDDF5;
+    --amber-tint: rgba(143, 207, 242, 0.14);
+    --link: #7fb3f5;
+    --danger: #ff8a71;
+    --danger-bg: rgba(255, 138, 113, 0.14);
+    --warn: #ffc766;
+    --warn-bg: rgba(255, 199, 102, 0.14);
+    --calm: #5cdcb0;
+    --calm-bg: rgba(92, 220, 176, 0.14);
+    --focus-ring: #8FCFF2;
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  h1, h2, h3 { font-family: "IBM Plex Mono", ui-monospace, monospace; text-wrap: balance; margin: 0; }
+  a { color: var(--link); }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  ::selection { background: var(--amber-tint); }
+
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* ============ MOBILE TOPBAR ============ */
+  .topbar {
+    display: none;
+    position: sticky; top: 0; z-index: 40;
+    align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar .brand { font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 14px; }
+  .topbar .brand span { color: var(--amber); }
+  .menu-btn {
+    width: 36px; height: 36px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--ink);
+    font-size: 16px; cursor: pointer; text-decoration: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sidebar-scrim { display: none; position: fixed; inset: 0; background: rgba(5,11,20,0.5); z-index: 45; }
+  .sidebar-scrim.show { display: block; }
+
+  /* ============ SHELL / SIDEBAR ============ */
+  .shell { display: flex; align-items: flex-start; max-width: 1360px; margin: 0 auto; }
+  .sidebar {
+    position: sticky; top: 0;
+    width: 280px; flex-shrink: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 22px 16px 60px;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+    scrollbar-width: thin;
+  }
+  .sidebar .brand {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 800;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 8px 16px;
+  }
+  .sidebar .brand span { color: var(--amber); }
+  .back-home {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 8px 18px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 600;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+  }
+  .back-home:hover { color: var(--ink); background: var(--amber-tint); border-color: var(--amber); }
+  .nav-group { margin-bottom: 4px; }
+  .nav-group-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    padding: 14px 8px 6px;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+    margin: 1px 0;
+    border-radius: 7px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 13px;
+    border-left: 2px solid transparent;
+  }
+  .nav-link:hover { background: var(--surface-2); color: var(--ink); }
+  .nav-link.active {
+    background: var(--amber-tint);
+    color: var(--ink);
+    font-weight: 600;
+    border-left: 2px solid var(--amber);
+  }
+  .nav-icon { flex-shrink: 0; width: 18px; text-align: center; font-size: 13px; }
+
+  .content { flex: 1; min-width: 0; padding: 40px 32px 90px; }
+  .topic-panel[hidden] { display: none; }
+
+  @media (max-width: 920px) {
+    .topbar { display: flex; }
+    .sidebar {
+      position: fixed; inset: 0 auto 0 0;
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+      z-index: 50;
+      width: 82vw;
+      max-width: 300px;
+      box-shadow: var(--shadow-lg);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .content { padding: 28px 18px 100px; }
+  }
+
+  /* ============ PANEL HERO (Overview only) ============ */
+  .panel-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    background: linear-gradient(150deg, #0a1a30 0%, #0f2c4a 55%, #0d2140 100%);
+    color: #eef2f8;
+    padding: 40px 32px;
+    margin-bottom: 30px;
+  }
+  .panel-hero::before {
+    content: "";
+    position: absolute;
+    top: -120px; right: -90px;
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(82,176,231,0.32), rgba(82,176,231,0) 70%);
+    pointer-events: none;
+  }
+  .panel-hero .eyebrow {
+    position: relative;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #8fcff2;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel-hero .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #8fcff2; display: inline-block; }
+  .panel-hero h1 { position: relative; margin-top: 14px; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.2; font-weight: 700; color: #fff; }
+  .panel-hero h1 em { font-style: normal; color: #8fcff2; }
+  .panel-hero p.lede { position: relative; margin-top: 12px; font-size: 15px; color: #c3d0e3; max-width: 68ch; font-family: "IBM Plex Sans", sans-serif; line-height: 1.75; }
+  .panel-hero .stat-chips { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .stat-chip {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    border: 1px solid rgba(255,255,255,0.22);
+    color: #dbe6f5;
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+  .stat-chip b { color: #fff; }
+
+  section.topic-panel h1.section-title { font-size: 22px; margin-bottom: 14px; }
+  .lede-plain { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 82ch; margin: 0 0 16px; }
+  .lede-plain b { color: var(--ink); }
+
+  /* ============ DIAGRAM BOX ============ */
+  .diagram-box {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    margin: 0 0 24px;
+  }
+  .diagram-box .d-chrome {
+    background: var(--navy);
+    color: #eef3fb;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 11px 16px;
+  }
+  .diagram-box .d-body { padding: 22px 18px 6px; overflow-x: auto; }
+  .diagram-box .d-body svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+  .diagram-box .d-caption {
+    padding: 6px 20px 20px;
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 88ch;
+  }
+  .diagram-box .d-caption code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; color: var(--ink); }
+  .diagram-box .d-caption b { color: var(--ink); }
+
+  /* shared SVG node styles, reused by every diagram */
+  svg .d-node { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
+  svg .d-node-accent { fill: var(--amber-tint); stroke: var(--amber); stroke-width: 1.5; }
+  svg .d-node-navy { fill: var(--navy); stroke: var(--navy); }
+  svg .d-title { fill: var(--ink); font: 700 13.5px "IBM Plex Sans", sans-serif; }
+  svg .d-title-light { fill: #ffffff; font: 700 12.5px "IBM Plex Mono", monospace; }
+  svg .d-sub { fill: var(--ink-faint); font: 600 10px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-sub-light { fill: #b9c8e0; font: 600 9.5px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-text { fill: var(--ink-soft); font: 500 11px "IBM Plex Mono", monospace; }
+  svg .d-arrow { fill: none; stroke: var(--ink-faint); stroke-width: 2; }
+  svg .d-arrow-accent { fill: none; stroke: var(--amber); stroke-width: 2.25; }
+  svg .d-label { fill: var(--ink-soft); font: 600 11px "IBM Plex Sans", sans-serif; }
+  svg .d-label-accent { fill: var(--amber-strong); font: 700 11px "IBM Plex Sans", sans-serif; }
+  svg .d-boundary { fill: none; stroke: var(--link); stroke-width: 1.5; stroke-dasharray: 6 4; }
+  svg .d-boundary-label { fill: var(--link); font: 700 10.5px "IBM Plex Mono", monospace; letter-spacing: 0.05em; }
+
+  /* ============ TOPIC PANEL ============ */
+  .panel-kicker {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 10px;
+  }
+  .panel-head { display: flex; gap: 16px; align-items: flex-start; }
+  .panel-icon {
+    flex-shrink: 0;
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    background: var(--navy);
+    color: var(--amber-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+  }
+  .svc-name-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .svc-name-row h2 { font-size: 21px; color: var(--ink); }
+  .panel-tagline { margin: 6px 0 0; font-size: 13.5px; color: var(--ink-faint); font-family: "IBM Plex Sans", sans-serif; }
+  .svc-desc { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 84ch; }
+
+  .use-callout {
+    margin: 22px 0;
+    padding: 16px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--link);
+    background: var(--surface-2);
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 84ch;
+  }
+  .use-callout b { color: var(--ink); }
+  .callout-title {
+    display: block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--link);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  h3.subhead { font-size: 15px; margin: 28px 0 6px; color: var(--ink); }
+
+  .steps-list {
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 84ch;
+  }
+  .steps-list li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .steps-list li::before {
+    counter-increment: step;
+    content: counter(step);
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--amber-strong);
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+    font-size: 11.5px;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .steps-list li b { color: var(--ink); }
+  .steps-list li code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+
+  .svc-learn { margin-top: 26px; }
+  .flabel {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--ink-soft);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .svc-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    max-width: 84ch;
+  }
+  .doc-link {
+    font-size: 12.5px;
+    color: var(--link);
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .doc-link:hover { text-decoration: underline; }
+  .badge {
+    display: inline-block;
+    font-family: "IBM Plex Mono", monospace;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+  }
+  .badge-must { background: var(--danger-bg); color: var(--danger); }
+  .badge-important { background: var(--warn-bg); color: var(--warn); }
+  .badge-level { background: var(--calm-bg); color: var(--calm); }
+
+  /* ============ OVERVIEW TOPIC INDEX ============ */
+  .svc-index-group { margin-bottom: 22px; }
+  .svc-index-group h4 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    font-family: "IBM Plex Mono", monospace;
+    margin-bottom: 10px;
+  }
+  .svc-index-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    text-decoration: none;
+    color: var(--ink);
+    margin-bottom: 6px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .svc-index-item:hover { border-color: var(--amber); background: var(--amber-tint); }
+  .svc-index-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--navy);
+    color: var(--amber-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .svc-index-text { flex: 1; min-width: 0; }
+  .svc-index-text .n { font-weight: 700; font-size: 13.5px; }
+  .svc-index-text .t { font-size: 11.5px; color: var(--ink-faint); }
+
+  /* ============ SUMMARY CARDS ============ */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--amber);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+  }
+  .card h3 { font-size: 14px; color: var(--ink); margin-bottom: 12px; }
+  .card p.card-note { margin: 0 0 14px; font-size: 13px; color: var(--ink-soft); font-family: "IBM Plex Sans", sans-serif; line-height: 1.7; }
+  .seq-flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; }
+  .seq-step {
+    font-family: "IBM Plex Mono", monospace;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  .seq-arrow { color: var(--amber); font-weight: 700; }
+
+  .priority-levels { display: flex; flex-direction: column; gap: 12px; }
+  .plevel { display: flex; gap: 12px; align-items: flex-start; }
+  .plevel .lvl-tag {
+    font-family: "IBM Plex Mono", monospace;
+    flex-shrink: 0;
+    width: 72px;
+    padding: 5px 0;
+    text-align: center;
+    border-radius: 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .lvl-1 { background: var(--danger); }
+  .lvl-2 { background: var(--warn); color: #221600; }
+  .lvl-3 { background: var(--ink-faint); }
+  .plevel .lvl-items { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+
+  .doc-links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 8px 20px;
+    font-size: 12px;
+  }
+  .doc-links-grid div { color: var(--ink-soft); overflow-wrap: break-word; }
+  .doc-links-grid b { color: var(--ink); font-family: "IBM Plex Mono", monospace; font-size: 11.5px; }
+
+  /* ============ FOOTER ============ */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 28px 48px;
+    text-align: center;
+  }
+  footer .label {
+    font-family: "IBM Plex Mono", monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 10px;
+    color: var(--amber);
+    font-weight: 700;
+  }
+  footer .name { font-size: 18px; font-weight: 700; margin-top: 6px; }
+  footer .role { font-size: 12.5px; color: var(--ink-soft); margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="Open navigation">☰</button>
+  <div class="brand">SEQ<span>::</span>DOCS</div>
+  <a class="menu-btn" href="../" aria-label="Back to Portfolio">⌂</a>
+</div>
+<div class="sidebar-scrim" id="sidebarScrim"></div>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">SEQ<span>::</span>DOCS</div>
+    <a class="back-home" href="../">← Back to Portfolio</a>
+
+    <div class="nav-group">
+      <a class="nav-link" href="#overview"><span class="nav-icon">🏠</span> Overview</a>
+    </div>
+
+    <div class="nav-group" id="nav-topics">
+      <div class="nav-group-label">Sequelize Topics</div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Reference</div>
+      <a class="nav-link" href="#summary"><span class="nav-icon">📐</span> Summary &amp; Patterns</a>
+      <a class="nav-link" href="#references"><span class="nav-icon">📄</span> Doc Links</a>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <section class="topic-panel" id="overview">
+      <div class="panel-hero">
+        <div class="eyebrow">Promise-Based ORM for SQL</div>
+        <h1>Sequelize <em>Complete Guide</em></h1>
+        <p class="lede">Sequelize is a mature, promise-based Object-Relational Mapper for Node.js that works across PostgreSQL, MySQL, MariaDB, SQLite, and SQL Server. It maps JavaScript model classes directly onto relational tables, generating the SQL for you while adding built-in validation, lifecycle hooks, and a declarative way to describe associations between tables. This doc walks through the 8 things a backend engineer actually needs to know to use Sequelize well in production — in the order you'll naturally run into them — with a diagram, a "where to use it" guide, and concrete implementation steps for every single one.</p>
+        <div class="stat-chips">
+          <span class="stat-chip"><b>8</b> topics</span>
+          <span class="stat-chip"><b>8</b> diagrams</span>
+          <span class="stat-chip"><b>1</b> ORM</span>
+          <span class="stat-chip"><b>5</b> supported dialects</span>
+        </div>
+      </div>
+
+      <p class="lede-plain">Use the sidebar to jump straight to any topic — each one opens its own page with a full explanation, a diagram of how it fits together with the concepts around it, and the concrete steps (with real code) to actually use it. If you're starting from zero, work through the topics top to bottom: nothing past model definitions makes much sense without a working connection and at least one model in place.</p>
+
+      <div class="diagram-box">
+        <div class="d-chrome">Diagram · From JS Models to a Running Database</div>
+        <div class="d-body">
+          <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="JS model definitions flow through Sequelize, which generates SQL, which runs against PostgreSQL or MySQL, supported underneath by migrations, associations, validations and hooks, transactions, connection pooling, and the CLI">
+            <defs>
+              <marker id="ovArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+            </defs>
+
+            <rect class="d-node" x="20" y="40" width="150" height="60" rx="10" />
+            <text class="d-title" x="38" y="66">JS Models</text>
+            <text class="d-sub" x="38" y="82">class extends Model</text>
+            <path class="d-arrow" d="M170 70 L198 70" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node-accent" x="200" y="35" width="150" height="70" rx="10" />
+            <text class="d-title" x="218" y="63">Sequelize</text>
+            <text class="d-sub" x="218" y="80">ORM engine</text>
+            <path class="d-arrow" d="M350 70 L378 70" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node" x="380" y="40" width="150" height="60" rx="10" />
+            <text class="d-title" x="398" y="66">Generated SQL</text>
+            <text class="d-sub" x="398" y="82">dialect-specific</text>
+            <path class="d-arrow" d="M530 70 L558 70" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node" x="560" y="30" width="130" height="42" rx="8" />
+            <text class="d-title" x="574" y="56" style="font-size:12px;">PostgreSQL</text>
+            <rect class="d-node" x="560" y="80" width="130" height="42" rx="8" />
+            <text class="d-title" x="574" y="106" style="font-size:12px;">MySQL / others</text>
+
+            <path class="d-boundary" d="M655 130 L 655 210" />
+            <text class="d-boundary-label" x="335" y="212">SUPPORTING CONCEPTS — MAKE THE ROW ABOVE SAFE &amp; USABLE</text>
+
+            <g>
+              <rect class="d-node" x="22" y="228" width="118" height="36" rx="8" /><text class="d-text" x="81" y="250" text-anchor="middle">Migrations</text>
+              <rect class="d-node" x="148" y="228" width="118" height="36" rx="8" /><text class="d-text" x="207" y="250" text-anchor="middle">Associations</text>
+              <rect class="d-node" x="274" y="228" width="150" height="36" rx="8" /><text class="d-text" x="349" y="250" text-anchor="middle">Validations &amp; Hooks</text>
+              <rect class="d-node" x="432" y="228" width="128" height="36" rx="8" /><text class="d-text" x="496" y="250" text-anchor="middle">Transactions</text>
+              <rect class="d-node" x="568" y="228" width="140" height="36" rx="8" /><text class="d-text" x="638" y="250" text-anchor="middle">Connection Pool</text>
+              <rect class="d-node" x="716" y="228" width="110" height="36" rx="8" /><text class="d-text" x="771" y="250" text-anchor="middle">sequelize-cli</text>
+            </g>
+          </svg>
+        </div>
+        <p class="d-caption">Everything you write is a JS model; Sequelize translates it into the correct dialect's SQL and runs it against the actual database. Everything in the row below is what keeps that translation safe and predictable — schema changes go through migrations, relationships through associations, data integrity through validations and hooks, and multi-step writes through transactions.</p>
+      </div>
+
+      <h3 class="subhead" style="margin-top:8px;">All 8 topics in this guide</h3>
+      <div id="svc-index"></div>
+    </section>
+
+    <!-- 8 topic panels are injected here by renderServicePanels() -->
+    <div id="service-panels"></div>
+
+    <section class="topic-panel" id="summary">
+      <h1 class="section-title">Summary &amp; Patterns</h1>
+      <p class="lede-plain">Once the individual topics make sense on their own, these references tie them together: the order to learn them in, and the one diagram every Sequelize user eventually needs — how the three association types actually differ.</p>
+
+      <div class="card">
+        <h3>Recommended Learning Order</h3>
+        <div class="seq-flow" id="sequence-flow"></div>
+      </div>
+
+      <div class="card">
+        <h3>hasOne / hasMany / belongsToMany at a glance</h3>
+        <div class="diagram-box" style="margin-bottom:0; box-shadow:none;">
+          <div class="d-chrome">Diagram · The Three Association Types</div>
+          <div class="d-body">
+            <svg viewBox="0 0 780 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="hasOne links User to Profile one to one, hasMany links User to many Posts, and belongsToMany links Post to Tag through an intermediate PostTag join table">
+              <defs>
+                <marker id="assocArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+                <marker id="assocArrowAccent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)" /></marker>
+              </defs>
+
+              <text class="d-label-accent" x="20" y="30">hasOne / belongsTo — one to one</text>
+              <rect class="d-node" x="20" y="40" width="120" height="50" rx="10" /><text class="d-title" x="80" y="70" text-anchor="middle">User</text>
+              <path class="d-arrow" d="M140 65 L 258 65" marker-end="url(#assocArrow)" />
+              <text class="d-label" x="150" y="55">1 : 1</text>
+              <rect class="d-node" x="260" y="40" width="130" height="50" rx="10" /><text class="d-title" x="325" y="70" text-anchor="middle">Profile</text>
+
+              <text class="d-label-accent" x="20" y="130">hasMany / belongsTo — one to many</text>
+              <rect class="d-node" x="20" y="140" width="120" height="50" rx="10" /><text class="d-title" x="80" y="170" text-anchor="middle">User</text>
+              <path class="d-arrow" d="M140 155 L 258 145" marker-end="url(#assocArrow)" />
+              <path class="d-arrow" d="M140 165 L 258 165" marker-end="url(#assocArrow)" />
+              <path class="d-arrow" d="M140 175 L 258 185" marker-end="url(#assocArrow)" />
+              <text class="d-label" x="150" y="132">1 : N</text>
+              <rect class="d-node" x="260" y="132" width="130" height="28" rx="6" /><text class="d-text" x="325" y="151" text-anchor="middle">Post</text>
+              <rect class="d-node" x="260" y="151" width="130" height="28" rx="6" /><text class="d-text" x="325" y="170" text-anchor="middle">Post</text>
+              <rect class="d-node" x="260" y="170" width="130" height="28" rx="6" /><text class="d-text" x="325" y="189" text-anchor="middle">Post</text>
+
+              <text class="d-label-accent" x="20" y="230">belongsToMany — many to many, through a join table</text>
+              <rect class="d-node" x="20" y="240" width="120" height="50" rx="10" /><text class="d-title" x="80" y="270" text-anchor="middle">Post</text>
+              <path class="d-arrow-accent" d="M140 265 L 298 265" marker-end="url(#assocArrowAccent)" />
+              <rect class="d-node-accent" x="300" y="248" width="120" height="34" rx="8" /><text class="d-title" x="360" y="270" text-anchor="middle" style="font-size:11.5px;">PostTag</text>
+              <path class="d-arrow-accent" d="M420 265 L 578 265" marker-end="url(#assocArrowAccent)" />
+              <rect class="d-node" x="580" y="240" width="120" height="50" rx="10" /><text class="d-title" x="640" y="270" text-anchor="middle">Tag</text>
+              <text class="d-label" x="200" y="255" text-anchor="middle">N</text>
+              <text class="d-label" x="500" y="255" text-anchor="middle">N</text>
+            </svg>
+          </div>
+          <p class="d-caption"><code>hasOne</code> adds a foreign key that points at a single related row; <code>hasMany</code> is the same foreign key, just on the "many" side; <code>belongsToMany</code> needs a real intermediate table (<code>PostTag</code>) holding a foreign key to each side, since neither <code>Post</code> nor <code>Tag</code> can hold a column referencing multiple rows on the other side.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic-panel" id="references">
+      <h1 class="section-title">Official Documentation Reference URLs</h1>
+      <p class="lede-plain">Every topic covered in this guide, with a direct link to its official Sequelize v6 docs.</p>
+      <div class="card">
+        <div class="doc-links-grid" id="doc-links"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="label">Documented By</div>
+  <div class="name">MD Eesha</div>
+  <div class="role">Sr. Software Engineer</div>
+</footer>
+
+<script>
+const PRIORITY_LABEL = {
+  must: "Must",
+  important: "Important",
+};
+const PRIORITY_CLASS = {
+  must: "badge-must",
+  important: "badge-important",
+};
+const GROUP_LABEL = {
+  1: "Sequelize Topic",
+};
+
+const DATA = {
+  1: [
+    { n:1, slug:"seq-intro", name:"Introduction &amp; Setup", icon:"🚀", what:"Promise-based Node.js ORM", use:"Connect a Node.js app to a SQL database with a JS API instead of raw SQL", learn:"npm install, dialects, Sequelize constructor, connection pooling, authenticate(), environment config, CLI project init", priority:"must", docName:"Sequelize — Getting Started", docUrl:"https://sequelize.org/docs/v6/getting-started/",
+      desc:"Sequelize is a promise-based Object-Relational Mapper for Node.js that supports PostgreSQL, MySQL, MariaDB, SQLite, and SQL Server through a single, consistent JavaScript API. Instead of writing raw SQL strings scattered through your codebase, you describe your data as JS models and let Sequelize generate the dialect-specific SQL underneath. Getting started means installing the core package plus the driver for whichever database you're targeting, then constructing a single <code>Sequelize</code> instance that manages a connection pool for the lifetime of your app. That instance is the entry point for everything else in this guide — every model, query, and transaction runs through it.",
+      useWhen:"Reach for Sequelize the moment a Node.js project needs a relational database and you'd rather work with JavaScript objects and method calls than hand-written SQL. It's the right call for typical CRUD-heavy backends — APIs, admin panels, SaaS products — where the productivity of a mature ORM outweighs the marginal performance cost versus raw queries; for extremely query-heavy analytical workloads, a lighter query builder might be a better fit.",
+      steps:["Install the core package and the driver for your database: <code>npm install sequelize pg pg-hstore</code> for PostgreSQL.","Create a single shared instance: <code>const sequelize = new Sequelize('postgres://user:pass@localhost:5432/mydb');</code>","Or pass connection details separately so secrets stay in environment variables: <code>new Sequelize(db, user, pass, { host, dialect: 'postgres' })</code>.","Call <code>await sequelize.authenticate()</code> on startup to fail fast if the database is unreachable.","Tune the connection pool for your environment: <code>{ pool: { max: 5, min: 0, idle: 10000 } }</code>.","Optionally scaffold a project with the CLI: <code>npx sequelize-cli init</code> to get <code>config/</code>, <code>models/</code>, <code>migrations/</code>, and <code>seeders/</code> folders."],
+      diagram:{ left:[{name:"Node.js Project",sub:"npm init"},{name:"npm install sequelize",sub:"+ pg / mysql2 driver"}], right:[{name:"Sequelize Instance",sub:"new Sequelize(...)"},{name:"Connection Pool",sub:"authenticate()"}], top:{name:"config/config.json",sub:"env credentials"}, bottom:{name:"Database Server",sub:"PostgreSQL / MySQL"}, coreSub:"npm install &amp; config",
+        caption:"Config drives how the Sequelize instance connects; once <code>authenticate()</code> succeeds, that single instance and its connection pool is what every model and query in the app will run through." } },
+    { n:2, slug:"seq-models", name:"Defining Models", icon:"🏗️", what:"JS classes mapped to SQL tables", use:"Describe table structure, column types, and constraints as a JavaScript class", learn:"Model.init(), DataTypes, column options, timestamps, tableName, underscored, indexes, sequelize.sync()", priority:"must", docName:"Sequelize — Model Basics", docUrl:"https://sequelize.org/docs/v6/core-concepts/model-basics/",
+      desc:"A model in Sequelize is a JavaScript class that represents one table, with each class attribute mapped to a column via a <code>DataTypes</code> value. You define models either with the class-based <code>Model.init()</code> syntax or the shorthand <code>sequelize.define()</code>, both of which register the model against your Sequelize instance so it knows how to build the underlying SQL. Column options like <code>allowNull</code>, <code>unique</code>, <code>defaultValue</code>, and <code>primaryKey</code> map directly onto SQL column constraints. Sequelize also auto-manages <code>createdAt</code>/<code>updatedAt</code> timestamp columns unless you opt out, and <code>sequelize.sync()</code> can generate the actual tables from your model definitions during development.",
+      useWhen:"Define a model for every entity your application persists — users, orders, products — as the very first step after your connection is working. Use <code>sync({ force: true })</code> only in local development or test databases to iterate quickly; in anything resembling production, models describe the schema but migrations (next section) are what actually change it safely.",
+      steps:["Define a model class: <code>class User extends Model {}</code> then <code>User.init({ name: DataTypes.STRING, email: { type: DataTypes.STRING, allowNull: false, unique: true } }, { sequelize, modelName: 'User' });</code>","Choose precise column types — <code>DataTypes.STRING</code>, <code>INTEGER</code>, <code>BOOLEAN</code>, <code>DATE</code>, <code>JSONB</code> — rather than defaulting everything to text.","Set table-level options like <code>{ tableName: 'users', timestamps: true, underscored: true }</code> to control the generated schema's naming.","Add indexes for columns you'll filter or join on often via the model's <code>indexes</code> option.","Call <code>await sequelize.sync()</code> in development to create tables that don't exist yet — never in production.","Export every model from a central <code>models/index.js</code> so associations (covered later) can reference them by name."],
+      diagram:{ left:[{name:"sequelize.define()",sub:"or class extends Model"},{name:"DataTypes",sub:"STRING, INTEGER…"}], right:[{name:"Model.sync()",sub:"creates table"},{name:"Table Schema",sub:"columns + constraints"}], top:{name:"Model Options",sub:"tableName, timestamps"}, coreSub:"JS class ↔ SQL table",
+        caption:"A model's attributes and options describe the table it wants; <code>sync()</code> is the one call that turns that description into an actual table in development." } },
+    { n:3, slug:"seq-migrations", name:"Migrations &amp; CLI", icon:"🔄", what:"Versioned, reversible schema changes", use:"Change a live database's schema safely, in order, across every environment", learn:"sequelize-cli, migration generators, up()/down(), SequelizeMeta, seeders, queryInterface, running/undoing migrations", priority:"must", docName:"Sequelize — Migrations", docUrl:"https://sequelize.org/docs/v6/other-topics/migrations/",
+      desc:"Migrations are timestamped, version-controlled files that describe one incremental change to your database schema — adding a column, creating a table, adding an index — each with an <code>up()</code> function to apply it and a <code>down()</code> function to reverse it. The Sequelize CLI generates migration skeletons, runs pending migrations in order, and tracks which ones have already been applied in a special <code>SequelizeMeta</code> table so the same migration never runs twice. Seeders follow the same up/down pattern but insert or remove sample/reference data instead of altering structure. Together, migrations are how a team keeps every developer's database, staging, and production schemas in sync without anyone manually running ALTER TABLE by hand.",
+      useWhen:"Use migrations for every schema change the instant more than one environment (or more than one developer) needs to stay in sync — which in practice means almost immediately after <code>sequelize-cli init</code>. Keep <code>sync()</code> for quick local prototyping only; migrations are the only safe way to evolve a schema that already has real data in it.",
+      steps:["Initialize the CLI project layout: <code>npx sequelize-cli init</code>.","Generate a migration: <code>npx sequelize-cli migration:generate --name add-role-to-users</code>.","Implement <code>up()</code> and <code>down()</code> using <code>queryInterface</code>: <code>await queryInterface.addColumn('Users', 'role', { type: Sequelize.STRING, defaultValue: 'member' });</code>","Run pending migrations: <code>npx sequelize-cli db:migrate</code>.","Roll back the most recent migration if something's wrong: <code>npx sequelize-cli db:migrate:undo</code>.","Use seeders (<code>db:seed:all</code>) for reference/sample data, keeping them separate from schema-changing migrations."],
+      diagram:{ left:[{name:"sequelize-cli",sub:"npx sequelize-cli"},{name:"migration file",sub:"up() / down()"}], right:[{name:"SequelizeMeta table",sub:"tracks applied migrations"},{name:"Database Schema",sub:"altered incrementally"}], bottom:{name:"seeders",sub:"sample data"}, coreSub:"versioned schema changes",
+        caption:"Every migration file is applied exactly once, in order, with <code>SequelizeMeta</code> acting as the ledger of which ones have already changed the live schema." } },
+    { n:4, slug:"seq-crud", name:"CRUD Queries", icon:"✏️", what:"Create, read, update, delete via model methods", use:"Perform basic database operations without writing SQL", learn:"create(), findAll(), findByPk(), findOne(), update(), destroy(), bulkCreate(), save()", priority:"must", docName:"Sequelize — Model Querying Basics", docUrl:"https://sequelize.org/docs/v6/core-concepts/model-querying-basics/",
+      desc:"Every Sequelize model comes with a standard set of static and instance methods that map directly onto the four CRUD operations. <code>Model.create()</code> inserts a new row and returns a live instance; <code>findAll()</code>, <code>findOne()</code>, and <code>findByPk()</code> cover the common read patterns; calling <code>.update()</code> or <code>.save()</code> on an instance issues an UPDATE, and <code>.destroy()</code> issues a DELETE. Because every returned row is a full model instance rather than a plain object, you get built-in methods, validations, and hooks for free on data you just read back out of the database. <code>bulkCreate()</code> extends the same pattern to multiple rows at once.",
+      useWhen:"This is the everyday surface of Sequelize — reach for these methods for any single-table operation. Once queries need conditions, sorting, or related data pulled in at the same time, move on to the querying and associations sections rather than trying to force it all through <code>findAll()</code> with no options.",
+      steps:["Create a row: <code>const user = await User.create({ name: 'Ada', email: 'ada@example.com' });</code>","Read all rows: <code>const users = await User.findAll();</code>","Read one row by primary key: <code>const user = await User.findByPk(1);</code>","Update an instance you already have: <code>user.name = 'Ada Lovelace'; await user.save();</code> or in one call <code>await User.update({ name: 'Ada' }, { where: { id: 1 } });</code>","Delete a row: <code>await user.destroy();</code> or <code>await User.destroy({ where: { id: 1 } });</code>","Insert many rows efficiently in one round trip: <code>await User.bulkCreate([...]);</code>"],
+      diagram:{ left:[{name:"Model.create()",sub:"INSERT"},{name:"Model.findAll() / findByPk()",sub:"SELECT"}], right:[{name:"instance.update()",sub:"UPDATE"},{name:"instance.destroy()",sub:"DELETE"}], coreSub:"Model methods",
+        caption:"Each CRUD method maps to exactly one SQL operation — the model instance you get back from a read already carries every method needed to update or delete it." } },
+    { n:5, slug:"seq-associations", name:"Associations", icon:"🔗", what:"Model relationships", use:"Link related tables — one-to-one, one-to-many, many-to-many", learn:"hasOne, belongsTo, hasMany, belongsToMany, foreign keys, through tables, aliasing, cascade options", priority:"important", docName:"Sequelize — Associations", docUrl:"https://sequelize.org/docs/v6/core-concepts/assocs/",
+      desc:"Associations describe how your models relate to each other and tell Sequelize how to generate the foreign key columns and join logic that connect their tables. <code>hasOne</code>/<code>belongsTo</code> model a one-to-one relationship (a User has one Profile), <code>hasMany</code>/<code>belongsTo</code> model one-to-many (a User has many Posts), and <code>belongsToMany</code> models many-to-many through an intermediate join table (Posts and Tags, joined through a PostTags table). Sequelize infers sensible foreign key names automatically but lets you override them, alias the association, and configure cascade behavior on delete/update. Once declared, associations unlock the <code>include</code> option covered in the next section, letting you fetch a record and its related data in a single query.",
+      useWhen:"Declare an association the moment two tables reference each other conceptually — a comment belongs to a post, an order belongs to a customer. Get the direction right: the side holding the foreign key column calls <code>belongsTo</code>, and the other side calls <code>hasOne</code>/<code>hasMany</code>, otherwise Sequelize will generate the foreign key on the wrong table.",
+      steps:["One-to-many: <code>User.hasMany(Post); Post.belongsTo(User);</code> — Sequelize adds a <code>userId</code> column to <code>Posts</code>.","One-to-one: <code>User.hasOne(Profile); Profile.belongsTo(User);</code>","Many-to-many with an explicit join model: <code>Post.belongsToMany(Tag, { through: 'PostTag' }); Tag.belongsToMany(Post, { through: 'PostTag' });</code>","Give an association a custom name when a model needs more than one relation to the same target, e.g. <code>{ as: 'author' }</code>.","Set cascade behavior explicitly: <code>{ onDelete: 'CASCADE' }</code> when child rows should disappear with their parent.","Run <code>sequelize.sync()</code> or a migration afterward so the actual foreign key columns get created."],
+      diagram:{ left:[{name:"hasOne / belongsTo",sub:"1 : 1"},{name:"hasMany",sub:"1 : N"}], right:[{name:"belongsToMany",sub:"N : N + through table"},{name:"Foreign Keys",sub:"auto-generated columns"}], coreSub:"model relationships",
+        caption:"Every association Sequelize supports boils down to where the foreign key column lives — one column for 1:1 and 1:N, a whole join table for N:N." } },
+    { n:6, slug:"seq-querying", name:"Querying (where / order / include)", icon:"🔎", what:"Filtering, sorting, pagination, eager loading", use:"Build precise SELECT queries and fetch related data in one round trip", learn:"where clauses, Op operators, order, limit/offset, include, nested include, attributes, group/having", priority:"must", docName:"Sequelize — Model Querying (where / include)", docUrl:"https://sequelize.org/docs/v6/core-concepts/model-querying-basics/",
+      desc:"Beyond basic CRUD, Sequelize's query options let you express nearly anything you'd write by hand in SQL. The <code>where</code> option takes a plain object for simple equality or the <code>Op</code> symbols (<code>Op.gt</code>, <code>Op.in</code>, <code>Op.like</code>, <code>Op.or</code>, …) for anything more expressive; <code>order</code> and <code>limit</code>/<code>offset</code> handle sorting and pagination. The <code>include</code> option is what makes Sequelize genuinely useful for relational data — it eager-loads associated models in the same query (via a SQL JOIN), avoiding the N+1 query problem you'd get by fetching each association separately. <code>attributes</code> lets you select only the columns you actually need, which matters once tables and joins get wide.",
+      useWhen:"Move past plain <code>findAll()</code> calls as soon as a query needs a condition, an order, or data from a related table — trying to filter or sort in JavaScript after fetching everything is a sign the query options above should be doing that work instead. Reach for <code>include</code> specifically whenever you'd otherwise run a second query per row to fetch related data.",
+      steps:["Filter with a plain object for equality: <code>User.findAll({ where: { role: 'admin' } })</code>.","Use <code>Op</code> for anything richer: <code>User.findAll({ where: { age: { [Op.gte]: 18 }, email: { [Op.like]: '%@company.com' } } })</code>.","Sort and paginate: <code>Post.findAll({ order: [['createdAt', 'DESC']], limit: 20, offset: 40 })</code>.","Eager-load an association in the same query: <code>User.findAll({ include: Post })</code> to avoid N+1 queries.","Nest includes for deeper relations: <code>{ include: { model: Post, include: [Comment] } }</code>.","Select only needed columns: <code>{ attributes: ['id', 'name'] }</code> to keep wide, joined queries lean."],
+      diagram:{ left:[{name:"where",sub:"filter conditions"},{name:"order / limit / offset",sub:"sort &amp; paginate"}], right:[{name:"include",sub:"eager-load associations"},{name:"Op operators",sub:"Op.gt, Op.in…"}], coreSub:"building SELECT queries",
+        caption:"Every option here compiles down to one clause of the same underlying SELECT — <code>include</code> is the one that turns a single-table query into a JOIN." } },
+    { n:7, slug:"seq-validations", name:"Validations &amp; Hooks", icon:"✅", what:"Data integrity before SQL runs", use:"Reject bad data before it reaches the database, and run code around lifecycle events", learn:"built-in validators, custom validators, allowNull vs validation, beforeCreate/afterCreate, beforeSave, beforeDestroy, hook order", priority:"important", docName:"Sequelize — Validations &amp; Constraints", docUrl:"https://sequelize.org/docs/v6/core-concepts/validations-and-constraints/",
+      desc:"Validations run in JavaScript, inside Sequelize, before a query is even sent to the database — checking things like <code>allowNull</code>, string length (<code>len</code>), format (<code>isEmail</code>), or a custom validator function you supply. If a validation fails, Sequelize throws a <code>ValidationError</code> immediately and no SQL is executed at all, which is a cheaper and more informative failure than waiting for the database to reject a constraint violation. Hooks are functions that run automatically around model lifecycle events — <code>beforeCreate</code>, <code>afterUpdate</code>, <code>beforeDestroy</code>, and many more — useful for things like hashing a password before it's saved or logging every deletion. Both features let you centralize rules that would otherwise be scattered across every place in your codebase that touches a model.",
+      useWhen:"Add validations to any column where 'garbage in' is a realistic risk — emails, usernames, prices, anything with a format or range constraint. Reach for hooks specifically when a side effect must always happen around a lifecycle event regardless of which code path triggered it, like hashing a password on every create and update, not just the ones you remember to handle manually.",
+      steps:["Add built-in validations to a column: <code>email: { type: DataTypes.STRING, validate: { isEmail: true } }</code>","Write a custom validator when built-ins aren't enough: <code>validate: { isEven(value) { if (value % 2 !== 0) throw new Error('Must be even'); } } }</code>","Remember <code>allowNull</code> is a schema-level constraint, not a validation — set both if a field is genuinely required.","Hash a password automatically with a hook: <code>User.beforeCreate(async (user) => { user.password = await hash(user.password); });</code>","Use <code>beforeSave</code> to cover both create and update with one hook instead of duplicating logic.","Catch <code>SequelizeValidationError</code> in your API layer and return a 400 with the specific failing fields."],
+      diagram:{ left:[{name:"Model validations",sub:"allowNull, len, isEmail"},{name:"beforeCreate / beforeSave",sub:"hooks"}], right:[{name:"ValidationError",sub:"thrown before SQL runs"},{name:"afterCreate / afterUpdate",sub:"side effects"}], coreSub:"data integrity",
+        caption:"Validations run first and can stop a query before it's ever sent; hooks run around the same lifecycle events but for side effects, not gatekeeping." } },
+    { n:8, slug:"seq-transactions", name:"Transactions", icon:"🔒", what:"Atomic multi-query operations", use:"Guarantee a group of writes either all succeed or all roll back together", learn:"sequelize.transaction(), managed vs unmanaged transactions, passing t to queries, isolation levels, rollback on error", priority:"important", docName:"Sequelize — Transactions", docUrl:"https://sequelize.org/docs/v6/other-topics/transactions/",
+      desc:"A transaction groups multiple queries into a single atomic unit of work — either every query in it succeeds and the changes are committed together, or any failure rolls all of them back as if none had happened. This matters the moment an operation touches more than one row or table where a partial write would leave your data inconsistent, like transferring money between two accounts or creating an order alongside its line items. Sequelize supports a 'managed' transaction, where you pass an async callback and it automatically commits on success or rolls back on a thrown error, and an 'unmanaged' style where you call <code>commit()</code>/<code>rollback()</code> yourself. Every query that should be part of the transaction needs the transaction object passed explicitly via its <code>transaction</code> option.",
+      useWhen:"Wrap any sequence of writes in a transaction the moment they need to succeed or fail as a unit — creating a parent row plus its children, adjusting two balances at once, anything where a crash between queries would leave the database in a state that doesn't make sense. Skip transactions for single independent writes; the overhead isn't worth it when there's nothing to keep consistent with anything else.",
+      steps:["Prefer the managed form so commit/rollback happen automatically: <code>await sequelize.transaction(async (t) => { ... });</code>","Pass the transaction to every query inside the callback: <code>await User.create({ name }, { transaction: t });</code>","Throwing anywhere inside the callback automatically triggers a rollback of everything done so far.","Use the unmanaged form only when you need finer control: <code>const t = await sequelize.transaction(); try { ...; await t.commit(); } catch (e) { await t.rollback(); }</code>","Set an isolation level for stricter guarantees when needed: <code>{ isolationLevel: Sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE }</code>.","Keep transactions short — long-running transactions hold database locks and hurt concurrency."],
+      diagram:{ left:[{name:"sequelize.transaction()",sub:"start unit of work"},{name:"multiple queries",sub:"within same t"}], right:[{name:"COMMIT",sub:"all succeed"},{name:"ROLLBACK",sub:"any failure"}], coreSub:"atomic operations",
+        caption:"Every query passed the same transaction object lives or dies together — a single thrown error anywhere inside rolls back everything that came before it." } },
+  ],
+};
+
+/* ---------- Generic per-topic architecture diagram renderer ---------- */
+function stackBoxes(items, x, w, centerY, boxH, gap) {
+  const n = items.length;
+  if (!n) return [];
+  const totalH = n * boxH + (n - 1) * gap;
+  const startY = centerY - totalH / 2;
+  return items.map((it, i) => {
+    const y = startY + i * (boxH + gap);
+    return { ...it, x, y, w, h: boxH, cy: y + boxH / 2 };
+  });
+}
+
+function svcDiagramSVG(svc) {
+  const cfg = svc.diagram;
+  const W = 760, H = 420;
+  const coreW = 200, coreH = 90, coreCX = 380, coreCY = 210;
+  const coreX = coreCX - coreW / 2, coreY = coreCY - coreH / 2;
+  const leftX = 20, leftW = 170, rightX = 570, rightW = 170, boxH = 60, gap = 18;
+  const uid = svc.slug;
+
+  const lefts = stackBoxes(cfg.left || [], leftX, leftW, coreCY, boxH, gap);
+  const rights = stackBoxes(cfg.right || [], rightX, rightW, coreCY, boxH, gap);
+  const label = cfg.coreLabel || svc.name;
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${cfg.caption.replace(/"/g,"'")}">`;
+  svg += `<defs>
+    <marker id="m-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)"/></marker>
+    <marker id="ma-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)"/></marker>
+  </defs>`;
+
+  if (cfg.top) {
+    svg += `<rect class="d-node-navy" x="${coreX}" y="24" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title-light" x="${coreX+14}" y="47">${cfg.top.name}</text>
+      <text class="d-sub-light" x="${coreX+14}" y="62">${cfg.top.sub||""}</text>
+      <path class="d-arrow" d="M${coreCX} 70 L${coreCX} ${coreY-2}" marker-end="url(#m-${uid})"/>`;
+  }
+  if (cfg.bottom) {
+    svg += `<rect class="d-node" x="${coreX}" y="350" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title" x="${coreX+14}" y="373">${cfg.bottom.name}</text>
+      <text class="d-sub" x="${coreX+14}" y="388">${cfg.bottom.sub||""}</text>
+      <path class="d-arrow-accent" d="M${coreCX} ${coreY+coreH+2} L${coreCX} 348" marker-end="url(#ma-${uid})"/>`;
+  }
+
+  svg += `<rect class="d-node-accent" x="${coreX}" y="${coreY}" width="${coreW}" height="${coreH}" rx="12"/>
+    <text class="d-title" x="${coreCX}" y="${coreCY-6}" text-anchor="middle">${label}</text>
+    <text class="d-sub" x="${coreCX}" y="${coreCY+14}" text-anchor="middle">${cfg.coreSub||""}</text>`;
+
+  lefts.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${b.x+b.w} ${b.cy} L${coreX-2} ${coreCY}" marker-end="url(#m-${uid})"/>`;
+  });
+  rights.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${coreX+coreW+2} ${coreCY} L${b.x} ${b.cy}" marker-end="url(#m-${uid})"/>`;
+  });
+
+  svg += `</svg>`;
+  return svg;
+}
+
+function renderServicePanels() {
+  const host = document.getElementById("service-panels");
+  const html = [];
+  Object.keys(DATA).forEach(groupKey => {
+    DATA[groupKey].forEach(item => {
+      html.push(`
+        <section class="topic-panel" id="${item.slug}" hidden>
+          <div class="panel-kicker">${GROUP_LABEL[groupKey]}</div>
+          <div class="panel-head">
+            <div class="panel-icon">${item.icon}</div>
+            <div>
+              <div class="svc-name-row"><h2>${String(item.n).padStart(2,"0")} · ${item.name}</h2><span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span></div>
+              <p class="panel-tagline">${item.what} — ${item.use}</p>
+            </div>
+          </div>
+          <p class="svc-desc" style="margin-top:20px;">${item.desc}</p>
+
+          <div class="use-callout">
+            <b class="callout-title">Where &amp; when to use it</b>
+            ${item.useWhen}
+          </div>
+
+          <div class="diagram-box">
+            <div class="d-chrome">Diagram · ${item.name}</div>
+            <div class="d-body">${svcDiagramSVG(item)}</div>
+            <p class="d-caption">${item.diagram.caption}</p>
+          </div>
+
+          <h3 class="subhead">How to implement it</h3>
+          <ol class="steps-list">${item.steps.map(s => `<li>${s}</li>`).join("")}</ol>
+
+          <div class="svc-learn">
+            <div class="flabel">What you should learn</div>
+            <div class="tag-list">${item.learn.split(",").map(t => `<span class="tag">${t.trim()}</span>`).join("")}</div>
+          </div>
+
+          <div class="svc-foot">
+            <a class="back-home" style="margin:0;" href="#overview">← All topics</a>
+            <a class="doc-link" href="${item.docUrl}" target="_blank" rel="noopener">${item.docName} →</a>
+          </div>
+        </section>
+      `);
+    });
+  });
+  host.innerHTML = html.join("");
+}
+
+function renderSidebarNav() {
+  Object.keys(DATA).forEach(groupKey => {
+    const group = document.getElementById("nav-topics");
+    const links = DATA[groupKey].map(item =>
+      `<a class="nav-link" href="#${item.slug}"><span class="nav-icon">${item.icon}</span> ${item.name}</a>`
+    ).join("");
+    group.insertAdjacentHTML("beforeend", links);
+  });
+}
+
+function renderServiceIndex() {
+  const host = document.getElementById("svc-index");
+  const html = Object.keys(DATA).map(groupKey => `
+    <div class="svc-index-group">
+      ${DATA[groupKey].map(item => `
+        <a class="svc-index-item" href="#${item.slug}">
+          <span class="svc-index-icon">${item.icon}</span>
+          <span class="svc-index-text"><div class="n">${item.name}</div><div class="t">${item.what} — ${item.use}</div></span>
+          <span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span>
+        </a>
+      `).join("")}
+    </div>
+  `).join("");
+  host.innerHTML = html;
+}
+
+/* ---------- Router: show exactly one topic panel at a time ---------- */
+function showTopic(id) {
+  document.querySelectorAll(".topic-panel").forEach(p => { p.hidden = (p.id !== id); });
+  document.querySelectorAll(".nav-link").forEach(a => {
+    a.classList.toggle("active", a.getAttribute("href") === "#" + id);
+  });
+  window.scrollTo(0, 0);
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("sidebarScrim").classList.remove("show");
+}
+
+function routeFromHash() {
+  const id = (location.hash || "#overview").slice(1);
+  showTopic(document.getElementById(id) ? id : "overview");
+}
+
+renderServicePanels();
+renderSidebarNav();
+renderServiceIndex();
+window.addEventListener("hashchange", routeFromHash);
+routeFromHash();
+
+/* ---------- Mobile sidebar toggle ---------- */
+const menuBtn = document.getElementById("menuBtn");
+const sidebarEl = document.getElementById("sidebar");
+const scrimEl = document.getElementById("sidebarScrim");
+if (menuBtn) {
+  menuBtn.addEventListener("click", () => {
+    sidebarEl.classList.toggle("open");
+    scrimEl.classList.toggle("show");
+  });
+}
+scrimEl.addEventListener("click", () => {
+  sidebarEl.classList.remove("open");
+  scrimEl.classList.remove("show");
+});
+
+/* ---------- Summary + references ---------- */
+const sequence = ["Introduction & Setup","Defining Models","Migrations & CLI","CRUD Queries","Associations","Querying (where / order / include)","Validations & Hooks","Transactions"];
+document.getElementById("sequence-flow").innerHTML = sequence.map(s => `<span class="seq-step">${s}</span>`).join('<span class="seq-arrow">→</span>');
+
+const docLinks = [
+  ["Introduction & Setup","https://sequelize.org/docs/v6/getting-started/"],
+  ["Defining Models","https://sequelize.org/docs/v6/core-concepts/model-basics/"],
+  ["Migrations & CLI","https://sequelize.org/docs/v6/other-topics/migrations/"],
+  ["CRUD Queries","https://sequelize.org/docs/v6/core-concepts/model-querying-basics/"],
+  ["Associations","https://sequelize.org/docs/v6/core-concepts/assocs/"],
+  ["Querying (where / order / include)","https://sequelize.org/docs/v6/core-concepts/model-querying-basics/"],
+  ["Validations & Hooks","https://sequelize.org/docs/v6/core-concepts/validations-and-constraints/"],
+  ["Transactions","https://sequelize.org/docs/v6/other-topics/transactions/"],
+];
+document.getElementById("doc-links").innerHTML = docLinks.map(([n,u]) => `<div><b>${n}</b><br>${u}</div>`).join("");
+</script>
+
+</body>
+</html>

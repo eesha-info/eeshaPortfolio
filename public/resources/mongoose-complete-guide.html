@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mongoose — Complete Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS ============ */
+  :root {
+    --bg: #f2f5f9;
+    --surface: #ffffff;
+    --surface-2: #eaeff6;
+    --surface-3: #dfe6f0;
+    --border: #dbe2ec;
+    --ink: #0d1b2e;
+    --ink-soft: #4b5872;
+    --ink-faint: #8492a8;
+    --navy: #3A0E0C;
+    --navy-2: #4d1512;
+    --amber: #B33630;
+    --amber-strong: #8C2A25;
+    --amber-tint: rgba(179, 54, 48, 0.12);
+    --link: #1d5fa8;
+    --danger: #b8402b;
+    --danger-bg: rgba(184, 64, 43, 0.10);
+    --warn: #9c6a0a;
+    --warn-bg: rgba(156, 106, 10, 0.12);
+    --calm: #1f7a5c;
+    --calm-bg: rgba(31, 122, 92, 0.12);
+    --focus-ring: #B33630;
+    --shadow: 0 12px 32px rgba(13, 27, 46, 0.10);
+    --shadow-lg: 0 24px 64px rgba(13, 27, 46, 0.28);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0a1220;
+      --surface: #111d30;
+      --surface-2: #17253c;
+      --surface-3: #1f3049;
+      --border: #26395a;
+      --ink: #ecf1f8;
+      --ink-soft: #a7b6cd;
+      --ink-faint: #71829e;
+      --navy: #5a201c;
+      --navy-2: #6e2b25;
+      --amber: #E08079;
+      --amber-strong: #EBA09A;
+      --amber-tint: rgba(224, 128, 121, 0.14);
+      --link: #7fb3f5;
+      --danger: #ff8a71;
+      --danger-bg: rgba(255, 138, 113, 0.14);
+      --warn: #ffc766;
+      --warn-bg: rgba(255, 199, 102, 0.14);
+      --calm: #5cdcb0;
+      --calm-bg: rgba(92, 220, 176, 0.14);
+      --focus-ring: #E08079;
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0a1220;
+    --surface: #111d30;
+    --surface-2: #17253c;
+    --surface-3: #1f3049;
+    --border: #26395a;
+    --ink: #ecf1f8;
+    --ink-soft: #a7b6cd;
+    --ink-faint: #71829e;
+    --navy: #5a201c;
+    --navy-2: #6e2b25;
+    --amber: #E08079;
+    --amber-strong: #EBA09A;
+    --amber-tint: rgba(224, 128, 121, 0.14);
+    --link: #7fb3f5;
+    --danger: #ff8a71;
+    --danger-bg: rgba(255, 138, 113, 0.14);
+    --warn: #ffc766;
+    --warn-bg: rgba(255, 199, 102, 0.14);
+    --calm: #5cdcb0;
+    --calm-bg: rgba(92, 220, 176, 0.14);
+    --focus-ring: #E08079;
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  h1, h2, h3 { font-family: "IBM Plex Mono", ui-monospace, monospace; text-wrap: balance; margin: 0; }
+  a { color: var(--link); }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  ::selection { background: var(--amber-tint); }
+
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* ============ MOBILE TOPBAR ============ */
+  .topbar {
+    display: none;
+    position: sticky; top: 0; z-index: 40;
+    align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar .brand { font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 14px; }
+  .topbar .brand span { color: var(--amber); }
+  .menu-btn {
+    width: 36px; height: 36px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--ink);
+    font-size: 16px; cursor: pointer; text-decoration: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sidebar-scrim { display: none; position: fixed; inset: 0; background: rgba(5,11,20,0.5); z-index: 45; }
+  .sidebar-scrim.show { display: block; }
+
+  /* ============ SHELL / SIDEBAR ============ */
+  .shell { display: flex; align-items: flex-start; max-width: 1360px; margin: 0 auto; }
+  .sidebar {
+    position: sticky; top: 0;
+    width: 280px; flex-shrink: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 22px 16px 60px;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+    scrollbar-width: thin;
+  }
+  .sidebar .brand {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 800;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 8px 16px;
+  }
+  .sidebar .brand span { color: var(--amber); }
+  .back-home {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 8px 18px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 600;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+  }
+  .back-home:hover { color: var(--ink); background: var(--amber-tint); border-color: var(--amber); }
+  .nav-group { margin-bottom: 4px; }
+  .nav-group-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    padding: 14px 8px 6px;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+    margin: 1px 0;
+    border-radius: 7px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 13px;
+    border-left: 2px solid transparent;
+  }
+  .nav-link:hover { background: var(--surface-2); color: var(--ink); }
+  .nav-link.active {
+    background: var(--amber-tint);
+    color: var(--ink);
+    font-weight: 600;
+    border-left: 2px solid var(--amber);
+  }
+  .nav-icon { flex-shrink: 0; width: 18px; text-align: center; font-size: 13px; }
+
+  .content { flex: 1; min-width: 0; padding: 40px 32px 90px; }
+  .topic-panel[hidden] { display: none; }
+
+  @media (max-width: 920px) {
+    .topbar { display: flex; }
+    .sidebar {
+      position: fixed; inset: 0 auto 0 0;
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+      z-index: 50;
+      width: 82vw;
+      max-width: 300px;
+      box-shadow: var(--shadow-lg);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .content { padding: 28px 18px 100px; }
+  }
+
+  /* ============ PANEL HERO (Overview only) ============ */
+  .panel-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    background: linear-gradient(150deg, #2a0a08 0%, #4a1210 55%, #3a0e0c 100%);
+    color: #f8eeed;
+    padding: 40px 32px;
+    margin-bottom: 30px;
+  }
+  .panel-hero::before {
+    content: "";
+    position: absolute;
+    top: -120px; right: -90px;
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(224,128,121,0.32), rgba(224,128,121,0) 70%);
+    pointer-events: none;
+  }
+  .panel-hero .eyebrow {
+    position: relative;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #f2a79f;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel-hero .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #f2a79f; display: inline-block; }
+  .panel-hero h1 { position: relative; margin-top: 14px; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.2; font-weight: 700; color: #fff; }
+  .panel-hero h1 em { font-style: normal; color: #f2a79f; }
+  .panel-hero p.lede { position: relative; margin-top: 12px; font-size: 15px; color: #e3cfcc; max-width: 68ch; font-family: "IBM Plex Sans", sans-serif; line-height: 1.75; }
+  .panel-hero .stat-chips { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .stat-chip {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    border: 1px solid rgba(255,255,255,0.22);
+    color: #f3e2df;
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+  .stat-chip b { color: #fff; }
+
+  section.topic-panel h1.section-title { font-size: 22px; margin-bottom: 14px; }
+  .lede-plain { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 82ch; margin: 0 0 16px; }
+  .lede-plain b { color: var(--ink); }
+
+  /* ============ DIAGRAM BOX ============ */
+  .diagram-box {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    margin: 0 0 24px;
+  }
+  .diagram-box .d-chrome {
+    background: var(--navy);
+    color: #fbeeec;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 11px 16px;
+  }
+  .diagram-box .d-body { padding: 22px 18px 6px; overflow-x: auto; }
+  .diagram-box .d-body svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+  .diagram-box .d-caption {
+    padding: 6px 20px 20px;
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 88ch;
+  }
+  .diagram-box .d-caption code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; color: var(--ink); }
+  .diagram-box .d-caption b { color: var(--ink); }
+
+  /* shared SVG node styles, reused by every diagram */
+  svg .d-node { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
+  svg .d-node-accent { fill: var(--amber-tint); stroke: var(--amber); stroke-width: 1.5; }
+  svg .d-node-navy { fill: var(--navy); stroke: var(--navy); }
+  svg .d-title { fill: var(--ink); font: 700 13.5px "IBM Plex Sans", sans-serif; }
+  svg .d-title-light { fill: #ffffff; font: 700 12.5px "IBM Plex Mono", monospace; }
+  svg .d-sub { fill: var(--ink-faint); font: 600 10px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-sub-light { fill: #f0d9d6; font: 600 9.5px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-text { fill: var(--ink-soft); font: 500 11px "IBM Plex Mono", monospace; }
+  svg .d-arrow { fill: none; stroke: var(--ink-faint); stroke-width: 2; }
+  svg .d-arrow-accent { fill: none; stroke: var(--amber); stroke-width: 2.25; }
+  svg .d-label { fill: var(--ink-soft); font: 600 11px "IBM Plex Sans", sans-serif; }
+  svg .d-label-accent { fill: var(--amber-strong); font: 700 11px "IBM Plex Sans", sans-serif; }
+  svg .d-boundary { fill: none; stroke: var(--link); stroke-width: 1.5; stroke-dasharray: 6 4; }
+  svg .d-boundary-label { fill: var(--link); font: 700 10.5px "IBM Plex Mono", monospace; letter-spacing: 0.05em; }
+
+  /* ============ TOPIC PANEL ============ */
+  .panel-kicker {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 10px;
+  }
+  .panel-head { display: flex; gap: 16px; align-items: flex-start; }
+  .panel-icon {
+    flex-shrink: 0;
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    background: var(--navy);
+    color: var(--amber-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+  }
+  .svc-name-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .svc-name-row h2 { font-size: 21px; color: var(--ink); }
+  .panel-tagline { margin: 6px 0 0; font-size: 13.5px; color: var(--ink-faint); font-family: "IBM Plex Sans", sans-serif; }
+  .svc-desc { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 84ch; }
+
+  .use-callout {
+    margin: 22px 0;
+    padding: 16px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--link);
+    background: var(--surface-2);
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 84ch;
+  }
+  .use-callout b { color: var(--ink); }
+  .callout-title {
+    display: block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--link);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  h3.subhead { font-size: 15px; margin: 28px 0 6px; color: var(--ink); }
+
+  .steps-list {
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 84ch;
+  }
+  .steps-list li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .steps-list li::before {
+    counter-increment: step;
+    content: counter(step);
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--amber-strong);
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+    font-size: 11.5px;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .steps-list li b { color: var(--ink); }
+  .steps-list li code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+
+  .svc-learn { margin-top: 26px; }
+  .flabel {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--ink-soft);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .svc-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    max-width: 84ch;
+  }
+  .doc-link {
+    font-size: 12.5px;
+    color: var(--link);
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .doc-link:hover { text-decoration: underline; }
+  .badge {
+    display: inline-block;
+    font-family: "IBM Plex Mono", monospace;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+  }
+  .badge-must { background: var(--danger-bg); color: var(--danger); }
+  .badge-important { background: var(--warn-bg); color: var(--warn); }
+  .badge-level { background: var(--calm-bg); color: var(--calm); }
+
+  /* ============ OVERVIEW TOPIC INDEX ============ */
+  .svc-index-group { margin-bottom: 22px; }
+  .svc-index-group h4 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    font-family: "IBM Plex Mono", monospace;
+    margin-bottom: 10px;
+  }
+  .svc-index-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    text-decoration: none;
+    color: var(--ink);
+    margin-bottom: 6px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .svc-index-item:hover { border-color: var(--amber); background: var(--amber-tint); }
+  .svc-index-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--navy);
+    color: var(--amber-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .svc-index-text { flex: 1; min-width: 0; }
+  .svc-index-text .n { font-weight: 700; font-size: 13.5px; }
+  .svc-index-text .t { font-size: 11.5px; color: var(--ink-faint); }
+
+  /* ============ SUMMARY CARDS ============ */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--amber);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+  }
+  .card h3 { font-size: 14px; color: var(--ink); margin-bottom: 12px; }
+  .card p.card-note { margin: 0 0 14px; font-size: 13px; color: var(--ink-soft); font-family: "IBM Plex Sans", sans-serif; line-height: 1.7; }
+  .seq-flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; }
+  .seq-step {
+    font-family: "IBM Plex Mono", monospace;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  .seq-arrow { color: var(--amber); font-weight: 700; }
+
+  .priority-levels { display: flex; flex-direction: column; gap: 12px; }
+  .plevel { display: flex; gap: 12px; align-items: flex-start; }
+  .plevel .lvl-tag {
+    font-family: "IBM Plex Mono", monospace;
+    flex-shrink: 0;
+    width: 72px;
+    padding: 5px 0;
+    text-align: center;
+    border-radius: 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .lvl-1 { background: var(--danger); }
+  .lvl-2 { background: var(--warn); color: #221600; }
+  .lvl-3 { background: var(--ink-faint); }
+  .plevel .lvl-items { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+
+  .doc-links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 8px 20px;
+    font-size: 12px;
+  }
+  .doc-links-grid div { color: var(--ink-soft); overflow-wrap: break-word; }
+  .doc-links-grid b { color: var(--ink); font-family: "IBM Plex Mono", monospace; font-size: 11.5px; }
+
+  /* ============ FOOTER ============ */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 28px 48px;
+    text-align: center;
+  }
+  footer .label {
+    font-family: "IBM Plex Mono", monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 10px;
+    color: var(--amber);
+    font-weight: 700;
+  }
+  footer .name { font-size: 18px; font-weight: 700; margin-top: 6px; }
+  footer .role { font-size: 12.5px; color: var(--ink-soft); margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="Open navigation">☰</button>
+  <div class="brand">MONGOOSE<span>::</span>DOCS</div>
+  <a class="menu-btn" href="../" aria-label="Back to Portfolio">⌂</a>
+</div>
+<div class="sidebar-scrim" id="sidebarScrim"></div>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">MONGOOSE<span>::</span>DOCS</div>
+    <a class="back-home" href="../">← Back to Portfolio</a>
+
+    <div class="nav-group">
+      <a class="nav-link" href="#overview"><span class="nav-icon">🏠</span> Overview</a>
+    </div>
+
+    <div class="nav-group" id="nav-group-core">
+      <div class="nav-group-label">Core Topics</div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Reference</div>
+      <a class="nav-link" href="#summary"><span class="nav-icon">📐</span> Summary &amp; Patterns</a>
+      <a class="nav-link" href="#references"><span class="nav-icon">📄</span> Doc Links</a>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <section class="topic-panel" id="overview">
+      <div class="panel-hero">
+        <div class="eyebrow">Elegant MongoDB Object Modeling</div>
+        <h1>Mongoose <em>Complete Guide</em></h1>
+        <p class="lede">Mongoose is an ODM — an Object Document Mapper — that sits on top of MongoDB's native Node.js driver and gives an otherwise schema-less document database structure. It lets you define schemas that declare exactly what shape a document should have, layers on validation so bad data never reaches the database, and adds middleware (hooks) that run automatically around every save, update, or delete. Underneath, every Mongoose call still talks to MongoDB through the standard driver — Mongoose just makes it far easier to model, validate, and enforce structure as an application grows past its first few collections. This doc walks through the 8 concepts that make up the core of everyday Mongoose usage, each with a diagram, a "where &amp; when to use it" guide, and concrete implementation steps.</p>
+        <div class="stat-chips">
+          <span class="stat-chip"><b>8</b> topics</span>
+          <span class="stat-chip"><b>8</b> diagrams</span>
+          <span class="stat-chip"><b>1</b> ODM</span>
+        </div>
+      </div>
+
+      <p class="lede-plain">Use the sidebar to jump straight to any topic — each one opens its own page with a full explanation, a diagram of exactly how it fits into the request lifecycle, and the concrete steps to use it in a real app. If you're starting from zero, work through <b>Connecting to MongoDB</b> and <b>Schemas &amp; Models</b> first: nothing else on this page works without a live connection and a compiled model in place.</p>
+
+      <div class="diagram-box">
+        <div class="d-chrome">Diagram · Where Mongoose Sits Between Your App and MongoDB</div>
+        <div class="d-body">
+          <svg viewBox="0 0 900 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="App code calls a Mongoose model, which validates data and runs middleware hooks, then hands off to the native MongoDB driver, which talks to the MongoDB server. Underneath the Mongoose model sit validation, middleware, virtuals, population, query helpers, and indexes.">
+            <defs>
+              <marker id="overviewArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+            </defs>
+
+            <rect class="d-node" x="20" y="40" width="110" height="60" rx="30" />
+            <text class="d-title" x="75" y="74" text-anchor="middle">App Code</text>
+            <path class="d-arrow" d="M130 70 L158 70" marker-end="url(#overviewArrow)" />
+
+            <rect class="d-node-accent" x="160" y="25" width="190" height="90" rx="10" />
+            <text class="d-title" x="178" y="58">Mongoose Model</text>
+            <text class="d-sub" x="178" y="76">schema + methods</text>
+            <text class="d-sub" x="178" y="92">validates &amp; runs hooks</text>
+            <path class="d-arrow" d="M350 70 L378 70" marker-end="url(#overviewArrow)" />
+
+            <rect class="d-node" x="380" y="35" width="180" height="70" rx="10" />
+            <text class="d-title" x="398" y="66">Native Driver</text>
+            <text class="d-sub" x="398" y="82">mongodb npm package</text>
+            <path class="d-arrow" d="M560 70 L588 70" marker-end="url(#overviewArrow)" />
+
+            <rect class="d-node-navy" x="590" y="25" width="190" height="90" rx="10" />
+            <text class="d-title-light" x="608" y="58">MongoDB Server</text>
+            <text class="d-sub-light" x="608" y="76">replica set / Atlas</text>
+            <text class="d-sub-light" x="608" y="92">durable storage</text>
+
+            <path class="d-boundary" d="M40 145 L 860 145" />
+            <text class="d-boundary-label" x="450" y="137" text-anchor="middle">INSIDE THE MONGOOSE MODEL LAYER</text>
+
+            <g>
+              <rect class="d-node" x="20" y="160" width="118" height="36" rx="8" /><text class="d-text" x="79" y="182" text-anchor="middle">Validation</text>
+              <rect class="d-node" x="148" y="160" width="130" height="36" rx="8" /><text class="d-text" x="213" y="182" text-anchor="middle">Middleware</text>
+              <rect class="d-node" x="288" y="160" width="110" height="36" rx="8" /><text class="d-text" x="343" y="182" text-anchor="middle">Virtuals</text>
+              <rect class="d-node" x="408" y="160" width="130" height="36" rx="8" /><text class="d-text" x="473" y="182" text-anchor="middle">Population</text>
+              <rect class="d-node" x="548" y="160" width="140" height="36" rx="8" /><text class="d-text" x="618" y="182" text-anchor="middle">Query Helpers</text>
+              <rect class="d-node" x="698" y="160" width="110" height="36" rx="8" /><text class="d-text" x="753" y="182" text-anchor="middle">Indexes</text>
+            </g>
+          </svg>
+        </div>
+        <p class="d-caption">Every call your app makes goes through a Mongoose model first — that's where validation runs, where <code>pre</code>/<code>post</code> hooks fire, and where virtuals, population, query helpers, and indexes all live. Only after all of that does the call reach the native MongoDB driver and, eventually, the server itself.</p>
+      </div>
+
+      <h3 class="subhead" style="margin-top:8px;">All 8 topics in this guide</h3>
+      <div id="svc-index"></div>
+    </section>
+
+    <!-- 8 topic panels are injected here by renderServicePanels() -->
+    <div id="service-panels"></div>
+
+    <section class="topic-panel" id="summary">
+      <h1 class="section-title">Summary &amp; Patterns</h1>
+      <p class="lede-plain">Once the individual topics make sense on their own, these references tie them together: the order to learn them in, and the single mechanism — population — that's worth understanding in real depth before you consider yourself comfortable with Mongoose.</p>
+
+      <div class="card">
+        <h3>Recommended Learning Order</h3>
+        <div class="seq-flow" id="sequence-flow"></div>
+      </div>
+
+      <div class="card">
+        <h3>Key Concept — How Population Resolves a Reference</h3>
+        <p class="card-note">Population is the one Mongoose feature that most looks like "magic" the first time you see it — this is what actually happens underneath <code>.populate()</code>.</p>
+        <div class="diagram-box" style="margin-bottom:0; box-shadow:none;">
+          <div class="d-chrome">Diagram · Population — How a Ref Field Resolves Into a Full Document</div>
+          <div class="d-body">
+            <svg viewBox="0 0 780 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A Book document holding only an author ObjectId is passed through populate, which looks the id up in the Author collection and merges the full author document back into the result">
+              <defs>
+                <marker id="popArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+                <marker id="popArrowAccent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)" /></marker>
+              </defs>
+
+              <line class="d-boundary" x1="390" y1="20" x2="390" y2="240" />
+              <text class="d-boundary-label" x="195" y="36" text-anchor="middle">BEFORE POPULATE</text>
+              <text class="d-boundary-label" x="585" y="36" text-anchor="middle">AFTER POPULATE</text>
+
+              <rect class="d-node-accent" x="30" y="140" width="170" height="90" rx="10" />
+              <text class="d-title" x="46" y="168">Book Document</text>
+              <text class="d-sub" x="46" y="186">author: ObjectId('64f1…')</text>
+              <text class="d-sub" x="46" y="202">(unpopulated)</text>
+
+              <rect class="d-node" x="320" y="30" width="160" height="60" rx="10" />
+              <text class="d-title" x="336" y="55">Author Collection</text>
+              <text class="d-sub" x="336" y="72">matched by _id</text>
+
+              <path class="d-arrow" d="M195 140 C 250 110, 280 90, 320 65" marker-end="url(#popArrow)" />
+              <text class="d-label" x="185" y="112">① .populate('author') looks up the ref</text>
+
+              <path class="d-arrow-accent" d="M475 90 C 520 115, 545 135, 585 148" marker-end="url(#popArrowAccent)" />
+              <text class="d-label-accent" x="470" y="118">② full document merged back in</text>
+
+              <rect class="d-node-accent" x="590" y="140" width="170" height="90" rx="10" />
+              <text class="d-title" x="606" y="166">Book Document</text>
+              <text class="d-sub" x="606" y="184">author: { name, bio, … }</text>
+              <text class="d-sub" x="606" y="200">(populated)</text>
+            </svg>
+          </div>
+          <p class="d-caption">Before population, the <code>author</code> field is nothing more than a raw <code>ObjectId</code> — a pointer, not data. Calling <code>.populate('author')</code> runs a second query behind the scenes against the Author collection (<b>①</b>) and swaps that id out for the actual matching document (<b>②</b>) before your code ever sees the result. The Book document in your database never actually stores the author's fields — population reconstructs them at read time, every time.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic-panel" id="references">
+      <h1 class="section-title">Official Documentation Reference URLs</h1>
+      <p class="lede-plain">Every topic covered in this guide, with a direct link to its official Mongoose docs.</p>
+      <div class="card">
+        <div class="doc-links-grid" id="doc-links"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="label">Documented By</div>
+  <div class="name">MD Eesha</div>
+  <div class="role">Sr. Software Engineer</div>
+</footer>
+
+<script>
+const PRIORITY_LABEL = {
+  must: "Must",
+  important: "Important",
+};
+const PRIORITY_CLASS = {
+  must: "badge-must",
+  important: "badge-important",
+};
+const GROUP_LABEL = {
+  core: "Mongoose · Core Concepts",
+};
+
+const DATA = {
+  core: [
+    { n:1, slug:"topic-connecting", name:"Connecting to MongoDB", icon:"🔌", what:"Establishing &amp; managing the database connection", use:"Bootstrap Mongoose once, at app startup", learn:"mongoose.connect(), Connection string URI, Connection pooling, readyState, Connection events, Multiple connections, Buffering commands", priority:"must", docName:"Mongoose Connections Documentation", docUrl:"https://mongoosejs.com/docs/connections.html",
+      desc:"Before a Mongoose model can do anything, the application needs a live connection to a MongoDB server, and that connection is created once with <code>mongoose.connect()</code>. Under the hood, Mongoose wraps the official MongoDB Node.js driver and manages a pool of reused sockets rather than opening a new one per query, which is what makes it fast enough for production traffic. The returned connection object emits lifecycle events — <code>connected</code>, <code>error</code>, <code>disconnected</code> — that let an app react when the database goes away or comes back. Until the connection is actually open, Mongoose buffers model operations by default so requests made immediately at startup don't fail outright, though that buffering should not be relied on as a substitute for waiting on the connection properly.",
+      useWhen:"Call <code>mongoose.connect()</code> exactly once, near the very top of your app's entry file, before the HTTP server starts accepting traffic — never inside a request handler or a route file, which would open a new connection on every request. Use a connection string pointing at MongoDB Atlas in production and a local or containerized MongoDB instance in development, driven by an environment variable so the same code works in both places.",
+      steps:["Install the package with <code>npm install mongoose</code>.","Store the connection string in an environment variable, e.g. <code>MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/mydb</code>.","Call <code>await mongoose.connect(process.env.MONGODB_URI)</code> once at startup, before the server begins listening.","Listen for connection events: <code>mongoose.connection.on('error', console.error)</code> and <code>on('disconnected', ...)</code>.","Wrap the initial connect call in a try/catch so a failed startup connection fails loudly instead of silently.","In tests, connect to a separate test database (or an in-memory MongoDB instance) so test runs never touch production data."],
+      diagram:{ left:[{name:"MONGODB_URI",sub:"connection string"},{name:"mongoose.connect()",sub:"opens the pool"}], right:[{name:"Connection Pool",sub:"reused sockets"},{name:"MongoDB Atlas / Server",sub:"the actual cluster"}], top:{name:"Env Config",sub:".env variables"}, bottom:{name:"Connection Events",sub:"connected / error / disconnected"}, coreSub:"one connection, reused everywhere",
+        caption:"The URI and env config decide where and how to connect; once <code>mongoose.connect()</code> resolves, every model in the app shares the same pooled connection to the cluster underneath." } },
+
+    { n:2, slug:"topic-schemas", name:"Schemas &amp; Models", icon:"📐", what:"Declaring document shape and compiling it into a usable model", use:"Define structure for an otherwise schema-less collection", learn:"new mongoose.Schema(), SchemaTypes, mongoose.model(), Schema options, Timestamps, Instance methods, Statics", priority:"must", docName:"Mongoose Guide — Schemas &amp; Models", docUrl:"https://mongoosejs.com/docs/guide.html",
+      desc:"A schema is where you declare what a document is supposed to look like — field names, their types, defaults, and constraints — even though MongoDB itself would happily store documents with no fixed shape at all. <code>mongoose.model()</code> takes that schema and compiles it into a Model, a constructor you actually use to create, read, update, and delete documents in a specific collection. Schemas can also carry instance methods (behavior available on a single document), statics (behavior available on the model itself), and options like automatic <code>createdAt</code>/<code>updatedAt</code> timestamps. This is the layer every other Mongoose feature — validation, middleware, population, virtuals — attaches itself to.",
+      useWhen:"Define a schema for every distinct kind of document your app stores — users, posts, orders — typically one schema and model per file, in a dedicated <code>models/</code> directory. Reach for schema options like <code>timestamps: true</code> immediately; retrofitting them onto an existing collection later is far more annoying than turning it on from day one.",
+      steps:["Create a schema: <code>const userSchema = new mongoose.Schema({ name: String, age: Number })</code>.","Pick explicit SchemaTypes for every field instead of leaving them implicit.","Add <code>{ timestamps: true }</code> as a second argument to get automatic <code>createdAt</code>/<code>updatedAt</code> fields.","Compile the model: <code>const User = mongoose.model('User', userSchema)</code>.","Add instance methods for per-document behavior, e.g. <code>userSchema.methods.isAdult = function() { return this.age >= 18; }</code>.","Add static methods for model-level queries, e.g. <code>userSchema.statics.findByEmail = function(email) { return this.findOne({ email }); }</code>."],
+      diagram:{ left:[{name:"new mongoose.Schema()",sub:"field types + rules"},{name:"Schema Options",sub:"timestamps, etc."}], right:[{name:"mongoose.model()",sub:"compiles the schema"},{name:"MongoDB Collection",sub:"e.g. users"}], coreSub:"schema → model",
+        caption:"A schema is only a description of shape; nothing exists in the database until <code>mongoose.model()</code> compiles it into a Model tied to a real collection." } },
+
+    { n:3, slug:"topic-crud", name:"CRUD Operations", icon:"✏️", what:"Creating, reading, updating, and deleting documents", use:"Read and write data through the model instead of raw driver calls", learn:"create() / save(), find() / findOne() / findById(), updateOne() / findByIdAndUpdate(), deleteOne() / findByIdAndDelete(), Lean queries, bulkWrite()", priority:"must", docName:"Mongoose Queries Documentation", docUrl:"https://mongoosejs.com/docs/queries.html",
+      desc:"Every model exposes a consistent set of methods for the four basic data operations: creating documents with <code>create()</code> or <code>new Model().save()</code>, reading them with <code>find()</code>, <code>findOne()</code>, and <code>findById()</code>, updating with <code>updateOne()</code> or the convenient <code>findByIdAndUpdate()</code>, and removing with <code>deleteOne()</code> or <code>findByIdAndDelete()</code>. Query methods return a Mongoose Query object, which is thenable — you can <code>await</code> it directly or chain further options like <code>.sort()</code>, <code>.limit()</code>, and <code>.select()</code> before it executes. Because reads go through the full document constructor by default, Mongoose also offers <code>.lean()</code> to skip that overhead and return plain JavaScript objects when you don't need document methods, which matters for read-heavy endpoints. <code>bulkWrite()</code> batches many operations into a single round trip when you're writing at volume.",
+      useWhen:"Use the model's CRUD methods for essentially all application-level reads and writes — that's the entire point of using Mongoose instead of the raw driver. Reach for <code>.lean()</code> on hot, read-only endpoints (list views, search results) where you're serializing the result straight to JSON and don't need virtuals, methods, or change tracking on it.",
+      steps:["Create: <code>const user = await User.create({ name: 'Ada', age: 30 })</code>.","Read one: <code>const user = await User.findById(id)</code>; read many: <code>await User.find({ age: { $gte: 18 } })</code>.","Chain query options before awaiting: <code>User.find().sort('-createdAt').limit(20)</code>.","Update: <code>await User.findByIdAndUpdate(id, { age: 31 }, { new: true })</code> to get the updated document back.","Delete: <code>await User.findByIdAndDelete(id)</code>.","Add <code>.lean()</code> to read-only queries that don't need document instance methods, to skip hydration overhead."],
+      diagram:{ left:[{name:"Create",sub:"create() / save()"},{name:"Read",sub:"find() / findById()"}], right:[{name:"Update",sub:"findByIdAndUpdate()"},{name:"Delete",sub:"findByIdAndDelete()"}], bottom:{name:"MongoDB Collection",sub:"documents actually stored"}, coreSub:"Model query methods",
+        caption:"All four operations funnel through the same Model — the collection underneath never sees anything except the driver calls Mongoose translates these into." } },
+
+    { n:4, slug:"topic-validation", name:"Validation", icon:"✅", what:"Enforcing rules on document data before it's saved", learn:"required / min / max / enum, Custom validators, Async validators, ValidationError, validateSync(), Update validators", use:"Reject bad data before it ever reaches the database", priority:"important", docName:"Mongoose Validation Documentation", docUrl:"https://mongoosejs.com/docs/validation.html",
+      desc:"Validation is declared right on the schema, next to each field's type: <code>required</code>, <code>min</code>/<code>max</code>, <code>minlength</code>/<code>maxlength</code>, and <code>enum</code> cover the common cases, and a <code>validate</code> function handles anything more specific, including asynchronous checks like looking up whether an email is already taken. Validation runs automatically before <code>save()</code>, and if any rule fails, Mongoose throws a <code>ValidationError</code> that lists every field that failed rather than stopping at the first one, which makes it easy to return all the problems to a client at once. By default, update operations like <code>updateOne()</code> skip validation entirely, so update-time checks have to be turned on explicitly.",
+      useWhen:"Put validation directly on the schema for every field with a real constraint — required fields, string length limits, numeric ranges, allowed enum values — instead of re-checking the same rules by hand in every route that touches the model. Turn on <code>runValidators: true</code> for update queries the moment you rely on the same rules holding after a document has already been created.",
+      steps:["Add basic constraints inline: <code>{ email: { type: String, required: true, unique: true } }</code>.","Constrain strings and numbers: <code>{ age: { type: Number, min: 0, max: 120 } }</code>, <code>{ role: { type: String, enum: ['user','admin'] } }</code>.","Write a custom validator for anything else: <code>{ validate: v => /@/.test(v) }</code>.","Handle the thrown <code>ValidationError</code> in a catch block and map <code>error.errors</code> into a client-friendly response.","Pass <code>{ runValidators: true }</code> to <code>findByIdAndUpdate()</code> so update operations re-run the same rules as create.","Use <code>doc.validateSync()</code> in tests to check a document's validity without hitting the database."],
+      diagram:{ left:[{name:"Built-in rules",sub:"required, min, max, enum"},{name:"Custom validators",sub:"validate: fn"}], right:[{name:".save() / .validate()",sub:"runs every rule"},{name:"ValidationError",sub:"thrown on failure"}], coreSub:"schema-level rules",
+        caption:"Every rule attached to the schema runs together on save; a single failure produces one <code>ValidationError</code> listing every field that failed, not just the first." } },
+
+    { n:5, slug:"topic-middleware", name:"Middleware (Hooks)", icon:"🪝", what:"Functions that run automatically before or after an operation", learn:"pre() hooks, post() hooks, Document middleware, Query middleware, Aggregate middleware, Error-handling middleware", use:"Run shared logic around save/update/remove without repeating it in every route", priority:"important", docName:"Mongoose Middleware Documentation", docUrl:"https://mongoosejs.com/docs/middleware.html",
+      desc:"Middleware — Mongoose calls them hooks — are functions attached to a schema that run automatically before (<code>pre</code>) or after (<code>post</code>) a given operation, without the calling code having to remember to invoke them. They exist for document operations like <code>save</code> and <code>validate</code>, for query operations like <code>find</code> and <code>updateOne</code>, and for aggregation pipelines, and each type receives slightly different context (a document instance in document middleware, the query itself in query middleware). A dedicated error-handling middleware signature, <code>schema.post(event, function(error, doc, next) {...})</code>, lets a schema react specifically to failures, like translating a duplicate-key error into a friendlier message.",
+      useWhen:"Reach for a <code>pre('save')</code> hook for anything that must happen every single time a document is created or changed and shouldn't depend on every caller remembering to do it — hashing a password, normalizing an email to lowercase, stamping an <code>updatedAt</code> field. Use query middleware (<code>pre('find')</code>, <code>pre(/^find/)</code>) for cross-cutting concerns like automatically excluding soft-deleted documents from every query.",
+      steps:["Hash a password before save: <code>userSchema.pre('save', async function(next) { if (this.isModified('password')) this.password = await hash(this.password); next(); })</code>.","Use <code>this.isModified(field)</code> inside hooks to avoid redoing expensive work when a field hasn't changed.","Add a query-level hook to filter soft-deleted rows automatically: <code>schema.pre(/^find/, function(next) { this.where({ deletedAt: null }); next(); })</code>.","Add a <code>post('save')</code> hook for side effects that should only happen after a successful write, like emitting an event.","Add error-handling middleware to convert a MongoDB duplicate-key error into a clear application error.","Prefer async/await hooks over the legacy callback-style <code>next()</code> pattern in new code, but remember hooks still must resolve or call <code>next()</code>."],
+      diagram:{ left:[{name:"pre('save')",sub:"before the write"},{name:"pre('validate')",sub:"before validation"}], right:[{name:"post('save')",sub:"after the write"},{name:"Error middleware",sub:"post(err, doc, next)"}], coreSub:"schema-attached hooks",
+        caption:"Hooks wrap the operation on both sides — <code>pre</code> can still change or block it, <code>post</code> only ever reacts to what already happened." } },
+
+    { n:6, slug:"topic-population", name:"Population", icon:"🔗", what:"Resolving a referenced ObjectId into the full document it points to", learn:"ref in schema, populate(), Nested/deep population, populate() with select/match, Virtual populate, refPath (dynamic refs)", use:"Model relationships between collections without manual joins", priority:"important", docName:"Mongoose Population Documentation", docUrl:"https://mongoosejs.com/docs/populate.html",
+      desc:"MongoDB has no native join, so Mongoose fills that gap with population: a field is declared as a reference to another model using <code>ref</code>, storing only that document's <code>ObjectId</code>, and calling <code>.populate('fieldName')</code> on a query runs a second query behind the scenes and swaps that id out for the real document. Population can go multiple levels deep, be filtered with its own <code>match</code> and narrowed with its own <code>select</code>, and even work in reverse with virtual population — showing, say, every comment that references a post, without the post storing an array of comment ids at all. It's a convenience layered entirely at the application level; the reference in the database is still just a plain id.",
+      useWhen:"Use population whenever one document needs to display data that actually lives in another collection — a blog post's author, an order's line-item products — instead of duplicating that data into every referencing document. Reach for virtual population specifically for one-to-many relationships where the 'many' side would otherwise require storing a huge, unbounded array of ids on the 'one' side.",
+      steps:["Declare the reference in the schema: <code>author: { type: mongoose.Schema.Types.ObjectId, ref: 'Author' }</code>.","Populate it on read: <code>const book = await Book.findById(id).populate('author')</code>.","Narrow what comes back: <code>.populate({ path: 'author', select: 'name bio' })</code>.","Chain population across relationships: <code>.populate('author').populate('publisher')</code> or nested via <code>populate: {...}</code>.","Set up virtual population for the reverse direction: <code>schema.virtual('comments', { ref: 'Comment', localField: '_id', foreignField: 'postId' })</code>.","Remember every populated field costs an extra query — avoid populating fields a view doesn't actually render."],
+      diagram:{ left:[{name:"Parent Document",sub:"holds ObjectId ref"}], right:[{name:"Referenced Model",sub:"resolved by ref"},{name:"populate() Result",sub:"full document swapped in"}], coreSub:"application-level join",
+        caption:"The stored document never changes — <code>.populate()</code> runs a second lookup at query time and hands back a merged result, purely on the read path." } },
+
+    { n:7, slug:"topic-virtuals", name:"Virtuals", icon:"🪄", what:"Computed properties that aren't stored in the database", learn:"schema.virtual(), Virtual getters, Virtual setters, toJSON virtuals option, Populated virtuals, Computed properties", use:"Derive a convenient field from ones that already exist", priority:"important", docName:"Mongoose Guide — Virtuals", docUrl:"https://mongoosejs.com/docs/guide.html#virtuals",
+      desc:"A virtual is a document property that behaves like a real field — you can read it, and with a setter, write to it — but it's never persisted to MongoDB; it's computed on the fly from data that already exists on the document. The classic example is a <code>fullName</code> virtual derived from stored <code>firstName</code> and <code>lastName</code> fields, so callers get a convenient combined value without the database storing the same information twice and risking it drifting out of sync. By default virtuals are excluded from <code>JSON.stringify()</code> and <code>.toObject()</code> output, so the schema needs <code>{ toJSON: { virtuals: true } }</code> to have them show up in an API response.",
+      useWhen:"Reach for a virtual any time a value can be derived purely from fields the document already has — never store a value that's just a computation away from data you're already keeping, since a computed virtual can never go stale the way a duplicated stored field can. Add a virtual setter when you want a convenient write-shortcut that Mongoose then splits back into the underlying real fields.",
+      steps:["Define a getter: <code>userSchema.virtual('fullName').get(function() { return this.firstName + ' ' + this.lastName; })</code>.","Optionally define a setter that writes back to the real fields: <code>.set(function(v) { [this.firstName, this.lastName] = v.split(' '); })</code>.","Enable virtuals in serialized output: <code>new mongoose.Schema({...}, { toJSON: { virtuals: true }, toObject: { virtuals: true } })</code>.","Keep virtual logic simple and synchronous — it runs on every access, not just once.","Remember a virtual can't be queried or indexed directly since it doesn't exist in the underlying collection.","Use populated virtuals (see Population) when the 'computed' value needs to come from another collection instead of the same document."],
+      diagram:{ left:[{name:"Stored fields",sub:"firstName, lastName"}], right:[{name:"Virtual getter",sub:"fullName (not stored)"},{name:"toJSON output",sub:"virtuals: true"}], coreSub:"computed, not persisted",
+        caption:"Nothing about a virtual ever touches the database — it's read (and optionally written) purely in memory, on top of fields that are already there." } },
+
+    { n:8, slug:"topic-queryhelpers", name:"Query Helpers &amp; Indexes", icon:"⚡", what:"Reusable query shortcuts, and the indexes that make queries fast", learn:"schema.query helpers, Chainable custom queries, schema.index(), Compound indexes, Unique indexes, explain(), Query performance", use:"Keep common filters reusable, and keep large collections fast to search", priority:"important", docName:"Mongoose Guide — Indexes", docUrl:"https://mongoosejs.com/docs/guide.html#indexes",
+      desc:"Query helpers let a schema attach its own chainable methods onto every query it produces, so a common filter like 'only active users' can be written once as <code>schema.query.byActive()</code> and reused as <code>User.find().byActive()</code> everywhere instead of repeating the same <code>{ active: true }</code> filter object across the codebase. Indexes are a separate but related concern: they're declared on the schema with <code>schema.index()</code> and tell MongoDB to build a lookup structure on specific fields — without one, a query on a large collection has to scan every document to find matches, which gets slow fast. Compound indexes cover queries that filter or sort on multiple fields together, and unique indexes both speed up lookups and enforce that no two documents share the same value.",
+      useWhen:"Add a query helper the moment the same filter object shows up in more than one route or query — it's a small investment that keeps filtering logic in one place. Add an index the moment a field is regularly used in a <code>find()</code> filter, a <code>sort()</code>, or a uniqueness constraint on a collection that's expected to grow past a few thousand documents; check with <code>.explain('executionStats')</code> if a query feels slower than expected.",
+      steps:["Define a query helper: <code>userSchema.query.byActive = function() { return this.where({ active: true }); }</code>.","Use it in application code: <code>await User.find().byActive().sort('-createdAt')</code>.","Add a single-field index for frequently filtered fields: <code>userSchema.index({ email: 1 }, { unique: true })</code>.","Add a compound index for queries that filter on multiple fields together: <code>schema.index({ status: 1, createdAt: -1 })</code>.","Confirm an index is actually being used: <code>await User.find({ email }).explain('executionStats')</code>.","Avoid over-indexing — every index speeds up reads but adds overhead to every write, so only index fields real queries actually use."],
+      diagram:{ left:[{name:"schema.query helper",sub:"e.g. byActive()"},{name:"schema.index()",sub:"declared on schema"}], right:[{name:"Chained query",sub:".find().byActive()"},{name:"Fast lookup",sub:"index used at query time"}], coreSub:"reusable filters + speed",
+        caption:"A query helper keeps filter logic in one place; an index is what keeps that same filter fast once the collection is no longer tiny." } },
+  ],
+};
+
+/* ---------- Generic per-topic architecture diagram renderer ---------- */
+function stackBoxes(items, x, w, centerY, boxH, gap) {
+  const n = items.length;
+  if (!n) return [];
+  const totalH = n * boxH + (n - 1) * gap;
+  const startY = centerY - totalH / 2;
+  return items.map((it, i) => {
+    const y = startY + i * (boxH + gap);
+    return { ...it, x, y, w, h: boxH, cy: y + boxH / 2 };
+  });
+}
+
+function svcDiagramSVG(svc) {
+  const cfg = svc.diagram;
+  const W = 760, H = 420;
+  const coreW = 200, coreH = 90, coreCX = 380, coreCY = 210;
+  const coreX = coreCX - coreW / 2, coreY = coreCY - coreH / 2;
+  const leftX = 20, leftW = 170, rightX = 570, rightW = 170, boxH = 60, gap = 18;
+  const uid = svc.slug;
+
+  const lefts = stackBoxes(cfg.left || [], leftX, leftW, coreCY, boxH, gap);
+  const rights = stackBoxes(cfg.right || [], rightX, rightW, coreCY, boxH, gap);
+  const label = cfg.coreLabel || svc.name;
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${cfg.caption.replace(/"/g,"'")}">`;
+  svg += `<defs>
+    <marker id="m-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)"/></marker>
+    <marker id="ma-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)"/></marker>
+  </defs>`;
+
+  if (cfg.top) {
+    svg += `<rect class="d-node-navy" x="${coreX}" y="24" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title-light" x="${coreX+14}" y="47">${cfg.top.name}</text>
+      <text class="d-sub-light" x="${coreX+14}" y="62">${cfg.top.sub||""}</text>
+      <path class="d-arrow" d="M${coreCX} 70 L${coreCX} ${coreY-2}" marker-end="url(#m-${uid})"/>`;
+  }
+  if (cfg.bottom) {
+    svg += `<rect class="d-node" x="${coreX}" y="350" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title" x="${coreX+14}" y="373">${cfg.bottom.name}</text>
+      <text class="d-sub" x="${coreX+14}" y="388">${cfg.bottom.sub||""}</text>
+      <path class="d-arrow-accent" d="M${coreCX} ${coreY+coreH+2} L${coreCX} 348" marker-end="url(#ma-${uid})"/>`;
+  }
+
+  svg += `<rect class="d-node-accent" x="${coreX}" y="${coreY}" width="${coreW}" height="${coreH}" rx="12"/>
+    <text class="d-title" x="${coreCX}" y="${coreCY-6}" text-anchor="middle">${label}</text>
+    <text class="d-sub" x="${coreCX}" y="${coreCY+14}" text-anchor="middle">${cfg.coreSub||""}</text>`;
+
+  lefts.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${b.x+b.w} ${b.cy} L${coreX-2} ${coreCY}" marker-end="url(#m-${uid})"/>`;
+  });
+  rights.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${coreX+coreW+2} ${coreCY} L${b.x} ${b.cy}" marker-end="url(#m-${uid})"/>`;
+  });
+
+  svg += `</svg>`;
+  return svg;
+}
+
+function renderServicePanels() {
+  const host = document.getElementById("service-panels");
+  const html = [];
+  Object.keys(DATA).forEach(groupKey => {
+    DATA[groupKey].forEach(item => {
+      html.push(`
+        <section class="topic-panel" id="${item.slug}" hidden>
+          <div class="panel-kicker">${GROUP_LABEL[groupKey]}</div>
+          <div class="panel-head">
+            <div class="panel-icon">${item.icon}</div>
+            <div>
+              <div class="svc-name-row"><h2>${String(item.n).padStart(2,"0")} · ${item.name}</h2><span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span></div>
+              <p class="panel-tagline">${item.what} — ${item.use}</p>
+            </div>
+          </div>
+          <p class="svc-desc" style="margin-top:20px;">${item.desc}</p>
+
+          <div class="use-callout">
+            <b class="callout-title">Where &amp; when to use it</b>
+            ${item.useWhen}
+          </div>
+
+          <div class="diagram-box">
+            <div class="d-chrome">Diagram · ${item.name}</div>
+            <div class="d-body">${svcDiagramSVG(item)}</div>
+            <p class="d-caption">${item.diagram.caption}</p>
+          </div>
+
+          <h3 class="subhead">How to implement it</h3>
+          <ol class="steps-list">${item.steps.map(s => `<li>${s}</li>`).join("")}</ol>
+
+          <div class="svc-learn">
+            <div class="flabel">What you should learn</div>
+            <div class="tag-list">${item.learn.split(",").map(t => `<span class="tag">${t.trim()}</span>`).join("")}</div>
+          </div>
+
+          <div class="svc-foot">
+            <a class="back-home" style="margin:0;" href="#overview">← All topics</a>
+            <a class="doc-link" href="${item.docUrl}" target="_blank" rel="noopener">${item.docName} →</a>
+          </div>
+        </section>
+      `);
+    });
+  });
+  host.innerHTML = html.join("");
+}
+
+function renderSidebarNav() {
+  Object.keys(DATA).forEach(groupKey => {
+    const group = document.getElementById(`nav-group-${groupKey}`);
+    const links = DATA[groupKey].map(item =>
+      `<a class="nav-link" href="#${item.slug}"><span class="nav-icon">${item.icon}</span> ${item.name}</a>`
+    ).join("");
+    group.insertAdjacentHTML("beforeend", links);
+  });
+}
+
+function renderServiceIndex() {
+  const host = document.getElementById("svc-index");
+  const html = Object.keys(DATA).map(groupKey => `
+    <div class="svc-index-group">
+      <h4>${GROUP_LABEL[groupKey]}</h4>
+      ${DATA[groupKey].map(item => `
+        <a class="svc-index-item" href="#${item.slug}">
+          <span class="svc-index-icon">${item.icon}</span>
+          <span class="svc-index-text"><div class="n">${item.name}</div><div class="t">${item.what} — ${item.use}</div></span>
+          <span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span>
+        </a>
+      `).join("")}
+    </div>
+  `).join("");
+  host.innerHTML = html;
+}
+
+/* ---------- Router: show exactly one topic panel at a time ---------- */
+function showTopic(id) {
+  document.querySelectorAll(".topic-panel").forEach(p => { p.hidden = (p.id !== id); });
+  document.querySelectorAll(".nav-link").forEach(a => {
+    a.classList.toggle("active", a.getAttribute("href") === "#" + id);
+  });
+  window.scrollTo(0, 0);
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("sidebarScrim").classList.remove("show");
+}
+
+function routeFromHash() {
+  const id = (location.hash || "#overview").slice(1);
+  showTopic(document.getElementById(id) ? id : "overview");
+}
+
+renderServicePanels();
+renderSidebarNav();
+renderServiceIndex();
+window.addEventListener("hashchange", routeFromHash);
+routeFromHash();
+
+/* ---------- Mobile sidebar toggle ---------- */
+const menuBtn = document.getElementById("menuBtn");
+const sidebarEl = document.getElementById("sidebar");
+const scrimEl = document.getElementById("sidebarScrim");
+if (menuBtn) {
+  menuBtn.addEventListener("click", () => {
+    sidebarEl.classList.toggle("open");
+    scrimEl.classList.toggle("show");
+  });
+}
+scrimEl.addEventListener("click", () => {
+  sidebarEl.classList.remove("open");
+  scrimEl.classList.remove("show");
+});
+
+/* ---------- Summary + references (unchanged data) ---------- */
+const sequence = ["Connecting to MongoDB","Schemas & Models","CRUD Operations","Validation","Middleware (Hooks)","Population","Virtuals","Query Helpers & Indexes"];
+document.getElementById("sequence-flow").innerHTML = sequence.map(s => `<span class="seq-step">${s}</span>`).join('<span class="seq-arrow">→</span>');
+
+const docLinks = [
+  ["Connecting to MongoDB","https://mongoosejs.com/docs/connections.html"],
+  ["Schemas & Models","https://mongoosejs.com/docs/guide.html"],
+  ["CRUD Operations","https://mongoosejs.com/docs/queries.html"],
+  ["Validation","https://mongoosejs.com/docs/validation.html"],
+  ["Middleware (Hooks)","https://mongoosejs.com/docs/middleware.html"],
+  ["Population","https://mongoosejs.com/docs/populate.html"],
+  ["Virtuals","https://mongoosejs.com/docs/guide.html#virtuals"],
+  ["Query Helpers & Indexes","https://mongoosejs.com/docs/guide.html#indexes"],
+];
+document.getElementById("doc-links").innerHTML = docLinks.map(([n,u]) => `<div><b>${n}</b><br>${u}</div>`).join("");
+</script>
+
+</body>
+</html>

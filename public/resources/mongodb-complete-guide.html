@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MongoDB — Complete Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS ============ */
+  :root {
+    --bg: #f2f7f4;
+    --surface: #ffffff;
+    --surface-2: #eaf3ea;
+    --surface-3: #dbe9dc;
+    --border: #d7e6d8;
+    --ink: #0d1f14;
+    --ink-soft: #46594c;
+    --ink-faint: #7c9184;
+    --navy: #0B2A16;
+    --navy-2: #103a1e;
+    --amber: #47A248;
+    --amber-strong: #3A8A3A;
+    --amber-tint: rgba(71, 162, 72, 0.12);
+    --link: #1d5fa8;
+    --danger: #b8402b;
+    --danger-bg: rgba(184, 64, 43, 0.10);
+    --warn: #9c6a0a;
+    --warn-bg: rgba(156, 106, 10, 0.12);
+    --calm: #1f7a5c;
+    --calm-bg: rgba(31, 122, 92, 0.12);
+    --focus-ring: #47A248;
+    --shadow: 0 12px 32px rgba(13, 27, 46, 0.10);
+    --shadow-lg: 0 24px 64px rgba(13, 27, 46, 0.28);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #081a0e;
+      --surface: #0f2416;
+      --surface-2: #15301c;
+      --surface-3: #1c3d24;
+      --border: #234a2a;
+      --ink: #eaf5ec;
+      --ink-soft: #a9c4ae;
+      --ink-faint: #74907a;
+      --navy: #123822;
+      --navy-2: #1c4a2c;
+      --amber: #6FCB74;
+      --amber-strong: #8EDB92;
+      --amber-tint: rgba(111, 203, 116, 0.14);
+      --link: #7fb3f5;
+      --danger: #ff8a71;
+      --danger-bg: rgba(255, 138, 113, 0.14);
+      --warn: #ffc766;
+      --warn-bg: rgba(255, 199, 102, 0.14);
+      --calm: #5cdcb0;
+      --calm-bg: rgba(92, 220, 176, 0.14);
+      --focus-ring: #6FCB74;
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #081a0e;
+    --surface: #0f2416;
+    --surface-2: #15301c;
+    --surface-3: #1c3d24;
+    --border: #234a2a;
+    --ink: #eaf5ec;
+    --ink-soft: #a9c4ae;
+    --ink-faint: #74907a;
+    --navy: #123822;
+    --navy-2: #1c4a2c;
+    --amber: #6FCB74;
+    --amber-strong: #8EDB92;
+    --amber-tint: rgba(111, 203, 116, 0.14);
+    --link: #7fb3f5;
+    --danger: #ff8a71;
+    --danger-bg: rgba(255, 138, 113, 0.14);
+    --warn: #ffc766;
+    --warn-bg: rgba(255, 199, 102, 0.14);
+    --calm: #5cdcb0;
+    --calm-bg: rgba(92, 220, 176, 0.14);
+    --focus-ring: #6FCB74;
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  h1, h2, h3 { font-family: "IBM Plex Mono", ui-monospace, monospace; text-wrap: balance; margin: 0; }
+  a { color: var(--link); }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  ::selection { background: var(--amber-tint); }
+
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* ============ MOBILE TOPBAR ============ */
+  .topbar {
+    display: none;
+    position: sticky; top: 0; z-index: 40;
+    align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar .brand { font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 14px; }
+  .topbar .brand span { color: var(--amber); }
+  .menu-btn {
+    width: 36px; height: 36px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--ink);
+    font-size: 16px; cursor: pointer; text-decoration: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sidebar-scrim { display: none; position: fixed; inset: 0; background: rgba(5,11,20,0.5); z-index: 45; }
+  .sidebar-scrim.show { display: block; }
+
+  /* ============ SHELL / SIDEBAR ============ */
+  .shell { display: flex; align-items: flex-start; max-width: 1360px; margin: 0 auto; }
+  .sidebar {
+    position: sticky; top: 0;
+    width: 280px; flex-shrink: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 22px 16px 60px;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+    scrollbar-width: thin;
+  }
+  .sidebar .brand {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 800;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 8px 16px;
+  }
+  .sidebar .brand span { color: var(--amber); }
+  .back-home {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 8px 18px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 600;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+  }
+  .back-home:hover { color: var(--ink); background: var(--amber-tint); border-color: var(--amber); }
+  .nav-group { margin-bottom: 4px; }
+  .nav-group-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    padding: 14px 8px 6px;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+    margin: 1px 0;
+    border-radius: 7px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 13px;
+    border-left: 2px solid transparent;
+  }
+  .nav-link:hover { background: var(--surface-2); color: var(--ink); }
+  .nav-link.active {
+    background: var(--amber-tint);
+    color: var(--ink);
+    font-weight: 600;
+    border-left: 2px solid var(--amber);
+  }
+  .nav-icon { flex-shrink: 0; width: 18px; text-align: center; font-size: 13px; }
+
+  .content { flex: 1; min-width: 0; padding: 40px 32px 90px; }
+  .topic-panel[hidden] { display: none; }
+
+  @media (max-width: 920px) {
+    .topbar { display: flex; }
+    .sidebar {
+      position: fixed; inset: 0 auto 0 0;
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+      z-index: 50;
+      width: 82vw;
+      max-width: 300px;
+      box-shadow: var(--shadow-lg);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .content { padding: 28px 18px 100px; }
+  }
+
+  /* ============ PANEL HERO (Overview only) ============ */
+  .panel-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    background: linear-gradient(150deg, #061a0d 0%, #0d2b17 55%, #0a2412 100%);
+    color: #eef8f1;
+    padding: 40px 32px;
+    margin-bottom: 30px;
+  }
+  .panel-hero::before {
+    content: "";
+    position: absolute;
+    top: -120px; right: -90px;
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(71,162,72,0.30), rgba(71,162,72,0) 70%);
+    pointer-events: none;
+  }
+  .panel-hero .eyebrow {
+    position: relative;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #8fe39a;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel-hero .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #8fe39a; display: inline-block; }
+  .panel-hero h1 { position: relative; margin-top: 14px; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.2; font-weight: 700; color: #fff; }
+  .panel-hero h1 em { font-style: normal; color: #8fe39a; }
+  .panel-hero p.lede { position: relative; margin-top: 12px; font-size: 15px; color: #c8ddcb; max-width: 68ch; font-family: "IBM Plex Sans", sans-serif; line-height: 1.75; }
+  .panel-hero .stat-chips { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .stat-chip {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    border: 1px solid rgba(255,255,255,0.22);
+    color: #dbe9dd;
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+  .stat-chip b { color: #fff; }
+
+  section.topic-panel h1.section-title { font-size: 22px; margin-bottom: 14px; }
+  .lede-plain { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 82ch; margin: 0 0 16px; }
+  .lede-plain b { color: var(--ink); }
+
+  /* ============ DIAGRAM BOX ============ */
+  .diagram-box {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    margin: 0 0 24px;
+  }
+  .diagram-box .d-chrome {
+    background: var(--navy);
+    color: #eef3fb;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 11px 16px;
+  }
+  .diagram-box .d-body { padding: 22px 18px 6px; overflow-x: auto; }
+  .diagram-box .d-body svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+  .diagram-box .d-caption {
+    padding: 6px 20px 20px;
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 88ch;
+  }
+  .diagram-box .d-caption code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; color: var(--ink); }
+  .diagram-box .d-caption b { color: var(--ink); }
+
+  /* shared SVG node styles, reused by every diagram */
+  svg .d-node { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
+  svg .d-node-accent { fill: var(--amber-tint); stroke: var(--amber); stroke-width: 1.5; }
+  svg .d-node-navy { fill: var(--navy); stroke: var(--navy); }
+  svg .d-title { fill: var(--ink); font: 700 13.5px "IBM Plex Sans", sans-serif; }
+  svg .d-title-light { fill: #ffffff; font: 700 12.5px "IBM Plex Mono", monospace; }
+  svg .d-sub { fill: var(--ink-faint); font: 600 10px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-sub-light { fill: #b9dfc0; font: 600 9.5px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-text { fill: var(--ink-soft); font: 500 11px "IBM Plex Mono", monospace; }
+  svg .d-arrow { fill: none; stroke: var(--ink-faint); stroke-width: 2; }
+  svg .d-arrow-accent { fill: none; stroke: var(--amber); stroke-width: 2.25; }
+  svg .d-label { fill: var(--ink-soft); font: 600 11px "IBM Plex Sans", sans-serif; }
+  svg .d-label-accent { fill: var(--amber-strong); font: 700 11px "IBM Plex Sans", sans-serif; }
+  svg .d-boundary { fill: none; stroke: var(--link); stroke-width: 1.5; stroke-dasharray: 6 4; }
+  svg .d-boundary-label { fill: var(--link); font: 700 10.5px "IBM Plex Mono", monospace; letter-spacing: 0.05em; }
+
+  /* ============ TOPIC PANEL ============ */
+  .panel-kicker {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 10px;
+  }
+  .panel-head { display: flex; gap: 16px; align-items: flex-start; }
+  .panel-icon {
+    flex-shrink: 0;
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    background: var(--navy);
+    color: var(--amber-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+  }
+  .svc-name-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .svc-name-row h2 { font-size: 21px; color: var(--ink); }
+  .panel-tagline { margin: 6px 0 0; font-size: 13.5px; color: var(--ink-faint); font-family: "IBM Plex Sans", sans-serif; }
+  .svc-desc { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 84ch; }
+
+  .use-callout {
+    margin: 22px 0;
+    padding: 16px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--link);
+    background: var(--surface-2);
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 84ch;
+  }
+  .use-callout b { color: var(--ink); }
+  .callout-title {
+    display: block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--link);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  h3.subhead { font-size: 15px; margin: 28px 0 6px; color: var(--ink); }
+
+  .steps-list {
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 84ch;
+  }
+  .steps-list li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .steps-list li::before {
+    counter-increment: step;
+    content: counter(step);
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--amber-strong);
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+    font-size: 11.5px;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .steps-list li b { color: var(--ink); }
+  .steps-list li code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+
+  .svc-learn { margin-top: 26px; }
+  .flabel {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--ink-soft);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .svc-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    max-width: 84ch;
+  }
+  .doc-link {
+    font-size: 12.5px;
+    color: var(--link);
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .doc-link:hover { text-decoration: underline; }
+  .badge {
+    display: inline-block;
+    font-family: "IBM Plex Mono", monospace;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+  }
+  .badge-must { background: var(--danger-bg); color: var(--danger); }
+  .badge-important { background: var(--warn-bg); color: var(--warn); }
+  .badge-level { background: var(--calm-bg); color: var(--calm); }
+
+  /* ============ OVERVIEW TOPIC INDEX ============ */
+  .svc-index-group { margin-bottom: 22px; }
+  .svc-index-group h4 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    font-family: "IBM Plex Mono", monospace;
+    margin-bottom: 10px;
+  }
+  .svc-index-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    text-decoration: none;
+    color: var(--ink);
+    margin-bottom: 6px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .svc-index-item:hover { border-color: var(--amber); background: var(--amber-tint); }
+  .svc-index-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--navy);
+    color: var(--amber-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .svc-index-text { flex: 1; min-width: 0; }
+  .svc-index-text .n { font-weight: 700; font-size: 13.5px; }
+  .svc-index-text .t { font-size: 11.5px; color: var(--ink-faint); }
+
+  /* ============ SUMMARY CARDS ============ */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--amber);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+  }
+  .card h3 { font-size: 14px; color: var(--ink); margin-bottom: 12px; }
+  .card p.card-note { margin: 0 0 14px; font-size: 13px; color: var(--ink-soft); font-family: "IBM Plex Sans", sans-serif; line-height: 1.7; }
+  .seq-flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; }
+  .seq-step {
+    font-family: "IBM Plex Mono", monospace;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  .seq-arrow { color: var(--amber); font-weight: 700; }
+
+  .priority-levels { display: flex; flex-direction: column; gap: 12px; }
+  .plevel { display: flex; gap: 12px; align-items: flex-start; }
+  .plevel .lvl-tag {
+    font-family: "IBM Plex Mono", monospace;
+    flex-shrink: 0;
+    width: 72px;
+    padding: 5px 0;
+    text-align: center;
+    border-radius: 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .lvl-1 { background: var(--danger); }
+  .lvl-2 { background: var(--warn); color: #221600; }
+  .lvl-3 { background: var(--ink-faint); }
+  .plevel .lvl-items { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+
+  .doc-links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 8px 20px;
+    font-size: 12px;
+  }
+  .doc-links-grid div { color: var(--ink-soft); overflow-wrap: break-word; }
+  .doc-links-grid b { color: var(--ink); font-family: "IBM Plex Mono", monospace; font-size: 11.5px; }
+
+  /* ============ FOOTER ============ */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 28px 48px;
+    text-align: center;
+  }
+  footer .label {
+    font-family: "IBM Plex Mono", monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 10px;
+    color: var(--amber);
+    font-weight: 700;
+  }
+  footer .name { font-size: 18px; font-weight: 700; margin-top: 6px; }
+  footer .role { font-size: 12.5px; color: var(--ink-soft); margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="Open navigation">☰</button>
+  <div class="brand">MDB<span>::</span>DOCS</div>
+  <a class="menu-btn" href="../" aria-label="Back to Portfolio">⌂</a>
+</div>
+<div class="sidebar-scrim" id="sidebarScrim"></div>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">MDB<span>::</span>DOCS</div>
+    <a class="back-home" href="../">← Back to Portfolio</a>
+
+    <div class="nav-group">
+      <a class="nav-link" href="#overview"><span class="nav-icon">🏠</span> Overview</a>
+    </div>
+
+    <div class="nav-group" id="nav-phase-1">
+      <div class="nav-group-label">Core Topics</div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Reference</div>
+      <a class="nav-link" href="#summary"><span class="nav-icon">📐</span> Summary &amp; Order</a>
+      <a class="nav-link" href="#references"><span class="nav-icon">📄</span> Doc Links</a>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <section class="topic-panel" id="overview">
+      <div class="panel-hero">
+        <div class="eyebrow">Document-Oriented NoSQL</div>
+        <h1>MongoDB <em>Complete Guide</em></h1>
+        <p class="lede">MongoDB is a document-oriented NoSQL database — instead of rows in rigid, predefined tables, it stores flexible, JSON-like documents (encoded as BSON) inside collections, and two documents in the same collection don't have to share the same fields. That flexibility makes it a natural fit for applications with rapidly evolving schemas, deeply nested or object-shaped data, and read-heavy workloads where denormalizing a bit of duplicate data is cheaper than a join. This doc walks through the 9 concepts a backend engineer actually needs — from the document model itself through querying, aggregation, and indexing, up to the operational concerns (replication, sharding, transactions) that come with running MongoDB in production — each with a diagram, a "where to use it" guide, and concrete implementation steps.</p>
+        <div class="stat-chips">
+          <span class="stat-chip"><b>9</b> topics</span>
+          <span class="stat-chip"><b>9</b> diagrams</span>
+          <span class="stat-chip"><b>2</b> core priority levels</span>
+        </div>
+      </div>
+
+      <p class="lede-plain">Use the sidebar to jump straight to any topic — each one opens its own page with a full explanation, a diagram of exactly how it fits with the concepts around it, and the concrete steps to actually use it. If you're starting from zero, work through <b>Documents &amp; Collections</b> and <b>CRUD Operations</b> first: everything else on this guide — querying, aggregating, indexing, scaling — is built on top of that basic document model.</p>
+
+      <div class="diagram-box">
+        <div class="d-chrome">Diagram · How MongoDB Stores Your Data</div>
+        <div class="d-body">
+          <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="An app connects through a driver to a MongoDB server, which organizes data into a collection made of documents, sped up by indexes, with a sample document's fields shown below">
+            <defs>
+              <marker id="ovArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+            </defs>
+
+            <rect class="d-node" x="20" y="40" width="120" height="60" rx="30" />
+            <text class="d-title" x="80" y="66" text-anchor="middle">App</text>
+            <text class="d-sub" x="80" y="82" text-anchor="middle">your code</text>
+            <path class="d-arrow" d="M140 70 L168 70" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node" x="170" y="40" width="120" height="60" rx="10" />
+            <text class="d-title" x="188" y="66">Driver</text>
+            <text class="d-sub" x="188" y="82">Mongoose / PyMongo</text>
+            <path class="d-arrow" d="M290 70 L318 70" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node-accent" x="320" y="35" width="180" height="70" rx="10" />
+            <text class="d-title" x="338" y="64">MongoDB Server</text>
+            <text class="d-sub" x="338" y="82">mongod process</text>
+            <path class="d-arrow" d="M500 70 L528 70" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node-accent" x="530" y="40" width="160" height="60" rx="10" />
+            <text class="d-title" x="548" y="66">Collection</text>
+            <text class="d-sub" x="548" y="82">e.g. db.users</text>
+            <path class="d-arrow" d="M690 55 L 718 30" marker-end="url(#ovArrow)" />
+            <path class="d-arrow" d="M690 85 L 718 140" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node" x="720" y="10" width="160" height="45" rx="8" />
+            <text class="d-title" x="736" y="37">Documents</text>
+            <rect class="d-node" x="720" y="115" width="160" height="45" rx="8" />
+            <text class="d-title" x="736" y="142">Indexes</text>
+
+            <path class="d-boundary" d="M610 100 L 610 205" />
+            <text class="d-boundary-label" x="235" y="205">SAMPLE DOCUMENT — WHAT ACTUALLY GETS STORED</text>
+
+            <g>
+              <rect class="d-node" x="22" y="222" width="90" height="36" rx="8" /><text class="d-text" x="67" y="244" text-anchor="middle">_id</text>
+              <rect class="d-node" x="120" y="222" width="90" height="36" rx="8" /><text class="d-text" x="165" y="244" text-anchor="middle">name</text>
+              <rect class="d-node" x="218" y="222" width="110" height="36" rx="8" /><text class="d-text" x="273" y="244" text-anchor="middle">email</text>
+              <rect class="d-node" x="336" y="222" width="140" height="36" rx="8" /><text class="d-text" x="406" y="244" text-anchor="middle">address {…}</text>
+              <rect class="d-node" x="484" y="222" width="110" height="36" rx="8" /><text class="d-text" x="539" y="244" text-anchor="middle">tags [ ]</text>
+              <rect class="d-node" x="602" y="222" width="130" height="36" rx="8" /><text class="d-text" x="667" y="244" text-anchor="middle">createdAt</text>
+            </g>
+          </svg>
+        </div>
+        <p class="d-caption">The app talks to MongoDB through a driver (or an ORM-like layer such as Mongoose), which sends operations to the server. The server organizes data into collections made of individual documents — each one a flexible bag of fields like the sample below — and an index sits alongside the collection purely to make lookups on those fields fast.</p>
+      </div>
+
+      <h3 class="subhead" style="margin-top:8px;">All 9 topics in this guide</h3>
+      <div id="svc-index"></div>
+    </section>
+
+    <!-- 9 topic panels are injected here by renderServicePanels() -->
+    <div id="service-panels"></div>
+
+    <section class="topic-panel" id="summary">
+      <h1 class="section-title">Summary &amp; Recommended Learning Order</h1>
+      <p class="lede-plain">Once the individual concepts make sense on their own, these references tie them together: the order to learn them in, how urgently each one matters, and the single schema-design decision worth internalizing above all others.</p>
+
+      <div class="card">
+        <h3>Recommended Learning Order</h3>
+        <div class="seq-flow" id="sequence-flow"></div>
+      </div>
+
+      <div class="card">
+        <h3>Recommended Priority</h3>
+        <div class="priority-levels">
+          <div class="plevel"><div class="lvl-tag lvl-1">CORE</div><div class="lvl-items">Documents &amp; Collections, CRUD Operations, Schema Design, Indexes — nothing else on this guide makes sense without these four.</div></div>
+          <div class="plevel"><div class="lvl-tag lvl-2">IMPORTANT</div><div class="lvl-items">Query Operators, Aggregation Pipeline — needed the moment your queries get more specific than an exact match, or your reports need real numbers.</div></div>
+          <div class="plevel"><div class="lvl-tag lvl-3">OPERATIONAL</div><div class="lvl-items">Replication, Sharding, Transactions — the concerns that show up once MongoDB is running in production at real scale.</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Key Schema-Design Pattern — Embedding vs. Referencing</h3>
+        <p class="card-note">The single most useful decision on this whole guide: whether related data lives inside the same document, or in a separate one linked by id.</p>
+        <div class="diagram-box" style="margin-bottom:0; box-shadow:none;">
+          <div class="d-chrome">Diagram · Embedding vs. Referencing</div>
+          <div class="d-body">
+            <svg viewBox="0 0 780 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Embedding stores related data inside the same document for a single read; referencing stores it in a separate collection linked by id, requiring a second lookup">
+              <defs>
+                <marker id="patArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+                <marker id="patArrowAccent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)" /></marker>
+              </defs>
+
+              <line class="d-boundary" x1="360" y1="20" x2="360" y2="280" />
+              <text class="d-boundary-label" x="170" y="36" text-anchor="middle">EMBEDDING</text>
+              <text class="d-boundary-label" x="570" y="36" text-anchor="middle">REFERENCING</text>
+
+              <rect class="d-node" x="20" y="110" width="120" height="60" rx="10" />
+              <text class="d-title" x="38" y="138">Order</text>
+              <text class="d-sub" x="38" y="154">top-level document</text>
+              <path class="d-arrow-accent" d="M140 140 L 178 140" marker-end="url(#patArrowAccent)" />
+              <text class="d-label-accent" x="70" y="100">① one document, one read</text>
+
+              <rect class="d-node-accent" x="180" y="105" width="150" height="70" rx="10" />
+              <text class="d-title" x="198" y="133">Address</text>
+              <text class="d-sub" x="198" y="151">embedded subdocument</text>
+
+              <rect class="d-node" x="400" y="110" width="120" height="60" rx="10" />
+              <text class="d-title" x="418" y="138">Order</text>
+              <text class="d-sub" x="418" y="154">customerId: 42</text>
+              <path class="d-arrow" d="M520 140 L 558 140" marker-end="url(#patArrow)" />
+              <text class="d-label" x="524" y="130">② second query</text>
+
+              <rect class="d-node" x="560" y="105" width="150" height="70" rx="10" />
+              <text class="d-title" x="578" y="133">Customer</text>
+              <text class="d-sub" x="578" y="151">separate collection</text>
+            </svg>
+          </div>
+          <p class="d-caption">Embedding puts the related data inside the same document, so one read returns everything (<b>①</b>) — ideal when the data is small and always used together, like a shipping address on an order. Referencing stores it in a separate collection and links by id, trading a second query (<b>②</b>) for the ability to update or share that data independently, like a customer record shared across many orders.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic-panel" id="references">
+      <h1 class="section-title">Official Documentation Reference URLs</h1>
+      <p class="lede-plain">Every topic covered in this guide, with a direct link to its official docs.</p>
+      <div class="card">
+        <div class="doc-links-grid" id="doc-links"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="label">Documented By</div>
+  <div class="name">MD Eesha</div>
+  <div class="role">Sr. Software Engineer</div>
+</footer>
+
+<script>
+const PRIORITY_LABEL = {
+  must: "Must",
+  important: "Important",
+};
+const PRIORITY_CLASS = {
+  must: "badge-must",
+  important: "badge-important",
+};
+const PHASE_LABEL = {
+  1: "MongoDB Core Concepts",
+};
+
+const DATA = {
+  1: [
+    { n:1, slug:"topic-documents", name:"Documents &amp; Collections", icon:"🍃", what:"Core data model", use:"Store flexible, JSON-like records", learn:"BSON, _id field, embedded documents, arrays, dynamic schema, collections", priority:"must", docName:"MongoDB Manual — Documents", docUrl:"https://www.mongodb.com/docs/manual/core/document/",
+      desc:"A MongoDB document is the basic unit of data — a set of key-value pairs stored internally as BSON, a binary superset of JSON that adds types like dates and binary data. Every document lives inside a collection, MongoDB's loose equivalent of a table, but unlike a table's rigid columns, two documents in the same collection can have completely different fields. Every document gets a unique <code>_id</code> field automatically if you don't supply one, which acts as its primary key. Fields can hold nested documents and arrays directly, so a single document can represent an entire object graph — a blog post with its comments embedded, for example — without a join.",
+      useWhen:"Reach for a document model whenever your data naturally looks like an object your application already works with — a user profile, a product listing, an order. It shines when the shape of that object varies between records or evolves over time, since there's no schema migration required to add a field to new documents.",
+      steps:["Connect to a MongoDB instance and select (or implicitly create) a database.","Create a collection explicitly if you need options like validation, or let MongoDB create it on first insert: <code>db.createCollection(\"users\")</code>.","Insert a document and note the auto-generated <code>_id</code>: <code>db.users.insertOne({ name: \"Ada\", email: \"ada@example.com\" })</code>.","Nest related data directly inside the document instead of a separate table, e.g. <code>{ name: \"Ada\", address: { city: \"London\" } }</code>.","Use arrays for one-to-many data that belongs to the parent, like tags or line items.","Inspect the document's real shape with <code>db.users.findOne()</code> to confirm it matches what your app expects."],
+      diagram:{ left:[{name:"Collection",sub:"holds many docs"}], right:[{name:"Embedded Doc",sub:"nested object"},{name:"Array Field",sub:"multi-valued"}], top:{name:"_id",sub:"auto primary key"}, coreSub:"BSON key-value pairs",
+        caption:"Every document gets an _id automatically; nested documents and arrays let a single document hold what would otherwise need several joined tables." } },
+    { n:2, slug:"topic-crud", name:"CRUD Operations", icon:"✏️", what:"Create, read, update, delete", use:"The everyday operations every app runs", learn:"insertOne/insertMany, find/findOne, updateOne/updateMany, $set/$inc, upsert, deleteOne/deleteMany", priority:"must", docName:"MongoDB Manual — CRUD", docUrl:"https://www.mongodb.com/docs/manual/crud/",
+      desc:"CRUD — create, read, update, delete — is how every application talks to MongoDB day to day, through a driver (Node's official driver, Mongoose, PyMongo, etc.) or the mongo shell. Inserts write one document with <code>insertOne</code> or many at once with <code>insertMany</code>. Reads use <code>find</code> with a query filter to return a cursor of matching documents, or <code>findOne</code> for a single result. Updates use operators like <code>$set</code> and <code>$inc</code> to modify specific fields without rewriting the whole document, and an upsert inserts a new document automatically if the filter matches nothing.",
+      useWhen:"These five operations are the ones you'll write the most code against, full stop — every feature in a MongoDB-backed app eventually boils down to a find, an insert, an update, or a delete, often composed together in a single request handler.",
+      steps:["Insert a new document: <code>db.orders.insertOne({ customerId: 42, total: 89.5, status: \"pending\" })</code>.","Query for matching documents with a filter: <code>db.orders.find({ status: \"pending\" })</code>.","Update specific fields without touching the rest of the document: <code>db.orders.updateOne({ _id: id }, { $set: { status: \"shipped\" } })</code>.","Use <code>upsert: true</code> when you want to insert if nothing matches, instead of checking first and inserting separately.","Delete documents that match a filter: <code>db.orders.deleteOne({ _id: id })</code>.","Batch multiple writes into one round trip with <code>bulkWrite()</code> when updating many documents at once."],
+      diagram:{ left:[{name:"App / Mongoose",sub:"issues operation"}], right:[{name:"Collection",sub:"documents affected"}], bottom:{name:"Write / Read Concern",sub:"durability & consistency"}, coreSub:"driver operations", coreLabel:"CRUD",
+        caption:"Every CRUD call from the driver becomes a single operation against a collection, with write/read concern controlling how durable or consistent that operation needs to be." } },
+    { n:3, slug:"topic-schema", name:"Schema Design", icon:"🧬", what:"Modeling your data", use:"Decide how documents relate to each other", learn:"embedding, referencing, one-to-few/many, denormalization, unbounded arrays, schema versioning", priority:"must", docName:"MongoDB Manual — Data Modeling", docUrl:"https://www.mongodb.com/docs/manual/core/data-modeling-introduction/",
+      desc:"Unlike a relational database, MongoDB doesn't force a schema on you upfront — which means schema design becomes a deliberate choice you make per relationship, not something handed to you before you write a line of code. The central decision is embedding versus referencing: embed related data directly inside a document when it's always read together and doesn't grow unbounded, or reference it by id in a separate collection when it's large, shared across many parents, or updated independently. Denormalizing — duplicating a bit of data to avoid a second query — is often the right tradeoff in MongoDB, where reads matter more than eliminating redundancy. Schema versioning (a <code>schemaVersion</code> field per document) lets you evolve the shape of your data gradually instead of migrating every document at once.",
+      useWhen:"Design the schema around your application's actual read and write patterns, not around normalized theory — model the data the way your code will query it, and only split into a separate collection when a piece of data is genuinely shared, unbounded, or needs to change independently of its parent.",
+      steps:["List the queries your application actually runs before designing any collection — schema follows access patterns in MongoDB, not the reverse.","Embed data that's always fetched with its parent and won't grow without bound, like a shipping address on an order.","Reference data with a foreign-key-style field (e.g. <code>customerId</code>) when it's shared across many documents or updated independently.","Watch for unbounded arrays (like an ever-growing comments array) — they cause documents to outgrow storage and degrade performance.","Add a <code>schemaVersion</code> field so you can evolve the document shape over time without a big-bang migration.","Revisit the design once real query patterns and volumes are known — the first schema rarely survives production traffic unchanged."],
+      diagram:{ left:[{name:"Embed",sub:"one-to-few, read together"}], right:[{name:"Reference",sub:"shared / unbounded data"}], coreSub:"embed vs. reference", coreLabel:"Schema Design",
+        caption:"The same relationship can be modeled either way; the right choice depends on whether the related data is small, private to its parent, and always read together." } },
+    { n:4, slug:"topic-query-operators", name:"Query Operators", icon:"🔎", what:"Expressive filters", use:"Match documents on more than exact equality", learn:"$eq/$gt/$in, $and/$or/$not, $exists/$type, $regex, $elemMatch, explain()", priority:"important", docName:"MongoDB Manual — Query Operators", docUrl:"https://www.mongodb.com/docs/manual/reference/operator/query/",
+      desc:"Query operators are how you express anything more specific than an exact-match filter in MongoDB. Comparison operators like <code>$gt</code>, <code>$lte</code>, and <code>$in</code> filter on ranges or sets of values; logical operators like <code>$and</code>, <code>$or</code>, and <code>$not</code> combine multiple conditions. Element operators such as <code>$exists</code> and <code>$type</code> check whether a field is present or of a certain type — useful given documents in the same collection can differ in shape. Array-specific operators like <code>$elemMatch</code> and <code>$all</code> let you query based on the contents of an array field, matching against individual elements or requiring multiple values to all be present.",
+      useWhen:"Use query operators the moment a filter needs to express more than 'this field equals this exact value' — a price range, a status that's one of several values, a field that may or may not exist, or a condition on an item inside an array.",
+      steps:["Filter by a range using comparison operators: <code>db.products.find({ price: { $gte: 10, $lte: 50 } })</code>.","Match against a set of possible values: <code>db.products.find({ category: { $in: [\"books\", \"games\"] } })</code>.","Combine multiple conditions explicitly with <code>$and</code>/<code>$or</code> when the implicit AND of a flat filter object isn't enough.","Check for the presence of an optional field: <code>db.users.find({ phone: { $exists: true } })</code>.","Query inside an array with <code>$elemMatch</code> when a single array element needs to satisfy multiple conditions at once.","Use <code>explain(\"executionStats\")</code> to confirm the query is actually using an index and not scanning the whole collection."],
+      diagram:{ left:[{name:"Collection",sub:"all documents"}], right:[{name:"Matching Docs",sub:"pass the filter"}], bottom:{name:"Index",sub:"speeds up evaluation"}, coreSub:"operators narrow the match", coreLabel:"Query Filter",
+        caption:"Operators narrow a full collection down to the documents that satisfy the filter; an index on the filtered fields is what keeps that narrowing fast." } },
+    { n:5, slug:"topic-aggregation", name:"Aggregation Pipeline", icon:"🔀", what:"Multi-stage data processing", use:"Build reports, totals, and joined views", learn:"$match, $group, $project, $sort, $lookup, $unwind, pipeline stages", priority:"important", docName:"MongoDB Manual — Aggregation Pipeline", docUrl:"https://www.mongodb.com/docs/manual/core/aggregation-pipeline/",
+      desc:"The aggregation pipeline processes documents through a sequence of stages, each one taking the previous stage's output as its input — similar in spirit to piping commands together in a shell. <code>$match</code> filters documents early (ideally using an index, just like a normal query), <code>$group</code> buckets documents by a key and computes accumulations like sums or averages, <code>$project</code> reshapes the output, and <code>$sort</code>/<code>$limit</code> control ordering and pagination. <code>$lookup</code> performs a left outer join against another collection, and <code>$unwind</code> flattens an array field into one document per element so it can be aggregated individually. It's the tool for anything more analytical than a plain CRUD query — totals, breakdowns, joined reports.",
+      useWhen:"Reach for the aggregation pipeline whenever a report or dashboard needs numbers that don't exist on any single document — revenue per customer, order counts per day, or a join across two collections that a simple find() can't express.",
+      steps:["Start with <code>$match</code> as the first stage to filter down to relevant documents using an index, before any heavier work.","Use <code>$group</code> to bucket by a key and accumulate: <code>{ $group: { _id: \"$customerId\", total: { $sum: \"$amount\" } } }</code>.","Reshape the output fields with <code>$project</code> to include only what the caller needs.","Join in related data from another collection with <code>$lookup</code> when the report needs fields that live elsewhere.","Flatten an array field with <code>$unwind</code> before grouping on its individual elements.","Sort and paginate the final result with <code>$sort</code> followed by <code>$skip</code>/<code>$limit</code>."],
+      diagram:{ left:[{name:"Collection",sub:"raw documents"}], right:[{name:"Report / Output",sub:"grouped, joined, shaped"}], coreSub:"$match → $group → $project", coreLabel:"Aggregation Pipeline",
+        caption:"Documents flow through each stage in order — an early $match keeps the pipeline cheap by using an index before the heavier $group and $lookup stages run." } },
+    { n:6, slug:"topic-indexes", name:"Indexes", icon:"⚡", what:"Fast lookup structures", use:"Speed up queries, sorts, and joins", learn:"single-field index, compound index, multikey index, text index, TTL index, explain()", priority:"must", docName:"MongoDB Manual — Indexes", docUrl:"https://www.mongodb.com/docs/manual/indexes/",
+      desc:"An index is a separate, ordered data structure MongoDB maintains alongside a collection so it can find matching documents without scanning every one. A single-field index speeds up queries and sorts on that field; a compound index covers queries that filter or sort on several fields together, and field order in a compound index matters — it should match the order fields are queried in. Multikey indexes are created automatically when you index a field that holds an array, indexing every element. TTL indexes automatically delete documents a set time after a timestamp field, which is useful for session data or expiring caches, and a text index enables basic full-text search.",
+      useWhen:"Add an index the moment a query filters, sorts, or joins on a field regularly and the collection is large enough that a full scan is noticeably slow — check with <code>explain()</code> first, since an index that never gets used just slows down writes for nothing.",
+      steps:["Identify the fields your slowest or most frequent queries filter and sort on.","Create a single-field index for a query that only ever filters on one field: <code>db.users.createIndex({ email: 1 }, { unique: true })</code>.","Create a compound index when a query filters on multiple fields together, ordering fields to match how they're queried.","Add a TTL index on a timestamp field to auto-expire documents like sessions: <code>db.sessions.createIndex({ createdAt: 1 }, { expireAfterSeconds: 3600 })</code>.","Run <code>db.users.find({ email: \"a@b.com\" }).explain(\"executionStats\")</code> and confirm it reports an index scan, not a collection scan.","Periodically review unused indexes with <code>$indexStats</code> — every index speeds up reads but slows down every write."],
+      diagram:{ left:[{name:"Query Filter",sub:"e.g. { email: ... }"}], right:[{name:"Matching Docs",sub:"found without a full scan"}], bottom:{name:"Write Cost",sub:"every insert updates the index too"}, coreSub:"sorted lookup structure", coreLabel:"Index",
+        caption:"An index turns a lookup into a fast, targeted read — at the cost of extra work on every write that touches the indexed field." } },
+    { n:7, slug:"topic-replication", name:"Replication", icon:"🔁", what:"High-availability data copies", use:"Survive hardware failure without downtime", learn:"replica set, primary/secondary, oplog, elections, read preference, write concern", priority:"important", docName:"MongoDB Manual — Replication", docUrl:"https://www.mongodb.com/docs/manual/replication/",
+      desc:"A MongoDB replica set is a group of servers holding the same data set, run for high availability rather than scale. One member is elected primary and accepts all writes; the others are secondaries, continuously replicating those writes by tailing the primary's operation log (the oplog). If the primary becomes unreachable, the remaining members hold an election and promote a new primary automatically, typically within seconds. Read preference lets an application choose whether reads must go to the primary (for the freshest data) or may go to secondaries (to spread load, at the cost of possibly slightly stale reads), and write concern controls how many members must acknowledge a write before it's considered successful.",
+      useWhen:"Run a replica set for any production deployment, full stop — a single standalone MongoDB server has no automatic failover, so any hardware failure or maintenance restart becomes real downtime. Reach for secondary reads only for genuinely read-tolerant workloads like analytics or reporting.",
+      steps:["Deploy at least three members (or a primary, secondary, and arbiter) so elections always have a majority.","Let the replica set elect a primary automatically — never write assuming a fixed member is always primary.","Set a write concern like <code>{ w: \"majority\" }</code> for writes that must survive a failover without being lost.","Use a read preference of <code>secondaryPreferred</code> only for workloads that can tolerate slightly stale data.","Monitor replication lag between the primary and secondaries — a lagging secondary serving reads can return noticeably stale data.","Test failover deliberately (step down the primary) before you need it to work correctly during a real outage."],
+      diagram:{ left:[{name:"App",sub:"writes go to primary"}], right:[{name:"Secondary",sub:"replicates via oplog"},{name:"Secondary",sub:"replicates via oplog"}], top:{name:"Election",sub:"promotes new primary on failure"}, coreSub:"primary + secondaries", coreLabel:"Replica Set",
+        caption:"Writes only ever go to the primary; secondaries continuously replay the oplog, and an election promotes one of them the moment the primary disappears." } },
+    { n:8, slug:"topic-sharding", name:"Sharding", icon:"🧩", what:"Horizontal scaling", use:"Scale past what one replica set can hold", learn:"shard key, chunks, mongos router, config servers, balancer, zone sharding", priority:"important", docName:"MongoDB Manual — Sharding", docUrl:"https://www.mongodb.com/docs/manual/sharding/",
+      desc:"Sharding is how MongoDB scales horizontally once a single replica set can't hold or serve the data anymore — it splits a collection's data across multiple shards, each one its own replica set. A shard key, chosen per collection, determines which shard a document lives on; picking a key with high cardinality and even access distribution matters enormously, since a poorly chosen key creates hot shards. Data is split into contiguous ranges called chunks, which a background balancer process moves between shards to keep the distribution even. Applications never talk to shards directly — they go through a <code>mongos</code> query router, which consults the config servers (which track where every chunk lives) to route each operation to the right shard or shards.",
+      useWhen:"Reach for sharding only once a single replica set genuinely can't handle the data volume, write throughput, or working-set size anymore — it adds real operational complexity, so most applications should exhaust vertical scaling and proper indexing first.",
+      steps:["Confirm a single replica set truly can't keep up before sharding — it's a one-way operational commitment, not something to reverse casually.","Choose a shard key with high cardinality and a distribution that spreads both storage and traffic evenly across shards.","Enable sharding on the database and the target collection, specifying the shard key.","Deploy config servers to track chunk-to-shard metadata, and one or more <code>mongos</code> routers for applications to connect through.","Let the balancer redistribute chunks automatically as data grows unevenly across shards.","Monitor for jumbo chunks or hot shards, which usually mean the shard key needs to be reconsidered."],
+      diagram:{ left:[{name:"App",sub:"connects to mongos"}], right:[{name:"Shard A",sub:"replica set"},{name:"Shard B",sub:"replica set"}], top:{name:"Config Servers",sub:"track chunk locations"}, coreSub:"routes by shard key", coreLabel:"mongos Router",
+        caption:"The application only ever talks to mongos; it's the config servers' chunk map that decides which underlying shard actually holds — or should hold — a given document." } },
+    { n:9, slug:"topic-transactions", name:"Transactions", icon:"🔒", what:"Multi-document atomicity", use:"Guarantee all-or-nothing writes across documents", learn:"ACID, sessions, startTransaction, commitTransaction, abortTransaction, write concern", priority:"important", docName:"MongoDB Manual — Transactions", docUrl:"https://www.mongodb.com/docs/manual/core/transactions/",
+      desc:"MongoDB transactions extend the atomicity that's always existed at the single-document level to multiple documents and even multiple collections, giving you full ACID guarantees across them. A transaction is scoped to a client session: you start it, run a sequence of reads and writes against it, and either commit them all together or abort and roll every one of them back if anything fails. Because holding a transaction open has real performance and resource costs, MongoDB recommends keeping them short — a handful of operations, not a long-running batch job. Most schemas, thanks to embedding, never need a multi-document transaction at all; they're for the specific cases where atomicity across separate documents is unavoidable.",
+      useWhen:"Reach for a transaction when a single logical operation must update multiple documents (often in different collections) and absolutely cannot be allowed to partially succeed — a funds transfer between two account documents, for example, where crediting one and failing to debit the other would corrupt the data.",
+      steps:["Start a client session: <code>const session = client.startSession();</code>.","Begin the transaction on that session: <code>session.startTransaction();</code>.","Perform each read/write passing the session explicitly, e.g. <code>db.accounts.updateOne({ _id: from }, { $inc: { balance: -amount } }, { session });</code>.","Commit only after every operation in the sequence has succeeded: <code>await session.commitTransaction();</code>.","Abort and roll everything back the moment any operation fails: <code>await session.abortTransaction();</code>.","Keep the transaction short-lived — do any slow, non-database work before opening it, not while it's held open."],
+      diagram:{ left:[{name:"Session",sub:"scopes the transaction"}], right:[{name:"Commit",sub:"all writes applied"},{name:"Abort",sub:"all writes rolled back"}], coreSub:"all-or-nothing", coreLabel:"Transaction",
+        caption:"Every operation inside the session either lands together on commit or vanishes together on abort — there's no partial outcome." } },
+  ],
+};
+
+/* ---------- Generic per-topic architecture diagram renderer ---------- */
+function stackBoxes(items, x, w, centerY, boxH, gap) {
+  const n = items.length;
+  if (!n) return [];
+  const totalH = n * boxH + (n - 1) * gap;
+  const startY = centerY - totalH / 2;
+  return items.map((it, i) => {
+    const y = startY + i * (boxH + gap);
+    return { ...it, x, y, w, h: boxH, cy: y + boxH / 2 };
+  });
+}
+
+function svcDiagramSVG(svc) {
+  const cfg = svc.diagram;
+  const W = 760, H = 420;
+  const coreW = 200, coreH = 90, coreCX = 380, coreCY = 210;
+  const coreX = coreCX - coreW / 2, coreY = coreCY - coreH / 2;
+  const leftX = 20, leftW = 170, rightX = 570, rightW = 170, boxH = 60, gap = 18;
+  const uid = svc.slug;
+
+  const lefts = stackBoxes(cfg.left || [], leftX, leftW, coreCY, boxH, gap);
+  const rights = stackBoxes(cfg.right || [], rightX, rightW, coreCY, boxH, gap);
+  const label = cfg.coreLabel || svc.name;
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${cfg.caption.replace(/"/g,"'")}">`;
+  svg += `<defs>
+    <marker id="m-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)"/></marker>
+    <marker id="ma-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)"/></marker>
+  </defs>`;
+
+  if (cfg.top) {
+    svg += `<rect class="d-node-navy" x="${coreX}" y="24" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title-light" x="${coreX+14}" y="47">${cfg.top.name}</text>
+      <text class="d-sub-light" x="${coreX+14}" y="62">${cfg.top.sub||""}</text>
+      <path class="d-arrow" d="M${coreCX} 70 L${coreCX} ${coreY-2}" marker-end="url(#m-${uid})"/>`;
+  }
+  if (cfg.bottom) {
+    svg += `<rect class="d-node" x="${coreX}" y="350" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title" x="${coreX+14}" y="373">${cfg.bottom.name}</text>
+      <text class="d-sub" x="${coreX+14}" y="388">${cfg.bottom.sub||""}</text>
+      <path class="d-arrow-accent" d="M${coreCX} ${coreY+coreH+2} L${coreCX} 348" marker-end="url(#ma-${uid})"/>`;
+  }
+
+  svg += `<rect class="d-node-accent" x="${coreX}" y="${coreY}" width="${coreW}" height="${coreH}" rx="12"/>
+    <text class="d-title" x="${coreCX}" y="${coreCY-6}" text-anchor="middle">${label}</text>
+    <text class="d-sub" x="${coreCX}" y="${coreCY+14}" text-anchor="middle">${cfg.coreSub||""}</text>`;
+
+  lefts.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${b.x+b.w} ${b.cy} L${coreX-2} ${coreCY}" marker-end="url(#m-${uid})"/>`;
+  });
+  rights.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${coreX+coreW+2} ${coreCY} L${b.x} ${b.cy}" marker-end="url(#m-${uid})"/>`;
+  });
+
+  svg += `</svg>`;
+  return svg;
+}
+
+function renderServicePanels() {
+  const host = document.getElementById("service-panels");
+  const html = [];
+  Object.keys(DATA).forEach(phaseKey => {
+    DATA[phaseKey].forEach(item => {
+      html.push(`
+        <section class="topic-panel" id="${item.slug}" hidden>
+          <div class="panel-kicker">${PHASE_LABEL[phaseKey]}</div>
+          <div class="panel-head">
+            <div class="panel-icon">${item.icon}</div>
+            <div>
+              <div class="svc-name-row"><h2>${String(item.n).padStart(2,"0")} · ${item.name}</h2><span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span></div>
+              <p class="panel-tagline">${item.what} — ${item.use}</p>
+            </div>
+          </div>
+          <p class="svc-desc" style="margin-top:20px;">${item.desc}</p>
+
+          <div class="use-callout">
+            <b class="callout-title">Where &amp; when to use it</b>
+            ${item.useWhen}
+          </div>
+
+          <div class="diagram-box">
+            <div class="d-chrome">Diagram · ${item.name}</div>
+            <div class="d-body">${svcDiagramSVG(item)}</div>
+            <p class="d-caption">${item.diagram.caption}</p>
+          </div>
+
+          <h3 class="subhead">How to implement it</h3>
+          <ol class="steps-list">${item.steps.map(s => `<li>${s}</li>`).join("")}</ol>
+
+          <div class="svc-learn">
+            <div class="flabel">What you should learn</div>
+            <div class="tag-list">${item.learn.split(",").map(t => `<span class="tag">${t.trim()}</span>`).join("")}</div>
+          </div>
+
+          <div class="svc-foot">
+            <a class="back-home" style="margin:0;" href="#overview">← All topics</a>
+            <a class="doc-link" href="${item.docUrl}" target="_blank" rel="noopener">${item.docName} →</a>
+          </div>
+        </section>
+      `);
+    });
+  });
+  host.innerHTML = html.join("");
+}
+
+function renderSidebarNav() {
+  Object.keys(DATA).forEach(phaseKey => {
+    const group = document.getElementById(`nav-phase-${phaseKey}`);
+    const links = DATA[phaseKey].map(item =>
+      `<a class="nav-link" href="#${item.slug}"><span class="nav-icon">${item.icon}</span> ${item.name}</a>`
+    ).join("");
+    group.insertAdjacentHTML("beforeend", links);
+  });
+}
+
+function renderServiceIndex() {
+  const host = document.getElementById("svc-index");
+  const html = Object.keys(DATA).map(phaseKey => `
+    <div class="svc-index-group">
+      <h4>${PHASE_LABEL[phaseKey]}</h4>
+      ${DATA[phaseKey].map(item => `
+        <a class="svc-index-item" href="#${item.slug}">
+          <span class="svc-index-icon">${item.icon}</span>
+          <span class="svc-index-text"><div class="n">${item.name}</div><div class="t">${item.what} — ${item.use}</div></span>
+          <span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span>
+        </a>
+      `).join("")}
+    </div>
+  `).join("");
+  host.innerHTML = html;
+}
+
+/* ---------- Router: show exactly one topic panel at a time ---------- */
+function showTopic(id) {
+  document.querySelectorAll(".topic-panel").forEach(p => { p.hidden = (p.id !== id); });
+  document.querySelectorAll(".nav-link").forEach(a => {
+    a.classList.toggle("active", a.getAttribute("href") === "#" + id);
+  });
+  window.scrollTo(0, 0);
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("sidebarScrim").classList.remove("show");
+}
+
+function routeFromHash() {
+  const id = (location.hash || "#overview").slice(1);
+  showTopic(document.getElementById(id) ? id : "overview");
+}
+
+renderServicePanels();
+renderSidebarNav();
+renderServiceIndex();
+window.addEventListener("hashchange", routeFromHash);
+routeFromHash();
+
+/* ---------- Mobile sidebar toggle ---------- */
+const menuBtn = document.getElementById("menuBtn");
+const sidebarEl = document.getElementById("sidebar");
+const scrimEl = document.getElementById("sidebarScrim");
+if (menuBtn) {
+  menuBtn.addEventListener("click", () => {
+    sidebarEl.classList.toggle("open");
+    scrimEl.classList.toggle("show");
+  });
+}
+scrimEl.addEventListener("click", () => {
+  sidebarEl.classList.remove("open");
+  scrimEl.classList.remove("show");
+});
+
+/* ---------- Summary + references (unchanged data) ---------- */
+const sequence = ["Documents & Collections","CRUD Operations","Schema Design","Query Operators","Aggregation Pipeline","Indexes","Replication","Sharding","Transactions"];
+document.getElementById("sequence-flow").innerHTML = sequence.map(s => `<span class="seq-step">${s}</span>`).join('<span class="seq-arrow">→</span>');
+
+const docLinks = [
+  ["Documents & Collections","https://www.mongodb.com/docs/manual/core/document/"],
+  ["CRUD Operations","https://www.mongodb.com/docs/manual/crud/"],
+  ["Schema Design","https://www.mongodb.com/docs/manual/core/data-modeling-introduction/"],
+  ["Query Operators","https://www.mongodb.com/docs/manual/reference/operator/query/"],
+  ["Aggregation Pipeline","https://www.mongodb.com/docs/manual/core/aggregation-pipeline/"],
+  ["Indexes","https://www.mongodb.com/docs/manual/indexes/"],
+  ["Replication","https://www.mongodb.com/docs/manual/replication/"],
+  ["Sharding","https://www.mongodb.com/docs/manual/sharding/"],
+  ["Transactions","https://www.mongodb.com/docs/manual/core/transactions/"],
+];
+document.getElementById("doc-links").innerHTML = docLinks.map(([n,u]) => `<div><b>${n}</b><br>${u}</div>`).join("");
+</script>
+
+</body>
+</html>

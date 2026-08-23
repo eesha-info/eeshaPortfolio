@@ -75,6 +75,7 @@ export const techStack: TechItem[] = [
       "Compile-time safety for large-scale apps and APIs",
     ],
     docsUrl: "https://www.typescriptlang.org/docs/",
+    notesUrl: "/resources/typescript-complete-guide.html",
   },
   {
     slug: "html",
@@ -91,6 +92,7 @@ export const techStack: TechItem[] = [
       "Metadata & SEO fundamentals",
     ],
     docsUrl: "https://developer.mozilla.org/en-US/docs/Web/HTML",
+    notesUrl: "/resources/html-complete-guide.html",
   },
   {
     slug: "css",
@@ -107,6 +109,7 @@ export const techStack: TechItem[] = [
       "Specificity, cascade, and the box model",
     ],
     docsUrl: "https://developer.mozilla.org/en-US/docs/Web/CSS",
+    notesUrl: "/resources/css-complete-guide.html",
   },
   {
     slug: "responsive-design",
@@ -123,6 +126,7 @@ export const techStack: TechItem[] = [
       "Fluid typography and flexible images",
     ],
     docsUrl: "https://getbootstrap.com/docs/5.3/getting-started/introduction/",
+    notesUrl: "/resources/responsive-design-guide.html",
   },
 
   // ── Database ──
@@ -141,6 +145,7 @@ export const techStack: TechItem[] = [
       "Transactions and ACID guarantees",
     ],
     docsUrl: "https://www.postgresql.org/docs/",
+    notesUrl: "/resources/postgresql-complete-guide.html",
   },
   {
     slug: "mongodb",
@@ -157,6 +162,7 @@ export const techStack: TechItem[] = [
       "Indexing for query performance",
     ],
     docsUrl: "https://www.mongodb.com/docs/",
+    notesUrl: "/resources/mongodb-complete-guide.html",
   },
   {
     slug: "sql",
@@ -173,6 +179,7 @@ export const techStack: TechItem[] = [
       "Transactions and isolation levels",
     ],
     docsUrl: "https://www.w3schools.com/sql/",
+    notesUrl: "/resources/sql-complete-guide.html",
   },
   {
     slug: "prisma",
@@ -189,6 +196,7 @@ export const techStack: TechItem[] = [
       "Relations, filtering, and pagination made simple",
     ],
     docsUrl: "https://www.prisma.io/docs",
+    notesUrl: "/resources/prisma-complete-guide.html",
   },
   {
     slug: "sequelize",
@@ -205,6 +213,7 @@ export const techStack: TechItem[] = [
       "Built-in validation and hooks/lifecycle events",
     ],
     docsUrl: "https://sequelize.org/docs/v6/",
+    notesUrl: "/resources/sequelize-complete-guide.html",
   },
   {
     slug: "mongoose",
@@ -221,6 +230,7 @@ export const techStack: TechItem[] = [
       "Query builder API on top of the native MongoDB driver",
     ],
     docsUrl: "https://mongoosejs.com/docs/",
+    notesUrl: "/resources/mongoose-complete-guide.html",
   },
 
   // ── Cloud ──

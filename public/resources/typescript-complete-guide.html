@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TypeScript — Complete Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS ============ */
+  :root {
+    --bg: #f2f5f9;
+    --surface: #ffffff;
+    --surface-2: #eaeff6;
+    --surface-3: #dfe6f0;
+    --border: #dbe2ec;
+    --ink: #0d1b2e;
+    --ink-soft: #4b5872;
+    --ink-faint: #8492a8;
+    --navy: #14304d;
+    --navy-2: #1c4066;
+    --amber: #3178c6;
+    --amber-strong: #235a97;
+    --amber-tint: rgba(49, 120, 198, 0.12);
+    --link: #1d5fa8;
+    --danger: #b8402b;
+    --danger-bg: rgba(184, 64, 43, 0.10);
+    --warn: #9c6a0a;
+    --warn-bg: rgba(156, 106, 10, 0.12);
+    --calm: #1f7a5c;
+    --calm-bg: rgba(31, 122, 92, 0.12);
+    --focus-ring: #3178c6;
+    --shadow: 0 12px 32px rgba(13, 27, 46, 0.10);
+    --shadow-lg: 0 24px 64px rgba(13, 27, 46, 0.28);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0a1220;
+      --surface: #111d30;
+      --surface-2: #17253c;
+      --surface-3: #1f3049;
+      --border: #26395a;
+      --ink: #ecf1f8;
+      --ink-soft: #a7b6cd;
+      --ink-faint: #71829e;
+      --navy: #1f4a78;
+      --navy-2: #2a5c94;
+      --amber: #5ea0e0;
+      --amber-strong: #7fb6ea;
+      --amber-tint: rgba(94, 160, 224, 0.14);
+      --link: #7fb3f5;
+      --danger: #ff8a71;
+      --danger-bg: rgba(255, 138, 113, 0.14);
+      --warn: #ffc766;
+      --warn-bg: rgba(255, 199, 102, 0.14);
+      --calm: #5cdcb0;
+      --calm-bg: rgba(92, 220, 176, 0.14);
+      --focus-ring: #5ea0e0;
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0a1220;
+    --surface: #111d30;
+    --surface-2: #17253c;
+    --surface-3: #1f3049;
+    --border: #26395a;
+    --ink: #ecf1f8;
+    --ink-soft: #a7b6cd;
+    --ink-faint: #71829e;
+    --navy: #1f4a78;
+    --navy-2: #2a5c94;
+    --amber: #5ea0e0;
+    --amber-strong: #7fb6ea;
+    --amber-tint: rgba(94, 160, 224, 0.14);
+    --link: #7fb3f5;
+    --danger: #ff8a71;
+    --danger-bg: rgba(255, 138, 113, 0.14);
+    --warn: #ffc766;
+    --warn-bg: rgba(255, 199, 102, 0.14);
+    --calm: #5cdcb0;
+    --calm-bg: rgba(92, 220, 176, 0.14);
+    --focus-ring: #5ea0e0;
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  h1, h2, h3 { font-family: "IBM Plex Mono", ui-monospace, monospace; text-wrap: balance; margin: 0; }
+  a { color: var(--link); }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  ::selection { background: var(--amber-tint); }
+
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* ============ MOBILE TOPBAR ============ */
+  .topbar {
+    display: none;
+    position: sticky; top: 0; z-index: 40;
+    align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar .brand { font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 14px; }
+  .topbar .brand span { color: var(--amber); }
+  .menu-btn {
+    width: 36px; height: 36px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--ink);
+    font-size: 16px; cursor: pointer; text-decoration: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sidebar-scrim { display: none; position: fixed; inset: 0; background: rgba(5,11,20,0.5); z-index: 45; }
+  .sidebar-scrim.show { display: block; }
+
+  /* ============ SHELL / SIDEBAR ============ */
+  .shell { display: flex; align-items: flex-start; max-width: 1360px; margin: 0 auto; }
+  .sidebar {
+    position: sticky; top: 0;
+    width: 280px; flex-shrink: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 22px 16px 60px;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+    scrollbar-width: thin;
+  }
+  .sidebar .brand {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 800;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 8px 16px;
+  }
+  .sidebar .brand span { color: var(--amber); }
+  .back-home {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 8px 18px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 600;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+  }
+  .back-home:hover { color: var(--ink); background: var(--amber-tint); border-color: var(--amber); }
+  .nav-group { margin-bottom: 4px; }
+  .nav-group-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    padding: 14px 8px 6px;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+    margin: 1px 0;
+    border-radius: 7px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 13px;
+    border-left: 2px solid transparent;
+  }
+  .nav-link:hover { background: var(--surface-2); color: var(--ink); }
+  .nav-link.active {
+    background: var(--amber-tint);
+    color: var(--ink);
+    font-weight: 600;
+    border-left: 2px solid var(--amber);
+  }
+  .nav-icon { flex-shrink: 0; width: 18px; text-align: center; font-size: 13px; }
+
+  .content { flex: 1; min-width: 0; padding: 40px 32px 90px; }
+  .topic-panel[hidden] { display: none; }
+
+  @media (max-width: 920px) {
+    .topbar { display: flex; }
+    .sidebar {
+      position: fixed; inset: 0 auto 0 0;
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+      z-index: 50;
+      width: 82vw;
+      max-width: 300px;
+      box-shadow: var(--shadow-lg);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .content { padding: 28px 18px 100px; }
+  }
+
+  /* ============ PANEL HERO (Overview only) ============ */
+  .panel-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    background: linear-gradient(150deg, #0a1a30 0%, #10294a 55%, #0d2140 100%);
+    color: #eef2f8;
+    padding: 40px 32px;
+    margin-bottom: 30px;
+  }
+  .panel-hero::before {
+    content: "";
+    position: absolute;
+    top: -120px; right: -90px;
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(49,120,198,0.30), rgba(49,120,198,0) 70%);
+    pointer-events: none;
+  }
+  .panel-hero .eyebrow {
+    position: relative;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #6fb0e8;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel-hero .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #6fb0e8; display: inline-block; }
+  .panel-hero h1 { position: relative; margin-top: 14px; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.2; font-weight: 700; color: #fff; }
+  .panel-hero h1 em { font-style: normal; color: #6fb0e8; }
+  .panel-hero p.lede { position: relative; margin-top: 12px; font-size: 15px; color: #c3d0e3; max-width: 68ch; font-family: "IBM Plex Sans", sans-serif; line-height: 1.75; }
+  .panel-hero .stat-chips { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .stat-chip {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    border: 1px solid rgba(255,255,255,0.22);
+    color: #dbe6f5;
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+  .stat-chip b { color: #fff; }
+
+  section.topic-panel h1.section-title { font-size: 22px; margin-bottom: 14px; }
+  .lede-plain { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 82ch; margin: 0 0 16px; }
+  .lede-plain b { color: var(--ink); }
+
+  /* ============ DIAGRAM BOX ============ */
+  .diagram-box {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    margin: 0 0 24px;
+  }
+  .diagram-box .d-chrome {
+    background: var(--navy);
+    color: #eef3fb;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 11px 16px;
+  }
+  .diagram-box .d-body { padding: 22px 18px 6px; overflow-x: auto; }
+  .diagram-box .d-body svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+  .diagram-box .d-caption {
+    padding: 6px 20px 20px;
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 88ch;
+  }
+  .diagram-box .d-caption code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; color: var(--ink); }
+  .diagram-box .d-caption b { color: var(--ink); }
+
+  /* shared SVG node styles, reused by every diagram */
+  svg .d-node { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
+  svg .d-node-accent { fill: var(--amber-tint); stroke: var(--amber); stroke-width: 1.5; }
+  svg .d-node-navy { fill: var(--navy); stroke: var(--navy); }
+  svg .d-title { fill: var(--ink); font: 700 13.5px "IBM Plex Sans", sans-serif; }
+  svg .d-title-light { fill: #ffffff; font: 700 12.5px "IBM Plex Mono", monospace; }
+  svg .d-sub { fill: var(--ink-faint); font: 600 10px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-sub-light { fill: #b9c8e0; font: 600 9.5px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-text { fill: var(--ink-soft); font: 500 11px "IBM Plex Mono", monospace; }
+  svg .d-arrow { fill: none; stroke: var(--ink-faint); stroke-width: 2; }
+  svg .d-arrow-accent { fill: none; stroke: var(--amber); stroke-width: 2.25; }
+  svg .d-label { fill: var(--ink-soft); font: 600 11px "IBM Plex Sans", sans-serif; }
+  svg .d-label-accent { fill: var(--amber-strong); font: 700 11px "IBM Plex Sans", sans-serif; }
+  svg .d-boundary { fill: none; stroke: var(--link); stroke-width: 1.5; stroke-dasharray: 6 4; }
+  svg .d-boundary-label { fill: var(--link); font: 700 10.5px "IBM Plex Mono", monospace; letter-spacing: 0.05em; }
+
+  /* ============ TOPIC PANEL ============ */
+  .panel-kicker {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 10px;
+  }
+  .panel-head { display: flex; gap: 16px; align-items: flex-start; }
+  .panel-icon {
+    flex-shrink: 0;
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    background: var(--navy);
+    color: var(--amber-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+  }
+  .svc-name-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .svc-name-row h2 { font-size: 21px; color: var(--ink); }
+  .panel-tagline { margin: 6px 0 0; font-size: 13.5px; color: var(--ink-faint); font-family: "IBM Plex Sans", sans-serif; }
+  .svc-desc { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 84ch; }
+
+  .use-callout {
+    margin: 22px 0;
+    padding: 16px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--link);
+    background: var(--surface-2);
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 84ch;
+  }
+  .use-callout b { color: var(--ink); }
+  .callout-title {
+    display: block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--link);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  h3.subhead { font-size: 15px; margin: 28px 0 6px; color: var(--ink); }
+
+  .steps-list {
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 84ch;
+  }
+  .steps-list li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .steps-list li::before {
+    counter-increment: step;
+    content: counter(step);
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--amber-strong);
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+    font-size: 11.5px;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .steps-list li b { color: var(--ink); }
+  .steps-list li code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+
+  .svc-learn { margin-top: 26px; }
+  .flabel {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--ink-soft);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .svc-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    max-width: 84ch;
+  }
+  .doc-link {
+    font-size: 12.5px;
+    color: var(--link);
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .doc-link:hover { text-decoration: underline; }
+  .badge {
+    display: inline-block;
+    font-family: "IBM Plex Mono", monospace;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+  }
+  .badge-must { background: var(--danger-bg); color: var(--danger); }
+  .badge-important { background: var(--warn-bg); color: var(--warn); }
+  .badge-level { background: var(--calm-bg); color: var(--calm); }
+
+  /* ============ OVERVIEW TOPIC INDEX ============ */
+  .svc-index-group { margin-bottom: 22px; }
+  .svc-index-group h4 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    font-family: "IBM Plex Mono", monospace;
+    margin-bottom: 10px;
+  }
+  .svc-index-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    text-decoration: none;
+    color: var(--ink);
+    margin-bottom: 6px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .svc-index-item:hover { border-color: var(--amber); background: var(--amber-tint); }
+  .svc-index-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--navy);
+    color: var(--amber-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .svc-index-text { flex: 1; min-width: 0; }
+  .svc-index-text .n { font-weight: 700; font-size: 13.5px; }
+  .svc-index-text .t { font-size: 11.5px; color: var(--ink-faint); }
+
+  /* ============ SUMMARY CARDS ============ */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--amber);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+  }
+  .card h3 { font-size: 14px; color: var(--ink); margin-bottom: 12px; }
+  .card p.card-note { margin: 0 0 14px; font-size: 13px; color: var(--ink-soft); font-family: "IBM Plex Sans", sans-serif; line-height: 1.7; }
+  .seq-flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; }
+  .seq-step {
+    font-family: "IBM Plex Mono", monospace;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  .seq-arrow { color: var(--amber); font-weight: 700; }
+
+  .priority-levels { display: flex; flex-direction: column; gap: 12px; }
+  .plevel { display: flex; gap: 12px; align-items: flex-start; }
+  .plevel .lvl-tag {
+    font-family: "IBM Plex Mono", monospace;
+    flex-shrink: 0;
+    width: 72px;
+    padding: 5px 0;
+    text-align: center;
+    border-radius: 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .lvl-1 { background: var(--danger); }
+  .lvl-2 { background: var(--warn); color: #221600; }
+  .lvl-3 { background: var(--ink-faint); }
+  .plevel .lvl-items { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+
+  .doc-links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 8px 20px;
+    font-size: 12px;
+  }
+  .doc-links-grid div { color: var(--ink-soft); overflow-wrap: break-word; }
+  .doc-links-grid b { color: var(--ink); font-family: "IBM Plex Mono", monospace; font-size: 11.5px; }
+
+  /* ============ FOOTER ============ */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 28px 48px;
+    text-align: center;
+  }
+  footer .label {
+    font-family: "IBM Plex Mono", monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 10px;
+    color: var(--amber);
+    font-weight: 700;
+  }
+  footer .name { font-size: 18px; font-weight: 700; margin-top: 6px; }
+  footer .role { font-size: 12.5px; color: var(--ink-soft); margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="Open navigation">☰</button>
+  <div class="brand">TS<span>::</span>DOCS</div>
+  <a class="menu-btn" href="../" aria-label="Back to Portfolio">⌂</a>
+</div>
+<div class="sidebar-scrim" id="sidebarScrim"></div>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">TS<span>::</span>DOCS</div>
+    <a class="back-home" href="../">← Back to Portfolio</a>
+
+    <div class="nav-group">
+      <a class="nav-link" href="#overview"><span class="nav-icon">🏠</span> Overview</a>
+    </div>
+
+    <div class="nav-group" id="nav-phase-1">
+      <div class="nav-group-label">Phase 1 · Language Fundamentals</div>
+    </div>
+    <div class="nav-group" id="nav-phase-2">
+      <div class="nav-group-label">Phase 2 · Advanced Type System</div>
+    </div>
+    <div class="nav-group" id="nav-phase-3">
+      <div class="nav-group-label">Phase 3 · Project &amp; Tooling</div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Reference</div>
+      <a class="nav-link" href="#summary"><span class="nav-icon">📐</span> Summary &amp; Order</a>
+      <a class="nav-link" href="#references"><span class="nav-icon">📄</span> Doc Links</a>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <section class="topic-panel" id="overview">
+      <div class="panel-hero">
+        <div class="eyebrow">Frontend &amp; Backend Engineering</div>
+        <h1>TypeScript <em>Complete Guide</em></h1>
+        <p class="lede">TypeScript is a typed superset of JavaScript, built by Microsoft, that compiles down to plain JavaScript before it ever runs. Every annotation you add — a parameter type, an interface, a generic constraint — is checked by the TypeScript compiler (<code>tsc</code>) at build time and then erased completely, so bugs that would otherwise surface in production get caught on your own machine instead. This doc walks through the 12 concepts that make up the language, in the order that builds most naturally on itself, each with a diagram, a genuine "where and when to use it" judgment call, and the concrete steps to put it into practice.</p>
+        <div class="stat-chips">
+          <span class="stat-chip"><b>3</b> phases</span>
+          <span class="stat-chip"><b>12</b> topics</span>
+          <span class="stat-chip"><b>12</b> diagrams</span>
+        </div>
+      </div>
+
+      <p class="lede-plain">Use the sidebar to jump straight to any topic — each one opens its own page with a full explanation, a diagram of how the concept actually connects to the code around it, and the concrete steps to use it. If you're starting from zero, work through <b>Phase 1</b> first: everything past it assumes you're already comfortable annotating variables, functions, and object shapes.</p>
+
+      <div class="diagram-box">
+        <div class="d-chrome">Diagram · From Source File to Running Code</div>
+        <div class="d-body">
+          <svg viewBox="0 0 780 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="TypeScript source files are compiled by tsc, which checks types and reports errors before emitting plain JavaScript that runs in Node.js or the browser">
+            <defs>
+              <marker id="ovArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+              <marker id="ovArrowAccent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)" /></marker>
+            </defs>
+
+            <rect class="d-node" x="20" y="75" width="140" height="70" rx="10" />
+            <text class="d-title" x="34" y="104">Source Code</text>
+            <text class="d-sub" x="34" y="120">.ts / .tsx files</text>
+            <path class="d-arrow" d="M160 110 L188 110" marker-end="url(#ovArrow)" />
+
+            <text class="d-label-accent" x="200" y="26">Type errors caught here — before anything runs</text>
+            <path class="d-arrow-accent" d="M330 34 C 300 34, 282 42, 280 53" marker-end="url(#ovArrowAccent)" />
+
+            <rect class="d-node-accent" x="190" y="55" width="180" height="110" rx="12" />
+            <text class="d-title" x="210" y="100" style="font-size:16px;">tsc</text>
+            <text class="d-sub" x="210" y="118">TypeScript Compiler</text>
+            <text class="d-sub" x="210" y="132">type-checks, then emits JS</text>
+            <path class="d-arrow" d="M370 110 L408 110" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node" x="410" y="75" width="150" height="70" rx="10" />
+            <text class="d-title" x="424" y="104">Plain JavaScript</text>
+            <text class="d-sub" x="424" y="120">.js output</text>
+
+            <path class="d-arrow" d="M560 100 C 582 78, 592 62, 600 47" marker-end="url(#ovArrow)" />
+            <path class="d-arrow" d="M560 120 C 582 142, 592 158, 600 172" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node" x="600" y="20" width="150" height="55" rx="10" />
+            <text class="d-title" x="614" y="44">Node.js</text>
+            <text class="d-sub" x="614" y="60">server runtime</text>
+
+            <rect class="d-node" x="600" y="145" width="150" height="55" rx="10" />
+            <text class="d-title" x="614" y="169">Browser</text>
+            <text class="d-sub" x="614" y="185">client runtime</text>
+          </svg>
+        </div>
+        <p class="d-caption">Nothing you write in a <code>.ts</code> file ever runs directly. It's read by <b>tsc</b>, which checks every annotation against how the code actually uses each value — that's the only moment a type error can be caught — and only then emits ordinary JavaScript with the types stripped out, ready for Node.js or a browser to run exactly as if it had been written in JavaScript all along.</p>
+      </div>
+
+      <h3 class="subhead" style="margin-top:8px;">All 12 topics in this guide</h3>
+      <div id="svc-index"></div>
+    </section>
+
+    <!-- 12 topic panels are injected here by renderServicePanels() -->
+    <div id="service-panels"></div>
+
+    <section class="topic-panel" id="summary">
+      <h1 class="section-title">Summary &amp; Learning Order</h1>
+      <p class="lede-plain">Once each individual topic makes sense on its own, these two references tie them together: the order to learn them in, and the single mental model — narrowing a union down to a specific type — worth internalizing above all others.</p>
+
+      <div class="card">
+        <h3>Recommended Learning Order</h3>
+        <div class="seq-flow" id="sequence-flow"></div>
+      </div>
+
+      <div class="card">
+        <h3>Key Pattern — Narrowing a Union Type</h3>
+        <p class="card-note">The single most useful habit in TypeScript: a union type isn't usable until a runtime check proves which member you're actually holding.</p>
+        <div class="diagram-box" style="margin-bottom:0; box-shadow:none;">
+          <div class="d-chrome">Diagram · typeof Check → Narrowed Branch</div>
+          <div class="d-body">
+            <svg viewBox="0 0 780 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A value typed string or number is checked with typeof; the true branch narrows to string and the false branch narrows to number">
+              <defs>
+                <marker id="narrowArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+                <marker id="narrowArrowAccent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)" /></marker>
+              </defs>
+
+              <rect class="d-node-accent" x="20" y="110" width="170" height="70" rx="10" />
+              <text class="d-title" x="34" y="142" style="font-size:12.5px;">value: string | number</text>
+              <text class="d-sub" x="34" y="160">still a union here</text>
+              <path class="d-arrow" d="M190 145 L228 145" marker-end="url(#narrowArrow)" />
+
+              <rect class="d-node" x="230" y="110" width="180" height="70" rx="10" />
+              <text class="d-title" x="244" y="140" style="font-size:12px;">typeof value ===</text>
+              <text class="d-title" x="244" y="156" style="font-size:12px;">'string' ?</text>
+
+              <path class="d-arrow-accent" d="M410 130 C 460 90, 500 70, 550 55" marker-end="url(#narrowArrowAccent)" />
+              <text class="d-label-accent" x="420" y="82">true</text>
+              <path class="d-arrow" d="M410 165 C 460 195, 500 210, 550 225" marker-end="url(#narrowArrow)" />
+              <text class="d-label" x="420" y="212">false</text>
+
+              <rect class="d-node" x="550" y="25" width="180" height="60" rx="10" />
+              <text class="d-title" x="564" y="50">narrowed: string</text>
+              <text class="d-sub" x="564" y="68">.toUpperCase() etc.</text>
+
+              <rect class="d-node" x="550" y="195" width="180" height="60" rx="10" />
+              <text class="d-title" x="564" y="220">narrowed: number</text>
+              <text class="d-sub" x="564" y="238">.toFixed() etc.</text>
+            </svg>
+          </div>
+          <p class="d-caption">The value's declared type never changes — it's still <code>string | number</code> everywhere. What changes is what the compiler is willing to let you call: inside the <b>true</b> branch it treats the value as a string, inside <b>false</b> as a number, purely because the <code>typeof</code> check is code it can follow.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic-panel" id="references">
+      <h1 class="section-title">Official Documentation Reference URLs</h1>
+      <p class="lede-plain">Every topic covered in this guide, with a direct link to its official docs.</p>
+      <div class="card">
+        <div class="doc-links-grid" id="doc-links"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="label">Documented By</div>
+  <div class="name">MD Eesha</div>
+  <div class="role">Sr. Software Engineer</div>
+</footer>
+
+<script>
+const PRIORITY_LABEL = {
+  must: "Core Concept",
+  important: "Good to Know",
+};
+const PRIORITY_CLASS = {
+  must: "badge-must",
+  important: "badge-important",
+};
+const PHASE_LABEL = {
+  1: "Phase 1 · Language Fundamentals",
+  2: "Phase 2 · Advanced Type System",
+  3: "Phase 3 · Project &amp; Tooling",
+};
+
+const DATA = {
+  1: [
+    { n:1, slug:"ts-intro", name:"Introduction to TypeScript", icon:"📘", what:"Typed superset of JavaScript", use:"Catch bugs at compile time, before code runs", learn:"Type annotations, tsc compiler, structural typing, gradual adoption, .ts vs .tsx, editor tooling", priority:"must", docName:"TypeScript Handbook — Introduction", docUrl:"https://www.typescriptlang.org/docs/handbook/intro.html",
+      desc:"TypeScript is a typed superset of JavaScript created by Microsoft: every valid JavaScript file is already valid TypeScript, but TypeScript lets you add type annotations on top of it. Those annotations are checked by the TypeScript compiler (<code>tsc</code>) before your code ever runs, catching an entire category of bugs — calling a method that doesn't exist, passing a string where a number was expected — at compile time instead of in production. Once compiled, the annotations are erased entirely; the output is plain JavaScript that runs unmodified in Node.js or a browser, so TypeScript adds zero runtime cost. Adoption can be gradual: you can rename a single .js file to .ts, leave everything untyped as <code>any</code>, and tighten types file by file rather than rewriting a codebase overnight.",
+      useWhen:"Adopt TypeScript on anything beyond a throwaway script — the value compounds with codebase size and team size, since types double as documentation that can't drift out of date the way a comment can. The contrarian call: don't reach for <code>strict: true</code> on day one of migrating a large legacy JS codebase; start loose and tighten incrementally, or the sheer volume of type errors will stall the migration before it starts.",
+      steps:["Install TypeScript as a dev dependency: <code>npm install -D typescript</code>.","Generate a starter config with <code>npx tsc --init</code>.","Rename a <code>.js</code> file to <code>.ts</code> and run <code>tsc</code> to see what it reports.","Fix or silence the reported errors — start with <code>any</code> where needed, tighten later.","Add a <code>build</code> script that runs <code>tsc</code> before your app starts.","Install an editor extension (VS Code ships one built-in) for inline type checking as you type."],
+      diagram:{ left:[{name:"JavaScript",sub:"any valid .js file"},{name:"Type Annotations",sub:"optional, added by you"}], right:[{name:"Compile-time checking",sub:"catches bugs early"},{name:"Editor intellisense",sub:"autocomplete, refactors"}], coreLabel:"TypeScript", coreSub:"typed superset of JS",
+        caption:"Every .js file is already valid input on the left; the moment you add an annotation, both compile-time checking and editor intellisense on the right start paying attention to it." } },
+    { n:2, slug:"ts-basic-types", name:"Basic Types", icon:"🔢", what:"The core type vocabulary", use:"Annotate variables, parameters, and return values", learn:"string, number, boolean, arrays, tuples, any, unknown, never, literal types", priority:"must", docName:"TypeScript Handbook — Basic Types", docUrl:"https://www.typescriptlang.org/docs/handbook/2/basic-types.html",
+      desc:"TypeScript's basic types describe the shape of the most common JavaScript values: string, number, boolean, arrays (<code>string[]</code>), and tuples — a fixed-length array where each position has its own type, like <code>[string, number]</code>. Two special types sit at the edges: <code>any</code> opts a value out of type checking entirely, while <code>unknown</code> accepts anything but forces you to narrow it before you can use it, making <code>unknown</code> the safer choice almost every time <code>any</code> looks tempting. <code>never</code> represents a value that can't logically occur, such as the return type of a function that always throws. Literal types go one step further, pinning a value to one exact string or number, like <code>'GET' | 'POST'</code>.",
+      useWhen:"Reach for a literal union instead of a bare string the moment a value only ever takes a fixed, known set of values — it turns a whole class of typo bugs into compile errors. The contrarian rule: ban <code>any</code> in your own code and use <code>unknown</code> instead; <code>any</code> doesn't just skip checking that one value, it silently disables checking everywhere that value flows next.",
+      steps:["Annotate a variable explicitly only when TypeScript can't infer it on its own.","Use array types for lists, like <code>string[]</code>.","Reach for a tuple only when position carries meaning: <code>[string, number]</code>.","Replace any incoming untyped value's type with <code>unknown</code>, not <code>any</code>.","Narrow an <code>unknown</code> value (typeof/instanceof) before using it.","Pin values to a fixed set with a literal union instead of a bare string."],
+      diagram:{ left:[{name:"string / number / boolean",sub:"primitive values"},{name:"array / tuple",sub:"ordered collections"}], right:[{name:"any",sub:"escapes checking — avoid"},{name:"unknown",sub:"safe, must narrow first"}], coreLabel:"Basic Types", coreSub:"the type vocabulary",
+        caption:"Primitives and collections flow into the type system on the left; any quietly turns checking off, while unknown keeps you safe by forcing a narrowing check before use." } },
+    { n:3, slug:"ts-interfaces", name:"Interfaces", icon:"🧩", what:"A named contract for an object's shape", use:"Describe the shape of objects, function params, and class contracts", learn:"structural typing, optional properties, readonly, extends, interface vs type, implements", priority:"must", docName:"TypeScript Handbook — Interfaces &amp; Objects", docUrl:"https://www.typescriptlang.org/docs/handbook/2/objects.html",
+      desc:"An interface names a contract for what an object should look like — which properties it has and what type each one is — without saying anything about where that object comes from. TypeScript checks objects structurally, not by name: any object with a matching shape satisfies the interface, even if it was never declared to implement it. Properties can be marked optional with a <code>?</code> or locked with <code>readonly</code>, and one interface can extend another to build more specific shapes from general ones. Classes can also formally declare that they <code>implements</code> an interface, which is checked at compile time.",
+      useWhen:"Use an interface for anything shaped like an object, and prefer it over a type alias specifically when you expect other code to extend it later, since interfaces support declaration merging and extends in a way type aliases don't. The contrarian call: don't over-model deep inheritance hierarchies of interfaces the way you would in Java; structural typing means a flat, composable interface is usually more useful than a deep one.",
+      steps:["Define an interface naming the properties an object must have.","Mark properties that aren't always present with <code>?</code>.","Lock properties that shouldn't be reassigned with <code>readonly</code>.","Extend a base interface with <code>extends</code> to build a more specific one.","Have a class declare <code>implements MyInterface</code> and let the compiler check it.","Pass any object literal that matches the shape — no explicit declaration required."],
+      diagram:{ left:[{name:"Object literal",sub:"matches shape structurally"},{name:"Class",sub:"implements interface"}], right:[{name:"Function parameter",sub:"accepts anything matching"},{name:"Extended interface",sub:"builds on the base shape"}], coreLabel:"Interface", coreSub:"a named shape contract",
+        caption:"Anything whose shape matches — an object literal or a class that implements it — satisfies the interface; TypeScript never checks the name, only the shape." } },
+    { n:4, slug:"ts-unions", name:"Type Aliases, Unions &amp; Intersections", icon:"🔀", what:"Custom names for types, and ways to combine them", use:"Model a value that can be one of several types, or combine shapes into one", learn:"type keyword, union (|), intersection (&), discriminated unions, type alias vs interface", priority:"must", docName:"TypeScript Handbook — Union Types", docUrl:"https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types",
+      desc:"A type alias gives any type — a primitive, a union, an object shape, anything — a reusable name. A union type (<code>A | B</code>) says a value can be one of several types, which is how TypeScript models real-world variability like a function that returns either a result or an error. An intersection type (<code>A &amp; B</code>) does the opposite: it combines every member of both types into one, requiring all their properties at once. Unions are especially powerful when paired with a shared 'tag' property across each member, forming a discriminated union — the single most useful pattern for modeling state in TypeScript.",
+      useWhen:"Reach for a discriminated union the moment you're modeling a value that can be in one of several distinct states — a network request that's loading, succeeded, or failed — instead of one object with a pile of optional fields. The contrarian call: intersections are frequently misused to merge unrelated types; if the result feels unnatural to use, the two types probably don't belong combined, and two separate parameters would be clearer.",
+      steps:["Name a reusable type with <code>type Name = ...</code>.","Model 'one of these' with a union, e.g. <code>type Result = Success | Failure;</code>.","Give each union member a shared literal tag field to make it discriminated.","Use a <code>switch</code> on the tag field to safely narrow and handle each case.","Combine required shapes with an intersection when a value genuinely needs both.","Prefer a union of well-named cases over an object with many optional fields."],
+      diagram:{ left:[{name:"Success",sub:"{status:'ok', data}"},{name:"Failure",sub:"{status:'error', message}"}], right:[{name:"Union type",sub:"Success | Failure"}], bottom:{name:"switch(status)",sub:"narrows each case safely"}, coreLabel:"Discriminated Union", coreSub:"type alias combining shapes",
+        caption:"Two distinct shapes become one union type; a switch on the shared tag field is what lets the compiler narrow down to the right shape in each branch." } },
+    { n:5, slug:"ts-functions", name:"Functions &amp; Type Inference", icon:"ƒ", what:"Typed parameters and return values, most of it inferred for you", use:"Type function signatures without over-annotating", learn:"parameter types, inferred return types, optional/default params, function overloads, contextual typing, void vs undefined", priority:"must", docName:"TypeScript Handbook — Functions", docUrl:"https://www.typescriptlang.org/docs/handbook/2/functions.html",
+      desc:"Function parameters need explicit type annotations because TypeScript can't guess what a caller will pass in, but return types are usually inferred automatically from what the function body actually returns. Parameters can be optional (<code>param?</code>) or carry a default value, both of which let a caller omit them. Contextual typing lets TypeScript infer a callback's parameter types from where that callback is used — which is why an array's <code>.map()</code> callback doesn't need its parameter typed by hand. Overloads let a single function name accept a few genuinely different signatures, each type-checked independently.",
+      useWhen:"Let TypeScript infer return types in almost every case — writing one out by hand only pays off on a public library's exported functions, where an explicit return type acts as a stable contract against an accidental signature change. The contrarian call: reach for an overload only when the parameter combinations are genuinely different shapes; if a union parameter type would describe the same behavior, it's simpler and should be preferred over overloads.",
+      steps:["Annotate every parameter — TypeScript will not infer those.","Leave the return type off and let it be inferred from the function body.","Mark optional parameters with <code>?</code> or give them a default value.","Let contextual typing infer callback parameter types, e.g. inside <code>.map()</code>.","Add an explicit return type only on a function other modules will import and call.","Use overloads only when parameter combinations produce genuinely different signatures."],
+      diagram:{ left:[{name:"Parameter types",sub:"must be explicit"}], right:[{name:"Return type",sub:"inferred from the body"},{name:"Callback params",sub:"inferred from context"}], coreLabel:"Function Signature", coreSub:"params explicit, rest inferred",
+        caption:"Parameters are the one part of a function TypeScript can never guess — everything downstream, from the return type to a callback's own parameters, is inferred from there." } },
+  ],
+  2: [
+    { n:6, slug:"ts-generics", name:"Generics", icon:"🧬", what:"Type parameters that let one function or class work across many types", use:"Write reusable code without losing type safety", priority:"important", learn:"type parameters <T>, generic functions, generic interfaces/classes, constraints (extends), default type parameters", docName:"TypeScript Handbook — Generics", docUrl:"https://www.typescriptlang.org/docs/handbook/2/generics.html",
+      desc:"A generic introduces a type parameter — conventionally named T — that stands in for a type the caller decides later. A function like <code>first&lt;T&gt;(arr: T[]): T</code> works identically whether it's called with an array of strings or an array of objects, and critically, TypeScript still knows the exact return type at each call site instead of falling back to <code>any</code>. Constraints (<code>T extends SomeShape</code>) narrow what T is allowed to be, so a generic can still safely access properties it depends on. Generics are what let a single reusable Array, Map, or Promise type definition stay precise no matter what it holds.",
+      useWhen:"Reach for a generic the moment you notice a function's logic is identical for every type but you're tempted to write it twice, or type it with <code>any</code>, just to avoid the type parameter syntax. The contrarian call: don't add a generic to a function until you actually have two different call sites needing two different types — a generic with one caller is speculative complexity, not reuse.",
+      steps:["Identify a function whose logic doesn't depend on a specific type.","Introduce a type parameter, e.g. <code>function wrap&lt;T&gt;(value: T): T[]</code>.","Let each call site infer T automatically from the argument passed in.","Add a constraint (<code>T extends {id: string}</code>) if the body needs to access a property.","Apply the same pattern to a class or interface, not just functions.","Resist adding a type parameter until a second real caller actually needs it."],
+      diagram:{ left:[{name:"Input value",sub:"type captured as T"}], right:[{name:"Output value",sub:"same T, not any"},{name:"Reusable across types",sub:"strings, objects, numbers…"}], coreLabel:"Generic &lt;T&gt;", coreSub:"a type parameter, not a value",
+        caption:"Whatever type flows in becomes T for that one call — the function's logic never changes, but the compiler still knows the exact type coming back out." } },
+    { n:7, slug:"ts-enums", name:"Enums", icon:"🎛️", what:"A named set of related constant values", use:"Represent a fixed, closed set of options", priority:"important", learn:"numeric enums, string enums, const enum, reverse mapping, enum vs literal union", docName:"TypeScript Handbook — Enums", docUrl:"https://www.typescriptlang.org/docs/handbook/enums.html",
+      desc:"An enum groups a small, closed set of related named constants under one type, like <code>Direction.Up</code>, <code>Direction.Down</code>, <code>Direction.Left</code>, <code>Direction.Right</code>. Numeric enums auto-increment from 0 unless you assign values explicitly, and uniquely among TypeScript's type features, they generate a reverse mapping — <code>Direction[0]</code> gives back the string 'Up'. String enums skip auto-incrementing and require an explicit value per member, which makes the compiled output and any logged value far more readable. <code>const enum</code> removes the runtime object entirely, inlining the values at compile time for zero overhead.",
+      useWhen:"In new code, a plain literal union usually beats an enum — it needs no import, compiles to nothing at runtime, and works identically with discriminated unions. The contrarian call: reach for an actual enum mainly when interoperating with an existing API or library that already expects one, or when the reverse mapping is a feature you genuinely need — not as the default way to model a fixed set of strings.",
+      steps:["Default to a literal union type before reaching for an enum.","If you do need an enum, prefer a string enum over a numeric one for readability.","Use <code>const enum</code> only when you specifically want zero runtime footprint.","Don't rely on numeric enum values staying stable if member order might change.","Reserve enums for interop with libraries/APIs that already expect them.","Never mix numeric and string members in the same enum."],
+      diagram:{ left:[{name:"Numeric enum",sub:"auto-increments from 0"},{name:"String enum",sub:"explicit values"}], right:[{name:"Compiled JS object",sub:"real object at runtime"},{name:"Literal union",sub:"often the simpler choice"}], coreLabel:"Enum", coreSub:"named constant set",
+        caption:"Unlike most TypeScript features, an enum leaves behind a real JavaScript object at runtime — which is exactly why a literal union is the leaner default for most new code." } },
+    { n:8, slug:"ts-classes", name:"Classes", icon:"🏛️", what:"Blueprints for creating objects with shared structure and behavior", use:"Model stateful objects with methods, inheritance, and access control", priority:"important", learn:"constructors, access modifiers (public/private/protected), readonly fields, extends, abstract classes, implements", docName:"TypeScript Handbook — Classes", docUrl:"https://www.typescriptlang.org/docs/handbook/2/classes.html",
+      desc:"A class is a blueprint for objects: it declares fields (the data each instance holds) and methods (the behavior each instance shares), and a constructor initializes a new instance's fields when it's created. Access modifiers control visibility — public (the default) is reachable from anywhere, private only from inside the class itself, and protected from the class and its subclasses. A class can extend another to inherit its fields and methods while overriding what needs to change, and an abstract class can declare methods with no implementation, forcing every concrete subclass to provide one.",
+      useWhen:"Reach for a class when an object genuinely has behavior tied to its own internal state that needs to stay encapsulated — a cache with private internal bookkeeping, a connection that manages its own lifecycle. The contrarian call: don't reach for a class, and inheritance in particular, just to share a few methods between otherwise-plain data objects — a plain interface plus standalone functions is usually easier to test and reason about than a deep class hierarchy.",
+      steps:["Declare the fields a class needs and give them types.","Initialize fields inside the constructor, not scattered across methods.","Mark internal-only fields <code>private</code>, and shared-with-subclasses fields <code>protected</code>.","Use <code>extends</code> only when a subclass is genuinely a more specific version of the base.","Mark a base class <code>abstract</code> if it should never be instantiated directly.","Prefer composition (plain objects + functions) over a deep inheritance chain when in doubt."],
+      diagram:{ left:[{name:"Constructor",sub:"initializes fields"},{name:"Access modifiers",sub:"public / private / protected"}], right:[{name:"new instance",sub:"created object"},{name:"Subclass (extends)",sub:"inherits & overrides"}], coreLabel:"Class", coreSub:"blueprint for objects",
+        caption:"The constructor and its access modifiers define what an instance looks like on the inside; everything on the right is what the outside world — including subclasses — actually gets to see and extend." } },
+    { n:9, slug:"ts-utility-types", name:"Utility Types", icon:"🛠️", what:"Built-in generics that transform an existing type into a new one", use:"Derive a new type from one you already defined, instead of duplicating it", priority:"important", learn:"Partial, Required, Pick, Omit, Readonly, Record, ReturnType", docName:"TypeScript Handbook — Utility Types", docUrl:"https://www.typescriptlang.org/docs/handbook/utility-types.html",
+      desc:"Utility types are generics TypeScript ships built in, each taking an existing type and producing a derived one without you retyping its fields by hand. <code>Partial&lt;T&gt;</code> makes every property optional — useful for an update payload where a caller might only send a few fields. <code>Pick&lt;T,K&gt;</code> and <code>Omit&lt;T,K&gt;</code> select or exclude specific properties from a type, <code>Readonly&lt;T&gt;</code> locks every property against reassignment, and <code>Record&lt;K,V&gt;</code> builds an object type mapping a set of keys to a value type. <code>ReturnType&lt;F&gt;</code> even extracts the return type of a function automatically, so a change to that function's return shape doesn't leave a duplicated type definition silently out of date.",
+      useWhen:"Reach for a utility type the instant you catch yourself retyping a slightly-modified copy of a type that already exists elsewhere in the codebase — that's exactly the duplication utility types exist to eliminate, and the duplicate will inevitably drift out of sync with the original. The contrarian call: don't stack four or five utility types on top of each other in one declaration; past a certain point the resulting type is unreadable in an editor tooltip, and a plainly written-out type alias communicates the shape better to the next reader.",
+      steps:["Start from a type you've already defined — don't invent a new one from scratch.","Use <code>Partial&lt;T&gt;</code> for update/patch payloads where fields are optional.","Use <code>Pick&lt;T,K&gt;</code> or <code>Omit&lt;T,K&gt;</code> to derive a narrower view of a type.","Use <code>Readonly&lt;T&gt;</code> anywhere a value must not be mutated after creation.","Use <code>Record&lt;K,V&gt;</code> for a dictionary-shaped object with known keys.","Stop stacking utility types once the result gets hard to read in a tooltip — write it out plainly instead."],
+      diagram:{ left:[{name:"Existing type T",sub:"e.g. a User interface"}], right:[{name:"Partial / Pick",sub:"narrower derived shape"},{name:"Readonly / Omit",sub:"restricted derived shape"}], coreLabel:"Utility Types", coreSub:"built-in type transforms",
+        caption:"Every utility type takes the same type T in on the left and produces a derived shape on the right — none of them require retyping a single field of the original by hand." } },
+    { n:10, slug:"ts-narrowing", name:"Type Narrowing", icon:"🔍", what:"Runtime checks that let the compiler know exactly which type you're holding", use:"Safely use a value inside a union type", priority:"important", learn:"typeof guards, instanceof, in operator, discriminated unions, custom type guards (is), truthiness narrowing", docName:"TypeScript Handbook — Narrowing", docUrl:"https://www.typescriptlang.org/docs/handbook/2/narrowing.html",
+      desc:"When a value's type is a union — <code>string | number</code>, for instance — TypeScript won't let you call a string-only method on it until you've proven, through code it can follow, which branch you're actually in. That proof is narrowing: a <code>typeof</code> check, an <code>instanceof</code> check, an <code>in</code> check for a property's existence, or a switch over a discriminated union's tag field. Inside each branch of that check, TypeScript automatically narrows the value's type for you, so a string-only method becomes callable exactly where — and only where — it's actually safe. Custom type guards extend this same mechanism to your own checks.",
+      useWhen:"Treat every union type in your code as a checklist that every consuming branch has to handle, and let the compiler flag a missing case — a switch checked against a <code>never</code> fallthrough catches exactly this. The contrarian call: avoid <code>as</code> type assertions as a substitute for narrowing — an assertion tells the compiler to trust you without checking anything at runtime, so a wrong assertion just moves the bug from compile time to production.",
+      steps:["Identify a union-typed value before trying to call a type-specific method on it.","Narrow with <code>typeof</code> for primitives, <code>instanceof</code> for classes.","Use the <code>in</code> operator to narrow based on a property's presence.","Model multi-branch state as a discriminated union and <code>switch</code> on its tag.","Write a custom type guard for reusable checks.","Avoid <code>as</code> assertions as a shortcut around narrowing — they skip the runtime check entirely."],
+      diagram:{ left:[{name:"typeof / instanceof",sub:"runtime checks"},{name:"Discriminated union",sub:"switch on tag field"}], right:[{name:"Narrowed type",sub:"the specific branch type"}], bottom:{name:"Type-specific method",sub:"only callable once narrowed"}, coreLabel:"Narrowing", coreSub:"union type &#8594; specific type",
+        caption:"Nothing about the union type itself changes — narrowing only tells the compiler which branch you've already proven you're in, which is what unlocks the type-specific method underneath." } },
+  ],
+  3: [
+    { n:11, slug:"ts-modules", name:"Modules", icon:"📦", what:"How code in one file is shared with another", use:"Split a codebase across files without polluting a shared global scope", priority:"must", learn:"export / import, default vs named exports, re-exports, module resolution, ambient declarations (.d.ts), CommonJS vs ESM", docName:"TypeScript Handbook — Modules", docUrl:"https://www.typescriptlang.org/docs/handbook/2/modules.html",
+      desc:"A module is simply any TypeScript or JavaScript file containing a top-level import or export — anything else is treated as a script that pollutes the global scope. <code>export</code> exposes a named binding (or one default export per file) for other files to import; imports pull only what's named, keeping each file's dependencies explicit and easy to trace. TypeScript layers type information onto this same mechanism — you can import and export interfaces and types exactly like values — and for JavaScript libraries with no types built in, an ambient declaration file (<code>.d.ts</code>) describes their shape separately. Module resolution is controlled by tsconfig.json's <code>module</code> and <code>moduleResolution</code> settings, and differs meaningfully between the older CommonJS format and modern ESM.",
+      useWhen:"Default to named exports over a single default export per file — they're easier to rename via refactoring tools, and an editor's autocomplete can suggest them by name, whereas a default export's name is just whatever the importer decided to call it. The contrarian call: resist re-export 'barrel' files once a project gets large — they're convenient early on, but they quietly make it hard for a bundler to tree-shake unused code and can create import cycles that are painful to debug.",
+      steps:["Give every shared piece of code an explicit named export.","Import only the specific bindings a file actually uses.","Reserve a default export for the one genuinely primary thing a file provides, if any.","Write or install a <code>.d.ts</code> file for any JS dependency that ships without its own types.","Set <code>module</code> and <code>moduleResolution</code> in tsconfig to match your actual runtime.","Avoid barrel files once the codebase is large enough that tree-shaking and import cycles start to matter."],
+      diagram:{ left:[{name:"export",sub:"file A exposes a binding"}], right:[{name:"import",sub:"file B consumes it"},{name:"Module resolution",sub:"tsconfig decides how"}], coreLabel:"Module", coreSub:"import / export boundary",
+        caption:"Every import on the right is resolved back to an export on the left according to rules tsconfig controls — get that resolution setting wrong and imports fail before a single line of logic runs." } },
+    { n:12, slug:"ts-tsconfig", name:"tsconfig.json", icon:"⚙️", what:"The TypeScript compiler's configuration file", use:"Control which files compile and how strictly they're checked", priority:"must", learn:"compilerOptions, strict mode, target, module, include/exclude, paths, incremental builds", docName:"TypeScript tsconfig Reference", docUrl:"https://www.typescriptlang.org/tsconfig",
+      desc:"tsconfig.json is the file <code>tsc</code> reads before compiling anything: it declares which files belong to the project (<code>include</code>/<code>exclude</code>), and a <code>compilerOptions</code> block that controls everything from the JavaScript version to target (<code>target</code>) to how strict the checking is. The single most consequential setting is <code>strict</code> — a bundle of individually-toggleable checks like <code>strictNullChecks</code> and <code>noImplicitAny</code> that together represent 'real' type safety; without it, TypeScript quietly lets far more bugs through than most people expect. <code>paths</code> lets you define custom import aliases, and incremental build settings cache compilation state so subsequent builds are dramatically faster.",
+      useWhen:"Turn <code>strict: true</code> on for every new project from the very first commit — retrofitting it onto an existing codebase later means fixing every violation it surfaces all at once, which only gets more expensive the longer you wait. The contrarian call: don't hand-roll compilerOptions from scratch for a framework project (Next.js, Vite, etc.) — start from the config that tool's own starter template generates, since it already encodes hard-won settings you'd otherwise rediscover by trial and error.",
+      steps:["Generate a starting config with <code>npx tsc --init</code>, or your framework's own starter.","Turn on <code>strict: true</code> immediately — don't defer it on a new project.","Set <code>target</code> to the oldest JS runtime you actually need to support.","Use <code>include</code>/<code>exclude</code> to keep generated output and <code>node_modules</code> out of the project.","Define <code>paths</code> aliases only if your bundler/runtime also understands them.","Enable <code>incremental</code> builds once compile time starts to noticeably slow down."],
+      diagram:{ left:[{name:"include / exclude",sub:"which files compile"}], right:[{name:"compilerOptions",sub:"strict, target, module…"},{name:"tsc build",sub:"reads this file first"}], coreLabel:"tsconfig.json", coreSub:"compiler configuration",
+        caption:"Before tsc checks a single line of your code, it reads this file to decide which files are even in scope and how strict the checking should be." } },
+  ],
+};
+
+/* ---------- Generic per-topic architecture diagram renderer ---------- */
+function stackBoxes(items, x, w, centerY, boxH, gap) {
+  const n = items.length;
+  if (!n) return [];
+  const totalH = n * boxH + (n - 1) * gap;
+  const startY = centerY - totalH / 2;
+  return items.map((it, i) => {
+    const y = startY + i * (boxH + gap);
+    return { ...it, x, y, w, h: boxH, cy: y + boxH / 2 };
+  });
+}
+
+function svcDiagramSVG(svc) {
+  const cfg = svc.diagram;
+  const W = 760, H = 420;
+  const coreW = 200, coreH = 90, coreCX = 380, coreCY = 210;
+  const coreX = coreCX - coreW / 2, coreY = coreCY - coreH / 2;
+  const leftX = 20, leftW = 170, rightX = 570, rightW = 170, boxH = 60, gap = 18;
+  const uid = svc.slug;
+
+  const lefts = stackBoxes(cfg.left || [], leftX, leftW, coreCY, boxH, gap);
+  const rights = stackBoxes(cfg.right || [], rightX, rightW, coreCY, boxH, gap);
+  const label = cfg.coreLabel || svc.name;
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${cfg.caption.replace(/"/g,"'")}">`;
+  svg += `<defs>
+    <marker id="m-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)"/></marker>
+    <marker id="ma-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)"/></marker>
+  </defs>`;
+
+  if (cfg.top) {
+    svg += `<rect class="d-node-navy" x="${coreX}" y="24" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title-light" x="${coreX+14}" y="47">${cfg.top.name}</text>
+      <text class="d-sub-light" x="${coreX+14}" y="62">${cfg.top.sub||""}</text>
+      <path class="d-arrow" d="M${coreCX} 70 L${coreCX} ${coreY-2}" marker-end="url(#m-${uid})"/>`;
+  }
+  if (cfg.bottom) {
+    svg += `<rect class="d-node" x="${coreX}" y="350" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title" x="${coreX+14}" y="373">${cfg.bottom.name}</text>
+      <text class="d-sub" x="${coreX+14}" y="388">${cfg.bottom.sub||""}</text>
+      <path class="d-arrow-accent" d="M${coreCX} ${coreY+coreH+2} L${coreCX} 348" marker-end="url(#ma-${uid})"/>`;
+  }
+
+  svg += `<rect class="d-node-accent" x="${coreX}" y="${coreY}" width="${coreW}" height="${coreH}" rx="12"/>
+    <text class="d-title" x="${coreCX}" y="${coreCY-6}" text-anchor="middle">${label}</text>
+    <text class="d-sub" x="${coreCX}" y="${coreCY+14}" text-anchor="middle">${cfg.coreSub||""}</text>`;
+
+  lefts.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${b.x+b.w} ${b.cy} L${coreX-2} ${coreCY}" marker-end="url(#m-${uid})"/>`;
+  });
+  rights.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${coreX+coreW+2} ${coreCY} L${b.x} ${b.cy}" marker-end="url(#m-${uid})"/>`;
+  });
+
+  svg += `</svg>`;
+  return svg;
+}
+
+function renderServicePanels() {
+  const host = document.getElementById("service-panels");
+  const html = [];
+  Object.keys(DATA).forEach(phaseKey => {
+    DATA[phaseKey].forEach(item => {
+      html.push(`
+        <section class="topic-panel" id="${item.slug}" hidden>
+          <div class="panel-kicker">${PHASE_LABEL[phaseKey]}</div>
+          <div class="panel-head">
+            <div class="panel-icon">${item.icon}</div>
+            <div>
+              <div class="svc-name-row"><h2>${String(item.n).padStart(2,"0")} · ${item.name}</h2><span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span></div>
+              <p class="panel-tagline">${item.what} — ${item.use}</p>
+            </div>
+          </div>
+          <p class="svc-desc" style="margin-top:20px;">${item.desc}</p>
+
+          <div class="use-callout">
+            <b class="callout-title">Where &amp; when to use it</b>
+            ${item.useWhen}
+          </div>
+
+          <div class="diagram-box">
+            <div class="d-chrome">Diagram · ${item.name}</div>
+            <div class="d-body">${svcDiagramSVG(item)}</div>
+            <p class="d-caption">${item.diagram.caption}</p>
+          </div>
+
+          <h3 class="subhead">How to implement it</h3>
+          <ol class="steps-list">${item.steps.map(s => `<li>${s}</li>`).join("")}</ol>
+
+          <div class="svc-learn">
+            <div class="flabel">What you should learn</div>
+            <div class="tag-list">${item.learn.split(",").map(t => `<span class="tag">${t.trim()}</span>`).join("")}</div>
+          </div>
+
+          <div class="svc-foot">
+            <a class="back-home" style="margin:0;" href="#overview">← All topics</a>
+            <a class="doc-link" href="${item.docUrl}" target="_blank" rel="noopener">${item.docName} →</a>
+          </div>
+        </section>
+      `);
+    });
+  });
+  host.innerHTML = html.join("");
+}
+
+function renderSidebarNav() {
+  Object.keys(DATA).forEach(phaseKey => {
+    const group = document.getElementById(`nav-phase-${phaseKey}`);
+    const links = DATA[phaseKey].map(item =>
+      `<a class="nav-link" href="#${item.slug}"><span class="nav-icon">${item.icon}</span> ${item.name}</a>`
+    ).join("");
+    group.insertAdjacentHTML("beforeend", links);
+  });
+}
+
+function renderServiceIndex() {
+  const host = document.getElementById("svc-index");
+  const html = Object.keys(DATA).map(phaseKey => `
+    <div class="svc-index-group">
+      <h4>${PHASE_LABEL[phaseKey]}</h4>
+      ${DATA[phaseKey].map(item => `
+        <a class="svc-index-item" href="#${item.slug}">
+          <span class="svc-index-icon">${item.icon}</span>
+          <span class="svc-index-text"><div class="n">${item.name}</div><div class="t">${item.what} — ${item.use}</div></span>
+          <span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span>
+        </a>
+      `).join("")}
+    </div>
+  `).join("");
+  host.innerHTML = html;
+}
+
+/* ---------- Router: show exactly one topic panel at a time ---------- */
+function showTopic(id) {
+  document.querySelectorAll(".topic-panel").forEach(p => { p.hidden = (p.id !== id); });
+  document.querySelectorAll(".nav-link").forEach(a => {
+    a.classList.toggle("active", a.getAttribute("href") === "#" + id);
+  });
+  window.scrollTo(0, 0);
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("sidebarScrim").classList.remove("show");
+}
+
+function routeFromHash() {
+  const id = (location.hash || "#overview").slice(1);
+  showTopic(document.getElementById(id) ? id : "overview");
+}
+
+renderServicePanels();
+renderSidebarNav();
+renderServiceIndex();
+window.addEventListener("hashchange", routeFromHash);
+routeFromHash();
+
+/* ---------- Mobile sidebar toggle ---------- */
+const menuBtn = document.getElementById("menuBtn");
+const sidebarEl = document.getElementById("sidebar");
+const scrimEl = document.getElementById("sidebarScrim");
+if (menuBtn) {
+  menuBtn.addEventListener("click", () => {
+    sidebarEl.classList.toggle("open");
+    scrimEl.classList.toggle("show");
+  });
+}
+scrimEl.addEventListener("click", () => {
+  sidebarEl.classList.remove("open");
+  scrimEl.classList.remove("show");
+});
+
+/* ---------- Summary + references (unchanged data) ---------- */
+const sequence = ["Introduction","Basic Types","Interfaces","Unions & Intersections","Functions & Inference","Generics","Enums","Classes","Utility Types","Type Narrowing","Modules","tsconfig.json"];
+document.getElementById("sequence-flow").innerHTML = sequence.map(s => `<span class="seq-step">${s}</span>`).join('<span class="seq-arrow">→</span>');
+
+const docLinks = [
+  ["Introduction to TypeScript","https://www.typescriptlang.org/docs/handbook/intro.html"],
+  ["Basic Types","https://www.typescriptlang.org/docs/handbook/2/basic-types.html"],
+  ["Interfaces","https://www.typescriptlang.org/docs/handbook/2/objects.html"],
+  ["Type Aliases, Unions & Intersections","https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types"],
+  ["Functions & Type Inference","https://www.typescriptlang.org/docs/handbook/2/functions.html"],
+  ["Generics","https://www.typescriptlang.org/docs/handbook/2/generics.html"],
+  ["Enums","https://www.typescriptlang.org/docs/handbook/enums.html"],
+  ["Classes","https://www.typescriptlang.org/docs/handbook/2/classes.html"],
+  ["Utility Types","https://www.typescriptlang.org/docs/handbook/utility-types.html"],
+  ["Type Narrowing","https://www.typescriptlang.org/docs/handbook/2/narrowing.html"],
+  ["Modules","https://www.typescriptlang.org/docs/handbook/2/modules.html"],
+  ["tsconfig.json","https://www.typescriptlang.org/tsconfig"],
+];
+document.getElementById("doc-links").innerHTML = docLinks.map(([n,u]) => `<div><b>${n}</b><br>${u}</div>`).join("");
+</script>
+
+</body>
+</html>

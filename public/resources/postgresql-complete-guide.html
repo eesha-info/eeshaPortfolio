@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PostgreSQL — Complete Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS ============ */
+  :root {
+    --bg: #f2f5f9;
+    --surface: #ffffff;
+    --surface-2: #eaeff6;
+    --surface-3: #dfe6f0;
+    --border: #dbe2ec;
+    --ink: #0d1b2e;
+    --ink-soft: #4b5872;
+    --ink-faint: #8492a8;
+    --navy: #0B2A3A;
+    --navy-2: #123c50;
+    --amber: #336791;
+    --amber-strong: #254C6B;
+    --amber-tint: rgba(51, 103, 145, 0.12);
+    --link: #1d5fa8;
+    --danger: #b8402b;
+    --danger-bg: rgba(184, 64, 43, 0.10);
+    --warn: #9c6a0a;
+    --warn-bg: rgba(156, 106, 10, 0.12);
+    --calm: #1f7a5c;
+    --calm-bg: rgba(31, 122, 92, 0.12);
+    --focus-ring: #336791;
+    --shadow: 0 12px 32px rgba(13, 27, 46, 0.10);
+    --shadow-lg: 0 24px 64px rgba(13, 27, 46, 0.28);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0a1220;
+      --surface: #111d30;
+      --surface-2: #17253c;
+      --surface-3: #1f3049;
+      --border: #26395a;
+      --ink: #ecf1f8;
+      --ink-soft: #a7b6cd;
+      --ink-faint: #71829e;
+      --navy: #163f52;
+      --navy-2: #1f5470;
+      --amber: #6FA8CC;
+      --amber-strong: #8FBFDE;
+      --amber-tint: rgba(111, 168, 204, 0.14);
+      --link: #7fb3f5;
+      --danger: #ff8a71;
+      --danger-bg: rgba(255, 138, 113, 0.14);
+      --warn: #ffc766;
+      --warn-bg: rgba(255, 199, 102, 0.14);
+      --calm: #5cdcb0;
+      --calm-bg: rgba(92, 220, 176, 0.14);
+      --focus-ring: #6FA8CC;
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0a1220;
+    --surface: #111d30;
+    --surface-2: #17253c;
+    --surface-3: #1f3049;
+    --border: #26395a;
+    --ink: #ecf1f8;
+    --ink-soft: #a7b6cd;
+    --ink-faint: #71829e;
+    --navy: #163f52;
+    --navy-2: #1f5470;
+    --amber: #6FA8CC;
+    --amber-strong: #8FBFDE;
+    --amber-tint: rgba(111, 168, 204, 0.14);
+    --link: #7fb3f5;
+    --danger: #ff8a71;
+    --danger-bg: rgba(255, 138, 113, 0.14);
+    --warn: #ffc766;
+    --warn-bg: rgba(255, 199, 102, 0.14);
+    --calm: #5cdcb0;
+    --calm-bg: rgba(92, 220, 176, 0.14);
+    --focus-ring: #6FA8CC;
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  h1, h2, h3 { font-family: "IBM Plex Mono", ui-monospace, monospace; text-wrap: balance; margin: 0; }
+  a { color: var(--link); }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  ::selection { background: var(--amber-tint); }
+
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* ============ MOBILE TOPBAR ============ */
+  .topbar {
+    display: none;
+    position: sticky; top: 0; z-index: 40;
+    align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar .brand { font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 14px; }
+  .topbar .brand span { color: var(--amber); }
+  .menu-btn {
+    width: 36px; height: 36px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--ink);
+    font-size: 16px; cursor: pointer; text-decoration: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sidebar-scrim { display: none; position: fixed; inset: 0; background: rgba(5,11,20,0.5); z-index: 45; }
+  .sidebar-scrim.show { display: block; }
+
+  /* ============ SHELL / SIDEBAR ============ */
+  .shell { display: flex; align-items: flex-start; max-width: 1360px; margin: 0 auto; }
+  .sidebar {
+    position: sticky; top: 0;
+    width: 280px; flex-shrink: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 22px 16px 60px;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+    scrollbar-width: thin;
+  }
+  .sidebar .brand {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 800;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 8px 16px;
+  }
+  .sidebar .brand span { color: var(--amber); }
+  .back-home {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 8px 18px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 600;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+  }
+  .back-home:hover { color: var(--ink); background: var(--amber-tint); border-color: var(--amber); }
+  .nav-group { margin-bottom: 4px; }
+  .nav-group-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    padding: 14px 8px 6px;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+    margin: 1px 0;
+    border-radius: 7px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 13px;
+    border-left: 2px solid transparent;
+  }
+  .nav-link:hover { background: var(--surface-2); color: var(--ink); }
+  .nav-link.active {
+    background: var(--amber-tint);
+    color: var(--ink);
+    font-weight: 600;
+    border-left: 2px solid var(--amber);
+  }
+  .nav-icon { flex-shrink: 0; width: 18px; text-align: center; font-size: 13px; }
+
+  .content { flex: 1; min-width: 0; padding: 40px 32px 90px; }
+  .topic-panel[hidden] { display: none; }
+
+  @media (max-width: 920px) {
+    .topbar { display: flex; }
+    .sidebar {
+      position: fixed; inset: 0 auto 0 0;
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+      z-index: 50;
+      width: 82vw;
+      max-width: 300px;
+      box-shadow: var(--shadow-lg);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .content { padding: 28px 18px 100px; }
+  }
+
+  /* ============ PANEL HERO (Overview only) ============ */
+  .panel-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    background: linear-gradient(150deg, #08202f 0%, #0f3247 55%, #0b2a3c 100%);
+    color: #eef2f8;
+    padding: 40px 32px;
+    margin-bottom: 30px;
+  }
+  .panel-hero::before {
+    content: "";
+    position: absolute;
+    top: -120px; right: -90px;
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(111,168,204,0.35), rgba(111,168,204,0) 70%);
+    pointer-events: none;
+  }
+  .panel-hero .eyebrow {
+    position: relative;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #8fd0f0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel-hero .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #8fd0f0; display: inline-block; }
+  .panel-hero h1 { position: relative; margin-top: 14px; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.2; font-weight: 700; color: #fff; }
+  .panel-hero h1 em { font-style: normal; color: #8fd0f0; }
+  .panel-hero p.lede { position: relative; margin-top: 12px; font-size: 15px; color: #c3d0e3; max-width: 68ch; font-family: "IBM Plex Sans", sans-serif; line-height: 1.75; }
+  .panel-hero .stat-chips { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .stat-chip {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    border: 1px solid rgba(255,255,255,0.22);
+    color: #dbe6f5;
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+  .stat-chip b { color: #fff; }
+
+  section.topic-panel h1.section-title { font-size: 22px; margin-bottom: 14px; }
+  .lede-plain { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 82ch; margin: 0 0 16px; }
+  .lede-plain b { color: var(--ink); }
+
+  /* ============ DIAGRAM BOX ============ */
+  .diagram-box {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    margin: 0 0 24px;
+  }
+  .diagram-box .d-chrome {
+    background: var(--navy);
+    color: #eef3fb;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 11px 16px;
+  }
+  .diagram-box .d-body { padding: 22px 18px 6px; overflow-x: auto; }
+  .diagram-box .d-body svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+  .diagram-box .d-caption {
+    padding: 6px 20px 20px;
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 88ch;
+  }
+  .diagram-box .d-caption code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; color: var(--ink); }
+  .diagram-box .d-caption b { color: var(--ink); }
+
+  /* shared SVG node styles, reused by every diagram */
+  svg .d-node { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
+  svg .d-node-accent { fill: var(--amber-tint); stroke: var(--amber); stroke-width: 1.5; }
+  svg .d-node-navy { fill: var(--navy); stroke: var(--navy); }
+  svg .d-title { fill: var(--ink); font: 700 13.5px "IBM Plex Sans", sans-serif; }
+  svg .d-title-light { fill: #ffffff; font: 700 12.5px "IBM Plex Mono", monospace; }
+  svg .d-sub { fill: var(--ink-faint); font: 600 10px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-sub-light { fill: #b9c8e0; font: 600 9.5px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-text { fill: var(--ink-soft); font: 500 11px "IBM Plex Mono", monospace; }
+  svg .d-arrow { fill: none; stroke: var(--ink-faint); stroke-width: 2; }
+  svg .d-arrow-accent { fill: none; stroke: var(--amber); stroke-width: 2.25; }
+  svg .d-label { fill: var(--ink-soft); font: 600 11px "IBM Plex Sans", sans-serif; }
+  svg .d-label-accent { fill: var(--amber-strong); font: 700 11px "IBM Plex Sans", sans-serif; }
+  svg .d-boundary { fill: none; stroke: var(--link); stroke-width: 1.5; stroke-dasharray: 6 4; }
+  svg .d-boundary-label { fill: var(--link); font: 700 10.5px "IBM Plex Mono", monospace; letter-spacing: 0.05em; }
+
+  /* ============ TOPIC PANEL ============ */
+  .panel-kicker {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 10px;
+  }
+  .panel-head { display: flex; gap: 16px; align-items: flex-start; }
+  .panel-icon {
+    flex-shrink: 0;
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    background: var(--navy);
+    color: var(--amber-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+  }
+  .svc-name-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .svc-name-row h2 { font-size: 21px; color: var(--ink); }
+  .panel-tagline { margin: 6px 0 0; font-size: 13.5px; color: var(--ink-faint); font-family: "IBM Plex Sans", sans-serif; }
+  .svc-desc { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 84ch; }
+
+  .use-callout {
+    margin: 22px 0;
+    padding: 16px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--link);
+    background: var(--surface-2);
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 84ch;
+  }
+  .use-callout b { color: var(--ink); }
+  .callout-title {
+    display: block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--link);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  h3.subhead { font-size: 15px; margin: 28px 0 6px; color: var(--ink); }
+
+  .steps-list {
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 84ch;
+  }
+  .steps-list li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .steps-list li::before {
+    counter-increment: step;
+    content: counter(step);
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--amber-strong);
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+    font-size: 11.5px;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .steps-list li b { color: var(--ink); }
+  .steps-list li code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+
+  .svc-learn { margin-top: 26px; }
+  .flabel {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--ink-soft);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .svc-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    max-width: 84ch;
+  }
+  .doc-link {
+    font-size: 12.5px;
+    color: var(--link);
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .doc-link:hover { text-decoration: underline; }
+  .badge {
+    display: inline-block;
+    font-family: "IBM Plex Mono", monospace;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+  }
+  .badge-must { background: var(--danger-bg); color: var(--danger); }
+  .badge-important { background: var(--warn-bg); color: var(--warn); }
+  .badge-level { background: var(--calm-bg); color: var(--calm); }
+
+  /* ============ OVERVIEW TOPIC INDEX ============ */
+  .svc-index-group { margin-bottom: 22px; }
+  .svc-index-group h4 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    font-family: "IBM Plex Mono", monospace;
+    margin-bottom: 10px;
+  }
+  .svc-index-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    text-decoration: none;
+    color: var(--ink);
+    margin-bottom: 6px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .svc-index-item:hover { border-color: var(--amber); background: var(--amber-tint); }
+  .svc-index-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--navy);
+    color: var(--amber-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .svc-index-text { flex: 1; min-width: 0; }
+  .svc-index-text .n { font-weight: 700; font-size: 13.5px; }
+  .svc-index-text .t { font-size: 11.5px; color: var(--ink-faint); }
+
+  /* ============ SUMMARY CARDS ============ */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--amber);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+  }
+  .card h3 { font-size: 14px; color: var(--ink); margin-bottom: 12px; }
+  .card p.card-note { margin: 0 0 14px; font-size: 13px; color: var(--ink-soft); font-family: "IBM Plex Sans", sans-serif; line-height: 1.7; }
+  .seq-flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; }
+  .seq-step {
+    font-family: "IBM Plex Mono", monospace;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  .seq-arrow { color: var(--amber); font-weight: 700; }
+
+  .priority-levels { display: flex; flex-direction: column; gap: 12px; }
+  .plevel { display: flex; gap: 12px; align-items: flex-start; }
+  .plevel .lvl-tag {
+    font-family: "IBM Plex Mono", monospace;
+    flex-shrink: 0;
+    width: 72px;
+    padding: 5px 0;
+    text-align: center;
+    border-radius: 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .lvl-1 { background: var(--danger); }
+  .lvl-2 { background: var(--warn); color: #221600; }
+  .lvl-3 { background: var(--ink-faint); }
+  .plevel .lvl-items { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+
+  .doc-links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 8px 20px;
+    font-size: 12px;
+  }
+  .doc-links-grid div { color: var(--ink-soft); overflow-wrap: break-word; }
+  .doc-links-grid b { color: var(--ink); font-family: "IBM Plex Mono", monospace; font-size: 11.5px; }
+
+  /* ============ FOOTER ============ */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 28px 48px;
+    text-align: center;
+  }
+  footer .label {
+    font-family: "IBM Plex Mono", monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 10px;
+    color: var(--amber);
+    font-weight: 700;
+  }
+  footer .name { font-size: 18px; font-weight: 700; margin-top: 6px; }
+  footer .role { font-size: 12.5px; color: var(--ink-soft); margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="Open navigation">☰</button>
+  <div class="brand">PG<span>::</span>DOCS</div>
+  <a class="menu-btn" href="../" aria-label="Back to Portfolio">⌂</a>
+</div>
+<div class="sidebar-scrim" id="sidebarScrim"></div>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">PG<span>::</span>DOCS</div>
+    <a class="back-home" href="../">← Back to Portfolio</a>
+
+    <div class="nav-group">
+      <a class="nav-link" href="#overview"><span class="nav-icon">🏠</span> Overview</a>
+    </div>
+
+    <div class="nav-group" id="nav-phase-1">
+      <div class="nav-group-label">Phase 1 · Foundations</div>
+    </div>
+    <div class="nav-group" id="nav-phase-2">
+      <div class="nav-group-label">Phase 2 · Querying &amp; Retrieval</div>
+    </div>
+    <div class="nav-group" id="nav-phase-3">
+      <div class="nav-group-label">Phase 3 · Reliability &amp; Abstraction</div>
+    </div>
+    <div class="nav-group" id="nav-phase-4">
+      <div class="nav-group-label">Phase 4 · Advanced &amp; Operations</div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Reference</div>
+      <a class="nav-link" href="#summary"><span class="nav-icon">📐</span> Summary</a>
+      <a class="nav-link" href="#references"><span class="nav-icon">📄</span> References</a>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <section class="topic-panel" id="overview">
+      <div class="panel-hero">
+        <div class="eyebrow">Relational Database Engineering</div>
+        <h1>PostgreSQL <em>Complete Guide</em></h1>
+        <p class="lede">PostgreSQL is a free, open-source relational database known for strict standards compliance, rock-solid reliability, and features most databases only added decades later — real transactions, sophisticated indexing, and a native JSONB type that blurs the line with document stores. This doc walks through the 11 concepts a working engineer actually needs, in the order you're likely to need them, with a diagram, a "where to use it" guide, and concrete SQL for every single one.</p>
+        <div class="stat-chips">
+          <span class="stat-chip"><b>4</b> phases</span>
+          <span class="stat-chip"><b>11</b> topics</span>
+          <span class="stat-chip"><b>11</b> diagrams</span>
+          <span class="stat-chip"><b>2</b> priority levels</span>
+        </div>
+      </div>
+
+      <p class="lede-plain">Use the sidebar to jump straight to any topic — each one opens its own page with a full explanation, a diagram of exactly how it fits with the concepts around it, and the concrete SQL to actually try it. If you're starting from zero, work through <b>Phase 1</b> first: nothing else on this roadmap makes sense without a server to connect to and a table to put data in.</p>
+
+      <div class="diagram-box">
+        <div class="d-chrome">Diagram · How a Write Reaches Disk — Where Every Topic Fits</div>
+        <div class="d-body">
+          <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Client or app connects through the PostgreSQL server into tables, backed by indexes for speed and the write-ahead log for durability, before finally reaching disk">
+            <defs>
+              <marker id="archArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+            </defs>
+
+            <rect class="d-node" x="20" y="40" width="120" height="60" rx="30" />
+            <text class="d-title" x="80" y="66" text-anchor="middle">Client / App</text>
+            <text class="d-sub" x="80" y="82" text-anchor="middle">psql, libpq</text>
+            <path class="d-arrow" d="M140 70 L168 70" marker-end="url(#archArrow)" />
+
+            <rect class="d-node-accent" x="170" y="40" width="150" height="60" rx="10" />
+            <text class="d-title" x="188" y="66">PostgreSQL Server</text>
+            <text class="d-sub" x="188" y="82">postmaster + backends</text>
+            <path class="d-arrow" d="M320 70 L348 70" marker-end="url(#archArrow)" />
+
+            <rect class="d-node" x="350" y="40" width="120" height="60" rx="10" />
+            <text class="d-title" x="368" y="66">Tables</text>
+            <text class="d-sub" x="368" y="82">rows on heap pages</text>
+            <path class="d-arrow" d="M470 55 L 508 30" marker-end="url(#archArrow)" />
+            <path class="d-arrow" d="M470 85 L 508 128" marker-end="url(#archArrow)" />
+
+            <rect class="d-node" x="510" y="10" width="130" height="45" rx="8" />
+            <text class="d-title" x="524" y="37">Indexes</text>
+            <rect class="d-node" x="510" y="120" width="130" height="45" rx="8" />
+            <text class="d-title" x="524" y="147">WAL</text>
+
+            <path class="d-arrow" d="M640 32 L 690 70" marker-end="url(#archArrow)" />
+            <path class="d-arrow" d="M640 142 L 690 90" marker-end="url(#archArrow)" />
+
+            <rect class="d-node-navy" x="700" y="45" width="110" height="50" rx="10" />
+            <text class="d-title-light" x="716" y="72">Disk</text>
+            <text class="d-sub-light" x="716" y="87">durable storage</text>
+
+            <path class="d-boundary" d="M475 205 L 475 205" />
+            <text class="d-boundary-label" x="335" y="205">EVERY WRITE COMMITS TO THE WAL BEFORE THE TABLE DATA ITSELF IS TOUCHED</text>
+
+            <g>
+              <rect class="d-node" x="22" y="222" width="140" height="36" rx="8" /><text class="d-text" x="92" y="244" text-anchor="middle">CRUD Statements</text>
+              <rect class="d-node" x="170" y="222" width="110" height="36" rx="8" /><text class="d-text" x="225" y="244" text-anchor="middle">Joins</text>
+              <rect class="d-node" x="288" y="222" width="130" height="36" rx="8" /><text class="d-text" x="353" y="244" text-anchor="middle">Transactions</text>
+              <rect class="d-node" x="426" y="222" width="130" height="36" rx="8" /><text class="d-text" x="491" y="244" text-anchor="middle">Views</text>
+              <rect class="d-node" x="564" y="222" width="110" height="36" rx="8" /><text class="d-text" x="619" y="244" text-anchor="middle">JSONB</text>
+              <rect class="d-node" x="682" y="222" width="140" height="36" rx="8" /><text class="d-text" x="752" y="244" text-anchor="middle">Backup / Replica</text>
+              <rect class="d-node" x="510" y="266" width="180" height="34" rx="8" /><text class="d-text" x="600" y="287" text-anchor="middle">Constraints &amp; Data Types</text>
+            </g>
+          </svg>
+        </div>
+        <p class="d-caption">This is the shape every PostgreSQL feature ultimately serves. A client talks to the server, which reads and writes tables that live on disk; indexes make the reads fast and the write-ahead log (WAL) makes every write durable and crash-safe. Because every change is committed to the WAL before it's applied, and the whole sequence of statements between <code>BEGIN</code> and <code>COMMIT</code> either happens completely or not at all, PostgreSQL can guarantee full ACID transactions even across a crash mid-write. Everything below is its own page in this sidebar.</p>
+      </div>
+
+      <h3 class="subhead" style="margin-top:8px;">All 11 topics in this guide</h3>
+      <div id="svc-index"></div>
+    </section>
+
+    <!-- 11 topic panels are injected here by renderServicePanels() -->
+    <div id="service-panels"></div>
+
+    <section class="topic-panel" id="summary">
+      <h1 class="section-title">Summary &amp; Patterns</h1>
+      <p class="lede-plain">Once the individual topics make sense on their own, these references tie them together: the order to learn them in, how urgently each one matters, and how the query planner actually decides what a query costs.</p>
+
+      <div class="card">
+        <h3>Recommended Learning Order</h3>
+        <div class="seq-flow" id="sequence-flow"></div>
+      </div>
+
+      <div class="card">
+        <h3>Recommended Priority</h3>
+        <div class="priority-levels">
+          <div class="plevel"><div class="lvl-tag lvl-1">MUST</div><div class="lvl-items">Introduction &amp; psql, Databases &amp; Schemas, Data Types, Tables &amp; Constraints, CRUD, Transactions &amp; ACID, Backup &amp; Replication.</div></div>
+          <div class="plevel"><div class="lvl-tag lvl-2">IMPORTANT</div><div class="lvl-items">Joins, Indexes, Views, JSONB.</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Anatomy of a Query Plan</h3>
+        <p class="card-note">The single most useful habit on this whole roadmap: read <code>EXPLAIN ANALYZE</code> before assuming a slow query needs an index — the planner already tells you exactly what it did and why.</p>
+        <div class="diagram-box" style="margin-bottom:0; box-shadow:none;">
+          <div class="d-chrome">Diagram · Query → Planner → Scan Path → Executor → Result</div>
+          <div class="d-body">
+            <svg viewBox="0 0 780 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A query goes to the planner, which estimates cost using table statistics and chooses either a sequential scan or an index scan, then hands the chosen path to the executor which returns the result rows">
+              <defs>
+                <marker id="patternArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+                <marker id="patternArrowAccent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)" /></marker>
+              </defs>
+
+              <line class="d-boundary" x1="330" y1="20" x2="330" y2="280" />
+              <text class="d-boundary-label" x="165" y="36" text-anchor="middle">PLANNING</text>
+              <text class="d-boundary-label" x="560" y="36" text-anchor="middle">EXECUTION</text>
+
+              <rect class="d-node" x="20" y="110" width="110" height="60" rx="30" />
+              <text class="d-title" x="75" y="144" text-anchor="middle">Query</text>
+              <path class="d-arrow" d="M130 140 L 168 140" marker-end="url(#patternArrow)" />
+
+              <rect class="d-node-accent" x="170" y="105" width="150" height="70" rx="10" />
+              <text class="d-title" x="188" y="133">Planner</text>
+              <text class="d-sub" x="188" y="149">estimates cost</text>
+              <path class="d-arrow-accent" d="M300 103 C 260 75, 180 70, 100 105" marker-end="url(#patternArrowAccent)" />
+              <text class="d-label-accent" x="90" y="65">① reads table statistics</text>
+
+              <path class="d-arrow" d="M320 118 L 358 70" marker-end="url(#patternArrow)" />
+              <text class="d-label" x="330" y="70">② no useful index</text>
+              <path class="d-arrow" d="M320 162 L 358 210" marker-end="url(#patternArrow)" />
+              <text class="d-label" x="330" y="222">③ selective + indexed</text>
+
+              <rect class="d-node" x="360" y="40" width="150" height="55" rx="10" />
+              <text class="d-title" x="378" y="63">Seq Scan</text>
+              <text class="d-sub" x="378" y="80">reads every row</text>
+
+              <rect class="d-node" x="360" y="185" width="150" height="55" rx="10" />
+              <text class="d-title" x="378" y="208">Index Scan</text>
+              <text class="d-sub" x="378" y="225">B-tree lookup</text>
+
+              <path class="d-arrow" d="M510 67 L 558 130" marker-end="url(#patternArrow)" />
+              <path class="d-arrow" d="M510 212 L 558 150" marker-end="url(#patternArrow)" />
+
+              <rect class="d-node" x="560" y="105" width="100" height="70" rx="10" />
+              <text class="d-title" x="574" y="133">Executor</text>
+              <text class="d-sub" x="574" y="149">runs the plan</text>
+              <path class="d-arrow" d="M660 140 L 698 140" marker-end="url(#patternArrow)" />
+
+              <rect class="d-node-navy" x="700" y="112" width="70" height="56" rx="10" />
+              <text class="d-title-light" x="712" y="144" style="font-size:11px;">Rows</text>
+            </svg>
+          </div>
+          <p class="d-caption">The planner never looks at the actual data — it estimates the cost of each possible path from stored table statistics <b>①</b>, then hands the executor whichever path it believes is cheapest, sequential scan or index scan. <code>EXPLAIN ANALYZE</code> shows you both the estimate and what actually happened, which is the only reliable way to know whether a slow query needs an index or already has one it isn't using.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic-panel" id="references">
+      <h1 class="section-title">Official Documentation Reference URLs</h1>
+      <p class="lede-plain">Every topic covered in this guide, with a direct link to its official PostgreSQL docs page.</p>
+      <div class="card">
+        <div class="doc-links-grid" id="doc-links"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="label">Documented By</div>
+  <div class="name">MD Eesha</div>
+  <div class="role">Sr. Software Engineer</div>
+</footer>
+
+<script>
+const PRIORITY_LABEL = {
+  must: "Must",
+  important: "Important",
+};
+const PRIORITY_CLASS = {
+  must: "badge-must",
+  important: "badge-important",
+};
+const PHASE_LABEL = {
+  1: "Phase 1 · Foundations",
+  2: "Phase 2 · Querying & Retrieval",
+  3: "Phase 3 · Reliability & Abstraction",
+  4: "Phase 4 · Advanced & Operations",
+};
+
+const DATA = {
+  1: [
+    { n:1, slug:"pg-intro", name:"Introduction &amp; psql", icon:"🐘", what:"The PostgreSQL server &amp; psql client", use:"Connect to, explore, and run your first commands against a PostgreSQL instance", learn:"psql, connection strings, roles, initdb, postgresql.conf, backend processes, \\d meta-commands", priority:"must", docName:"PostgreSQL Tutorial — Getting Started", docUrl:"https://www.postgresql.org/docs/current/tutorial.html",
+      desc:"PostgreSQL is a free, open-source object-relational database that has spent over three decades earning a reputation for correctness, standards compliance, and extensibility. A running PostgreSQL installation is really a single postmaster process listening on port 5432 that forks a dedicated backend process for every client connection, so one client's crash never takes down another's session. psql is the official command-line client — it speaks the wire protocol directly, gives you tab completion and command history, and adds a set of backslash meta-commands (<code>\\d</code>, <code>\\dt</code>, <code>\\l</code>) for inspecting the database without writing SQL. Roles are PostgreSQL's single concept for both users and groups, and <code>initdb</code> is the one-time step that lays out a brand-new data directory before the server can start. Everything else in this guide — schemas, tables, transactions — happens inside the session psql opens for you.",
+      useWhen:"Reach for psql the moment you need to poke at a database directly — running a one-off migration, checking whether an index actually got created, or debugging a query a GUI tool is rendering strangely. It's also the fastest way to learn: every SQL example in this guide can be pasted straight into a psql prompt.",
+      steps:["Install PostgreSQL locally or connect to a hosted instance (RDS, Supabase, Docker).","Connect with <code>psql -h localhost -U postgres -d postgres</code>.","List databases with <code>\\l</code> and switch into one with <code>\\c mydb</code>.","List tables with <code>\\dt</code> and describe one with <code>\\d users</code>.","Create your first role: <code>CREATE ROLE app_user WITH LOGIN PASSWORD 'change_me';</code>","Check the server version any time with <code>SELECT version();</code>."],
+      diagram:{ left:[{name:"psql client",sub:"terminal / wire protocol"}], right:[{name:"Backend process",sub:"forked per connection"}], top:{name:"Postmaster",sub:"listens on :5432"}, coreSub:"PostgreSQL server",
+        caption:"Every client connection gets its own backend process forked by the postmaster — one connection misbehaving never takes down the others." } },
+    { n:2, slug:"pg-schemas", name:"Databases &amp; Schemas", icon:"🗂️", what:"Namespacing your tables", use:"Organize tables, views, and functions into logical groups inside one database", learn:"CREATE DATABASE, CREATE SCHEMA, search_path, public schema, ownership, cross-schema references", priority:"must", docName:"PostgreSQL Docs — Schemas", docUrl:"https://www.postgresql.org/docs/current/ddl-schemas.html",
+      desc:"A PostgreSQL server can host many databases, and each database is a completely separate namespace — connections, permissions, and most system catalogs don't cross database boundaries. Inside a single database, schemas provide a second, lighter-weight layer of organization: a <code>public</code> schema exists by default, but you can create as many as you like (<code>app</code>, <code>reporting</code>, <code>audit</code>) to group related tables without spinning up new databases. The <code>search_path</code> setting decides which schema an unqualified table name resolves to, so <code>SELECT * FROM users</code> and <code>SELECT * FROM app.users</code> can mean the same thing once configured. This matters most once an application grows multiple concerns — keeping reporting tables, audit logs, and core application tables in separate schemas keeps permissions and backups easier to reason about.",
+      useWhen:"Use a new schema (not a new database) when you want to separate concerns within the same application — multi-tenant table sets, an audit trail, or a reporting layer that a BI tool connects to read-only. Reach for a genuinely separate database only when the data has no reason to ever be joined against the rest.",
+      steps:["Create a database: <code>CREATE DATABASE storefront;</code>","Connect to it and create a schema: <code>CREATE SCHEMA reporting;</code>","Create a table inside it explicitly: <code>CREATE TABLE reporting.daily_sales (day date, total numeric);</code>","Check or set the search path: <code>SHOW search_path;</code> / <code>SET search_path TO app, public;</code>","Grant schema-level access instead of table-by-table: <code>GRANT USAGE ON SCHEMA reporting TO analyst;</code>","List all schemas in the current database with <code>\\dn</code>."],
+      diagram:{ left:[{name:"CREATE DATABASE",sub:"top-level isolation"}], right:[{name:"public schema",sub:"default namespace"},{name:"custom schemas",sub:"app, reporting, audit"}], coreSub:"one database, many schemas",
+        caption:"Databases are fully isolated from each other; schemas inside the same database share catalogs and can be joined freely." } },
+    { n:3, slug:"pg-datatypes", name:"Data Types", icon:"🔢", what:"Choosing the right column type", use:"Store text, numbers, dates, and structured data with the correct precision", learn:"integer vs numeric, text vs varchar(n), timestamp vs timestamptz, boolean, uuid, arrays, enum, jsonb", priority:"must", docName:"PostgreSQL Docs — Data Types", docUrl:"https://www.postgresql.org/docs/current/datatype.html",
+      desc:"PostgreSQL ships with an unusually rich type system: exact integers (<code>smallint</code>/<code>integer</code>/<code>bigint</code>), arbitrary-precision <code>numeric</code> for money, floating point for scientific data, and a genuinely distinct <code>text</code> type that has no meaningful performance difference from <code>varchar(n)</code> — the length limit is the only thing <code>varchar</code> buys you. Dates and times come in both timezone-naive (<code>timestamp</code>) and timezone-aware (<code>timestamptz</code>) flavors, and picking the wrong one is one of the most common beginner mistakes. Beyond the basics, PostgreSQL supports native arrays, a <code>uuid</code> type for primary keys that don't leak row counts, user-defined <code>enum</code> types for closed sets of values, and <code>jsonb</code> for semi-structured data. Choosing a precise type up front — <code>numeric(10,2)</code> for currency instead of <code>float</code>, <code>timestamptz</code> instead of <code>timestamp</code> — prevents entire categories of bugs that only surface once data volume grows.",
+      useWhen:"Default to <code>text</code> over <code>varchar(n)</code> unless you have a genuine business rule about maximum length, <code>numeric</code> over <code>float</code>/<code>double precision</code> for any value involving money, and <code>timestamptz</code> over <code>timestamp</code> for anything a user in more than one timezone will ever read.",
+      steps:["Pick exact types for money: <code>price numeric(10,2) NOT NULL</code>, never float.","Use <code>timestamptz</code> for any datetime a user will see, so PostgreSQL handles timezone conversion for you.","Prefer <code>text</code> over <code>varchar(n)</code> unless there's a real length constraint to enforce.","Use <code>uuid</code> (with <code>gen_random_uuid()</code>) for public-facing primary keys that shouldn't leak sequence order.","Model a closed set of values with an enum: <code>CREATE TYPE order_status AS ENUM ('pending','paid','shipped');</code>","Reach for a native array column (<code>tags text[]</code>) only for small, unindexed lists — a join table scales better."],
+      diagram:{ left:[{name:"Numeric types",sub:"integer, numeric, real"},{name:"Text types",sub:"text, varchar(n), char"}], right:[{name:"Date/time types",sub:"timestamptz, date, interval"},{name:"Structured types",sub:"uuid, enum, array, jsonb"}], coreSub:"column type system",
+        caption:"The type you pick for a column is a permanent decision about precision — numeric vs float and timestamp vs timestamptz are the two most common regrets." } },
+    { n:4, slug:"pg-tables", name:"Tables &amp; Constraints", icon:"🏛️", what:"Defining structure and data integrity rules", use:"Create tables with primary keys, foreign keys, and validation rules enforced by the database itself", learn:"CREATE TABLE, PRIMARY KEY, FOREIGN KEY, NOT NULL, UNIQUE, CHECK, ON DELETE CASCADE, DEFAULT", priority:"must", docName:"PostgreSQL Docs — Constraints", docUrl:"https://www.postgresql.org/docs/current/ddl-constraints.html",
+      desc:"A table's constraints are the difference between a database that merely stores rows and one that actively refuses to store bad ones. A <code>PRIMARY KEY</code> uniquely identifies each row and is usually backed by an automatic index; a <code>FOREIGN KEY</code> guarantees a value in one table actually exists in another, with an <code>ON DELETE</code> policy (<code>CASCADE</code>, <code>RESTRICT</code>, <code>SET NULL</code>) deciding what happens when the referenced row disappears. <code>NOT NULL</code> and <code>UNIQUE</code> enforce presence and distinctness, <code>CHECK</code> constraints validate arbitrary business rules (<code>price &gt;= 0</code>) directly in the schema, and <code>DEFAULT</code> fills in a value when none is supplied. Enforcing these rules in the database, rather than only in application code, means every future service, migration script, or careless psql session is held to the same standard automatically.",
+      useWhen:"Put a constraint in the database for any rule that must never be violated regardless of which code path writes the row — application-level validation is a nice UX layer on top, but it isn't a substitute for a <code>NOT NULL</code>, <code>UNIQUE</code>, or <code>CHECK</code> constraint enforced by the engine itself.",
+      steps:["Define the primary key inline: <code>id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY</code>.","Add a foreign key with an explicit delete policy: <code>customer_id bigint REFERENCES customers(id) ON DELETE CASCADE</code>.","Require presence with <code>NOT NULL</code> and distinctness with <code>UNIQUE</code> on columns like email.","Validate business rules with <code>CHECK (quantity &gt; 0)</code> instead of trusting application code alone.","Set sensible defaults: <code>created_at timestamptz NOT NULL DEFAULT now()</code>.","Add or change a constraint later with <code>ALTER TABLE orders ADD CONSTRAINT positive_total CHECK (total &gt;= 0);</code>"],
+      diagram:{ left:[{name:"PRIMARY KEY",sub:"unique row identity"},{name:"NOT NULL / UNIQUE",sub:"presence & distinctness"}], right:[{name:"FOREIGN KEY",sub:"referential integrity"},{name:"CHECK",sub:"business rules"}], coreSub:"table definition",
+        caption:"Every constraint is a rule the engine itself enforces on every write, regardless of which application or script produced it." } },
+  ],
+  2: [
+    { n:5, slug:"pg-crud", name:"CRUD", icon:"✏️", what:"INSERT, SELECT, UPDATE, DELETE", use:"Read and write rows — the four statements every application runs constantly", learn:"INSERT ... RETURNING, WHERE, ORDER BY, LIMIT, UPDATE ... WHERE, DELETE ... WHERE, UPSERT", priority:"must", docName:"PostgreSQL Docs — Data Manipulation", docUrl:"https://www.postgresql.org/docs/current/dml.html",
+      desc:"INSERT, SELECT, UPDATE, and DELETE are the four data manipulation statements that make up the vast majority of traffic against any real database. <code>INSERT</code> adds rows and, with PostgreSQL's <code>RETURNING</code> clause, can hand back the generated ID in the same round trip instead of a second query. <code>SELECT</code> filters with <code>WHERE</code>, orders with <code>ORDER BY</code>, and paginates with <code>LIMIT</code>/<code>OFFSET</code>. <code>UPDATE</code> and <code>DELETE</code> both take a <code>WHERE</code> clause that is easy to accidentally omit — running either without one rewrites or removes every row in the table. PostgreSQL also supports <code>INSERT ... ON CONFLICT</code> (upsert), which inserts a new row or updates an existing one in a single atomic statement instead of a separate check-then-write.",
+      useWhen:"These four statements are the foundation of essentially every backend endpoint — a GET maps to SELECT, a POST to INSERT, a PUT/PATCH to UPDATE, a DELETE endpoint to DELETE. The one habit worth building early: always write and double-check the WHERE clause before running UPDATE or DELETE outside a transaction.",
+      steps:["Insert a row and get its id back in one round trip: <code>INSERT INTO users (email) VALUES ('a@b.com') RETURNING id;</code>","Filter and paginate a read: <code>SELECT * FROM orders WHERE customer_id = 42 ORDER BY created_at DESC LIMIT 20;</code>","Update only matching rows: <code>UPDATE orders SET status = 'shipped' WHERE id = 501;</code>","Delete only matching rows: <code>DELETE FROM sessions WHERE expires_at &lt; now();</code>","Upsert in one atomic statement: <code>INSERT INTO settings (user_id, key, value) VALUES (1,'theme','dark') ON CONFLICT (user_id, key) DO UPDATE SET value = EXCLUDED.value;</code>","Wrap a multi-row UPDATE in a transaction with a dry-run SELECT first to confirm the WHERE clause matches only what you intend."],
+      diagram:{ left:[{name:"INSERT",sub:"adds rows"},{name:"UPDATE",sub:"modifies rows"}], right:[{name:"SELECT",sub:"reads rows"},{name:"DELETE",sub:"removes rows"}], coreSub:"table rows",
+        caption:"All four statements operate on the same set of rows — SELECT and the WHERE clause on UPDATE/DELETE decide exactly which ones." } },
+    { n:6, slug:"pg-joins", name:"Joins", icon:"🔗", what:"Combining rows across tables", use:"Retrieve related data that's been normalized into separate tables", learn:"INNER JOIN, LEFT JOIN, RIGHT JOIN, FULL OUTER JOIN, ON vs WHERE, multi-table joins, self joins", priority:"important", docName:"PostgreSQL Docs — Table Expressions (Joins)", docUrl:"https://www.postgresql.org/docs/current/queries-table-expressions.html#QUERIES-JOIN",
+      desc:"Normalizing data into separate tables (customers, orders, order_items) avoids duplication, but it means you need joins to put related rows back together for a query. An <code>INNER JOIN</code> returns only rows that match on both sides; a <code>LEFT JOIN</code> keeps every row from the left table and fills in NULLs where there's no match on the right — the join you reach for when you want 'all customers, even ones with zero orders.' <code>RIGHT JOIN</code> is the mirror image and rarely used in practice since you can just flip the table order and use <code>LEFT JOIN</code>; <code>FULL OUTER JOIN</code> keeps unmatched rows from both sides. The condition in the <code>ON</code> clause decides how rows are matched, while a condition in <code>WHERE</code> filters the joined result afterward — putting a filter in the wrong clause is a common source of subtly wrong outer join results.",
+      useWhen:"Use INNER JOIN when a row is only meaningful alongside its match (an order line item without an order makes no sense). Use LEFT JOIN specifically when you need to preserve rows that might have zero matches, like a customer with no orders yet, and always double check whether a filter belongs in ON or WHERE when a LEFT JOIN is involved.",
+      steps:["Join two related tables: <code>SELECT o.id, c.name FROM orders o JOIN customers c ON o.customer_id = c.id;</code>","Keep every left-side row even without a match: <code>SELECT c.name, o.id FROM customers c LEFT JOIN orders o ON o.customer_id = c.id;</code>","Filter the match condition in ON, not WHERE, when using LEFT JOIN, or you'll silently turn it back into an INNER JOIN.","Chain multiple joins for a three-table relationship: orders → order_items → products.","Use a self-join to compare rows in the same table, e.g. finding an employee's manager in the same employees table.","Check the query plan with <code>EXPLAIN</code> once joins involve large tables, to confirm indexes are actually being used."],
+      diagram:{ left:[{name:"customers",sub:"table A"}], right:[{name:"orders",sub:"table B"}], coreSub:"JOIN result", coreLabel:"JOIN ... ON",
+        caption:"The ON condition decides which rows from each side are paired together; WHERE only filters the combined result afterward." } },
+    { n:7, slug:"pg-indexes", name:"Indexes", icon:"⚡", what:"Speeding up lookups", use:"Avoid full table scans on columns that are searched or joined on frequently", learn:"B-tree, EXPLAIN ANALYZE, sequential scan vs index scan, composite indexes, UNIQUE index, partial index, GIN", priority:"important", docName:"PostgreSQL Docs — Indexes", docUrl:"https://www.postgresql.org/docs/current/indexes.html",
+      desc:"Without an index, PostgreSQL answers a <code>WHERE</code> clause with a sequential scan — reading every row in the table to find matches, which is fine for a thousand rows and disastrous for ten million. A B-tree index (the default, and right choice for most columns) lets the planner jump straight to matching rows instead, at the cost of extra disk space and slightly slower writes since the index has to be updated too. <code>EXPLAIN ANALYZE</code> shows you exactly which plan the query planner chose and how long each step actually took, which is the only reliable way to know whether an index is helping. Composite indexes cover queries that filter on multiple columns together, partial indexes cover only rows matching a condition, and specialized index types like GIN exist for non-scalar data like JSONB and full-text search.",
+      useWhen:"Add an index the moment a column shows up in a WHERE, JOIN ... ON, or ORDER BY clause on a table that's growing past a few thousand rows — and always confirm with EXPLAIN ANALYZE that the planner is actually choosing to use it, rather than assuming.",
+      steps:["Create a basic B-tree index: <code>CREATE INDEX idx_orders_customer_id ON orders (customer_id);</code>","Confirm the planner uses it: <code>EXPLAIN ANALYZE SELECT * FROM orders WHERE customer_id = 42;</code>","Add a composite index when filtering on two columns together: <code>CREATE INDEX ON orders (customer_id, created_at);</code>","Enforce uniqueness and get an index for free: <code>CREATE UNIQUE INDEX idx_users_email ON users (email);</code>","Index only the rows that matter with a partial index: <code>CREATE INDEX ON orders (id) WHERE status = 'pending';</code>","Avoid over-indexing — every index slows down INSERT/UPDATE, so only add one with a query that actually needs it."],
+      diagram:{ left:[{name:"Sequential Scan",sub:"reads every row"}], right:[{name:"Index Scan",sub:"B-tree lookup"}], top:{name:"Query Planner",sub:"chooses the plan"}, coreSub:"WHERE customer_id = 42",
+        caption:"The planner picks whichever path it estimates is cheaper — an index only gets used if it's actually cheaper than scanning the table." } },
+  ],
+  3: [
+    { n:8, slug:"pg-transactions", name:"Transactions &amp; ACID", icon:"🔒", what:"Grouping statements atomically", use:"Make multiple related writes succeed or fail together, never halfway", learn:"BEGIN/COMMIT/ROLLBACK, ACID, isolation levels, WAL, SAVEPOINT, row locking", priority:"must", docName:"PostgreSQL Tutorial — Transactions", docUrl:"https://www.postgresql.org/docs/current/tutorial-transactions.html",
+      desc:"A transaction wraps one or more statements so they succeed or fail as a single unit — <code>BEGIN</code> starts it, <code>COMMIT</code> makes every change permanent, and <code>ROLLBACK</code> undoes all of them as if none had happened. This is what ACID means in practice: Atomicity (all-or-nothing), Consistency (constraints always hold), Isolation (concurrent transactions don't see each other's half-finished work), and Durability (once committed, a change survives a crash). PostgreSQL guarantees durability through the Write-Ahead Log (WAL) — every change is written to the log before it's applied to the actual data files, so a crash mid-write can always be replayed back to a consistent state. <code>SAVEPOINT</code> lets you roll back part of a transaction without abandoning the whole thing, which is useful for handling an expected failure partway through a longer sequence of statements.",
+      useWhen:"Wrap any sequence of writes that must not be allowed to happen halfway — debiting one account and crediting another, creating an order and decrementing inventory, or any multi-table write where a partial failure would leave the data inconsistent.",
+      steps:["Start a transaction explicitly: <code>BEGIN;</code>","Run the related statements, e.g. <code>UPDATE accounts SET balance = balance - 100 WHERE id = 1;</code> then the matching credit.","Commit only once every statement in the sequence succeeded: <code>COMMIT;</code>","Roll back the entire transaction on any failure: <code>ROLLBACK;</code>","Use <code>SAVEPOINT partial_step;</code> to roll back just part of a longer transaction without abandoning it entirely.","Pick an isolation level deliberately for concurrent workloads: <code>SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;</code>"],
+      diagram:{ left:[{name:"BEGIN",sub:"starts the unit"}], right:[{name:"COMMIT",sub:"all changes permanent"},{name:"ROLLBACK",sub:"all changes undone"}], top:{name:"Write-Ahead Log",sub:"durability guarantee"}, coreSub:"all-or-nothing", coreLabel:"Transaction",
+        caption:"Every change is written to the WAL before it touches the actual data files — that's the mechanism durability is built on." } },
+    { n:9, slug:"pg-views", name:"Views", icon:"👁️", what:"Saved, named queries", use:"Simplify repeated complex queries and control what underlying tables a consumer can see", learn:"CREATE VIEW, CREATE OR REPLACE VIEW, materialized views, REFRESH MATERIALIZED VIEW, updatable views", priority:"important", docName:"PostgreSQL Tutorial — Views", docUrl:"https://www.postgresql.org/docs/current/tutorial-views.html",
+      desc:"A view is a stored query that behaves like a read-only table — every time you <code>SELECT</code> from it, PostgreSQL runs the underlying query fresh, so the result always reflects the current data. This is useful both for simplifying a complex join that multiple parts of an application need, and for security: you can grant a role access to a view that exposes only certain columns without granting it access to the full underlying table. A materialized view is different — it stores the query's result physically on disk and only updates when you explicitly run <code>REFRESH MATERIALIZED VIEW</code>, trading freshness for the speed of not re-running an expensive query on every read. Simple views over a single table can even be updatable, letting an UPDATE or INSERT against the view pass through to the base table.",
+      useWhen:"Reach for a regular view to hide a complex join behind a simple name, or to expose a restricted subset of columns to a role like a BI tool. Reach for a materialized view specifically when the underlying query is expensive and the data doesn't need to be live-fresh on every read — a nightly sales rollup is the classic example.",
+      steps:["Create a view over a common filter: <code>CREATE VIEW active_customers AS SELECT * FROM customers WHERE status = 'active';</code>","Query it exactly like a table: <code>SELECT * FROM active_customers WHERE country = 'US';</code>","Update its definition without dropping it: <code>CREATE OR REPLACE VIEW active_customers AS ...</code>","Grant access to the view instead of the underlying table, for a role that shouldn't see everything.","Create a materialized view for an expensive aggregate: <code>CREATE MATERIALIZED VIEW daily_sales AS SELECT day, sum(total) FROM orders GROUP BY day;</code>","Refresh it on a schedule: <code>REFRESH MATERIALIZED VIEW daily_sales;</code>"],
+      diagram:{ left:[{name:"customers",sub:"base table"},{name:"orders",sub:"base table"}], right:[{name:"Consuming query",sub:"SELECT * FROM view"}], coreSub:"stored query definition", coreLabel:"VIEW",
+        caption:"A view re-runs its underlying query every time; a materialized view instead stores the result and waits for an explicit REFRESH." } },
+  ],
+  4: [
+    { n:10, slug:"pg-jsonb", name:"JSONB", icon:"🧾", what:"Semi-structured data inside a relational column", use:"Store flexible, schema-less attributes alongside strict relational columns", learn:"jsonb vs json, ->, ->>, @>, jsonb_set, GIN index, jsonb_path_query", priority:"important", docName:"PostgreSQL Docs — JSON Types", docUrl:"https://www.postgresql.org/docs/current/datatype-json.html",
+      desc:"<code>jsonb</code> stores JSON data in a decomposed binary format that's slightly slower to write than the plain <code>json</code> type but dramatically faster to query, since PostgreSQL doesn't have to re-parse the text on every access. The <code>-></code> operator extracts a JSON value as JSON, <code>->></code> extracts it as text, and the containment operator <code>@></code> checks whether one JSON document contains another — the basis for indexed JSONB queries. A GIN index on a <code>jsonb</code> column makes containment and key-existence queries fast even at scale, closing most of the performance gap with a fully relational design. This gives PostgreSQL a genuine middle ground between a rigid relational schema and a schema-less document store: strict columns for the data you always query on, and a <code>jsonb</code> column for the attributes that vary per row or change too often to justify a migration.",
+      useWhen:"Use jsonb for attributes that are genuinely variable per row — a metadata column on a products table where different product categories have different extra fields — not as a substitute for columns and relations you already know the shape of. If you're querying the same JSON key in most of your application code, it usually belongs in a real column instead.",
+      steps:["Add a jsonb column: <code>ALTER TABLE products ADD COLUMN attributes jsonb DEFAULT '{}';</code>","Extract a key as JSON or as text: <code>SELECT attributes->'color', attributes->>'color' FROM products;</code>","Query by containment: <code>SELECT * FROM products WHERE attributes @> '{\"color\":\"red\"}';</code>","Index it for fast containment/key lookups: <code>CREATE INDEX idx_products_attrs ON products USING GIN (attributes);</code>","Update a nested key without rewriting the whole document: <code>UPDATE products SET attributes = jsonb_set(attributes, '{stock}', '42');</code>","Move a key into a real column once most queries filter on it — jsonb is for the exception, not the rule."],
+      diagram:{ left:[{name:"Flexible input",sub:"varies per row"}], right:[{name:"GIN index",sub:"fast containment"}], coreSub:"schema-less column", coreLabel:"JSONB",
+        caption:"A GIN index is what lets a containment query on a jsonb column skip a full scan, closing most of the gap with a relational column." } },
+    { n:11, slug:"pg-backup", name:"Backup &amp; Replication", icon:"💾", what:"Protecting against data loss and downtime", use:"Recover from mistakes, hardware failure, or serve reads from a second server", learn:"pg_dump, pg_restore, pg_basebackup, WAL archiving, streaming replication, point-in-time recovery", priority:"must", docName:"PostgreSQL Docs — Backup and Restore", docUrl:"https://www.postgresql.org/docs/current/backup.html",
+      desc:"<code>pg_dump</code> produces a logical backup — a portable script or archive of the SQL needed to recreate a database — while <code>pg_basebackup</code> takes a physical copy of the entire data directory, which is what streaming replication is built on. A replica connects to the primary and continuously streams its Write-Ahead Log, replaying each change as it arrives, which both protects against the primary's outright failure and lets you offload read traffic to the replica. Combined with WAL archiving, this also enables point-in-time recovery — restoring the database to its exact state at any past second, not just the moment of the last full backup. None of this matters until the day it does, which is exactly why it needs to be tested before that day, not during it.",
+      useWhen:"Schedule automated pg_dump backups (or use a managed provider's snapshot feature) for every production database from day one, and set up streaming replication the moment either read traffic needs offloading or downtime during a primary failure becomes unacceptable. Test a restore periodically — a backup nobody has ever restored from is a hope, not a plan.",
+      steps:["Take a logical backup: <code>pg_dump -Fc mydb &gt; mydb.dump</code>","Restore it into a fresh database to verify it actually works: <code>pg_restore -d mydb_test mydb.dump</code>","Enable WAL archiving on the primary so point-in-time recovery is possible between full backups.","Take a physical base backup for a new replica: <code>pg_basebackup -h primary -D /var/lib/postgresql/data -U replicator -P --wal-method=stream</code>","Configure the replica to stream continuously from the primary and confirm replication lag stays near zero.","Actually run a test restore on a schedule — the only backup you can trust is one you've proven you can restore."],
+      diagram:{ left:[{name:"pg_dump",sub:"logical backup"}], right:[{name:"Streaming Replica",sub:"pg_basebackup + WAL"}], bottom:{name:"WAL Archive",sub:"point-in-time recovery"}, coreSub:"Primary server",
+        caption:"A replica stays current by continuously replaying the primary's WAL stream; the archived WAL is what makes point-in-time recovery possible." } },
+  ],
+};
+
+/* ---------- Generic per-topic architecture diagram renderer ---------- */
+function stackBoxes(items, x, w, centerY, boxH, gap) {
+  const n = items.length;
+  if (!n) return [];
+  const totalH = n * boxH + (n - 1) * gap;
+  const startY = centerY - totalH / 2;
+  return items.map((it, i) => {
+    const y = startY + i * (boxH + gap);
+    return { ...it, x, y, w, h: boxH, cy: y + boxH / 2 };
+  });
+}
+
+function svcDiagramSVG(svc) {
+  const cfg = svc.diagram;
+  const W = 760, H = 420;
+  const coreW = 200, coreH = 90, coreCX = 380, coreCY = 210;
+  const coreX = coreCX - coreW / 2, coreY = coreCY - coreH / 2;
+  const leftX = 20, leftW = 170, rightX = 570, rightW = 170, boxH = 60, gap = 18;
+  const uid = svc.slug;
+
+  const lefts = stackBoxes(cfg.left || [], leftX, leftW, coreCY, boxH, gap);
+  const rights = stackBoxes(cfg.right || [], rightX, rightW, coreCY, boxH, gap);
+  const label = cfg.coreLabel || svc.name;
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${cfg.caption.replace(/"/g,"'")}">`;
+  svg += `<defs>
+    <marker id="m-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)"/></marker>
+    <marker id="ma-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)"/></marker>
+  </defs>`;
+
+  if (cfg.top) {
+    svg += `<rect class="d-node-navy" x="${coreX}" y="24" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title-light" x="${coreX+14}" y="47">${cfg.top.name}</text>
+      <text class="d-sub-light" x="${coreX+14}" y="62">${cfg.top.sub||""}</text>
+      <path class="d-arrow" d="M${coreCX} 70 L${coreCX} ${coreY-2}" marker-end="url(#m-${uid})"/>`;
+  }
+  if (cfg.bottom) {
+    svg += `<rect class="d-node" x="${coreX}" y="350" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title" x="${coreX+14}" y="373">${cfg.bottom.name}</text>
+      <text class="d-sub" x="${coreX+14}" y="388">${cfg.bottom.sub||""}</text>
+      <path class="d-arrow-accent" d="M${coreCX} ${coreY+coreH+2} L${coreCX} 348" marker-end="url(#ma-${uid})"/>`;
+  }
+
+  svg += `<rect class="d-node-accent" x="${coreX}" y="${coreY}" width="${coreW}" height="${coreH}" rx="12"/>
+    <text class="d-title" x="${coreCX}" y="${coreCY-6}" text-anchor="middle">${label}</text>
+    <text class="d-sub" x="${coreCX}" y="${coreCY+14}" text-anchor="middle">${cfg.coreSub||""}</text>`;
+
+  lefts.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${b.x+b.w} ${b.cy} L${coreX-2} ${coreCY}" marker-end="url(#m-${uid})"/>`;
+  });
+  rights.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${coreX+coreW+2} ${coreCY} L${b.x} ${b.cy}" marker-end="url(#m-${uid})"/>`;
+  });
+
+  svg += `</svg>`;
+  return svg;
+}
+
+function renderServicePanels() {
+  const host = document.getElementById("service-panels");
+  const html = [];
+  Object.keys(DATA).forEach(phaseKey => {
+    DATA[phaseKey].forEach(item => {
+      html.push(`
+        <section class="topic-panel" id="${item.slug}" hidden>
+          <div class="panel-kicker">${PHASE_LABEL[phaseKey]}</div>
+          <div class="panel-head">
+            <div class="panel-icon">${item.icon}</div>
+            <div>
+              <div class="svc-name-row"><h2>${String(item.n).padStart(2,"0")} · ${item.name}</h2><span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span></div>
+              <p class="panel-tagline">${item.what} — ${item.use}</p>
+            </div>
+          </div>
+          <p class="svc-desc" style="margin-top:20px;">${item.desc}</p>
+
+          <div class="use-callout">
+            <b class="callout-title">Where &amp; when to use it</b>
+            ${item.useWhen}
+          </div>
+
+          <div class="diagram-box">
+            <div class="d-chrome">Diagram · ${item.name}</div>
+            <div class="d-body">${svcDiagramSVG(item)}</div>
+            <p class="d-caption">${item.diagram.caption}</p>
+          </div>
+
+          <h3 class="subhead">How to implement it</h3>
+          <ol class="steps-list">${item.steps.map(s => `<li>${s}</li>`).join("")}</ol>
+
+          <div class="svc-learn">
+            <div class="flabel">What you should learn</div>
+            <div class="tag-list">${item.learn.split(",").map(t => `<span class="tag">${t.trim()}</span>`).join("")}</div>
+          </div>
+
+          <div class="svc-foot">
+            <a class="back-home" style="margin:0;" href="#overview">← All topics</a>
+            <a class="doc-link" href="${item.docUrl}" target="_blank" rel="noopener">${item.docName} →</a>
+          </div>
+        </section>
+      `);
+    });
+  });
+  host.innerHTML = html.join("");
+}
+
+function renderSidebarNav() {
+  Object.keys(DATA).forEach(phaseKey => {
+    const group = document.getElementById(`nav-phase-${phaseKey}`);
+    const links = DATA[phaseKey].map(item =>
+      `<a class="nav-link" href="#${item.slug}"><span class="nav-icon">${item.icon}</span> ${item.name}</a>`
+    ).join("");
+    group.insertAdjacentHTML("beforeend", links);
+  });
+}
+
+function renderServiceIndex() {
+  const host = document.getElementById("svc-index");
+  const html = Object.keys(DATA).map(phaseKey => `
+    <div class="svc-index-group">
+      <h4>${PHASE_LABEL[phaseKey]}</h4>
+      ${DATA[phaseKey].map(item => `
+        <a class="svc-index-item" href="#${item.slug}">
+          <span class="svc-index-icon">${item.icon}</span>
+          <span class="svc-index-text"><div class="n">${item.name}</div><div class="t">${item.what} — ${item.use}</div></span>
+          <span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span>
+        </a>
+      `).join("")}
+    </div>
+  `).join("");
+  host.innerHTML = html;
+}
+
+/* ---------- Router: show exactly one topic panel at a time ---------- */
+function showTopic(id) {
+  document.querySelectorAll(".topic-panel").forEach(p => { p.hidden = (p.id !== id); });
+  document.querySelectorAll(".nav-link").forEach(a => {
+    a.classList.toggle("active", a.getAttribute("href") === "#" + id);
+  });
+  window.scrollTo(0, 0);
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("sidebarScrim").classList.remove("show");
+}
+
+function routeFromHash() {
+  const id = (location.hash || "#overview").slice(1);
+  showTopic(document.getElementById(id) ? id : "overview");
+}
+
+renderServicePanels();
+renderSidebarNav();
+renderServiceIndex();
+window.addEventListener("hashchange", routeFromHash);
+routeFromHash();
+
+/* ---------- Mobile sidebar toggle ---------- */
+const menuBtn = document.getElementById("menuBtn");
+const sidebarEl = document.getElementById("sidebar");
+const scrimEl = document.getElementById("sidebarScrim");
+if (menuBtn) {
+  menuBtn.addEventListener("click", () => {
+    sidebarEl.classList.toggle("open");
+    scrimEl.classList.toggle("show");
+  });
+}
+scrimEl.addEventListener("click", () => {
+  sidebarEl.classList.remove("open");
+  scrimEl.classList.remove("show");
+});
+
+/* ---------- Summary + references (unchanged data) ---------- */
+const sequence = ["Introduction & psql","Databases & Schemas","Data Types","Tables & Constraints","CRUD","Joins","Indexes","Transactions & ACID","Views","JSONB","Backup & Replication"];
+document.getElementById("sequence-flow").innerHTML = sequence.map(s => `<span class="seq-step">${s}</span>`).join('<span class="seq-arrow">→</span>');
+
+const docLinks = [
+  ["Introduction & psql","https://www.postgresql.org/docs/current/tutorial.html"],
+  ["Databases & Schemas","https://www.postgresql.org/docs/current/ddl-schemas.html"],
+  ["Data Types","https://www.postgresql.org/docs/current/datatype.html"],
+  ["Tables & Constraints","https://www.postgresql.org/docs/current/ddl-constraints.html"],
+  ["CRUD","https://www.postgresql.org/docs/current/dml.html"],
+  ["Joins","https://www.postgresql.org/docs/current/queries-table-expressions.html#QUERIES-JOIN"],
+  ["Indexes","https://www.postgresql.org/docs/current/indexes.html"],
+  ["Transactions & ACID","https://www.postgresql.org/docs/current/tutorial-transactions.html"],
+  ["Views","https://www.postgresql.org/docs/current/tutorial-views.html"],
+  ["JSONB","https://www.postgresql.org/docs/current/datatype-json.html"],
+  ["Backup & Replication","https://www.postgresql.org/docs/current/backup.html"],
+];
+document.getElementById("doc-links").innerHTML = docLinks.map(([n,u]) => `<div><b>${n}</b><br>${u}</div>`).join("");
+</script>
+
+</body>
+</html>
