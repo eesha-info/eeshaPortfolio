@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { socialLinks } from "@/app/lib/data";
 
 export default function Footer() {
@@ -13,6 +14,7 @@ export default function Footer() {
             . Crafted with precision.
           </p>
           <div className="flex gap-6">
+            <Link href="/tech-stack">Tech Stack</Link>
             <a href={socialLinks.github} target="_blank" rel="noopener noreferrer">
               GitHub
             </a>
