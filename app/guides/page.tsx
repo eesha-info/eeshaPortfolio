@@ -8,12 +8,14 @@ import { techStack } from "@/app/lib/techStack";
 export const metadata: Metadata = {
   title: "Guides | Mohammad Eesha",
   description:
-    "In-depth guides on the languages, databases, and cloud tools I work with — with quick explainers and links to official documentation.",
+    "12 in-depth guides covering every language, database, and cloud tool in my stack — each with diagrams, real implementation steps, and links to the official docs.",
 };
+
+const titleWords = ["Everything", "I", "Use", "—"];
 
 export default function GuidesPage() {
   return (
-    <>
+    <div className="page-blur-in">
       <Navbar />
 
       <section
@@ -55,23 +57,48 @@ export default function GuidesPage() {
             📚 Guides
           </span>
           <h1
-            className="text-4xl md:text-6xl font-bold mb-5 animate-fade-in-up delay-100"
-            style={{ opacity: 0, animationFillMode: "forwards", lineHeight: 1.15 }}
+            className="text-4xl md:text-6xl font-bold mb-5"
+            style={{ lineHeight: 1.15 }}
           >
-            Explore the <span className="gradient-text">Guides</span>
+            {titleWords.map((word, i) => (
+              <span
+                key={word + i}
+                className="inline-block animate-fade-in-up"
+                style={{
+                  opacity: 0,
+                  animationFillMode: "forwards",
+                  animationDelay: `${0.1 + i * 0.09}s`,
+                  marginRight: "0.28em",
+                }}
+              >
+                {word}
+              </span>
+            ))}
+            <span
+              className="inline-block animate-fade-in-up"
+              style={{
+                opacity: 0,
+                animationFillMode: "forwards",
+                animationDelay: "0.58s",
+              }}
+            >
+              <span className="gradient-text">Explained Properly</span>
+            </span>
           </h1>
           <p
-            className="text-base md:text-lg animate-fade-in-up delay-200"
+            className="text-base md:text-lg animate-fade-in-up"
             style={{
               opacity: 0,
               animationFillMode: "forwards",
+              animationDelay: "0.85s",
               color: "var(--text-secondary)",
               lineHeight: 1.8,
             }}
           >
-            Every language, database, and cloud tool I use day to day —
-            grouped, explained, and linked to official documentation so
-            anyone can dig deeper.
+            12 in-depth guides covering every language, database, and cloud
+            tool in my stack — each with diagrams, real implementation
+            steps, and a link to the official docs. Not a skills list —
+            the documentation I wish I'd had.
           </p>
         </div>
       </section>
@@ -132,6 +159,6 @@ export default function GuidesPage() {
       </section>
 
       <Footer />
-    </>
+    </div>
   );
 }

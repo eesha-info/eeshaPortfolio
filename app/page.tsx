@@ -4,6 +4,9 @@ import ProjectCard from "./components/ProjectCard";
 import SkillBadge from "./components/SkillBadge";
 import ExperienceCard from "./components/ExperienceCard";
 import Footer from "./components/Footer";
+import DownloadCvButton from "./components/DownloadCvButton";
+import TypedHeroIntro from "./components/TypedHeroIntro";
+import TypedParagraphs from "./components/TypedParagraphs";
 import {
   projects,
   skills,
@@ -80,40 +83,11 @@ export default function Home() {
             </span>
           </div>
 
-          <h1
-            className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in-up delay-100"
-            style={{
-              opacity: 0,
-              animationFillMode: "forwards",
-              lineHeight: 1.15,
-            }}
-          >
-            Hi, I&apos;m{" "}
-            <span className="gradient-text">{personalInfo.name}</span>
-          </h1>
-
-          <p
-            className="text-xl md:text-2xl mb-4 animate-fade-in-up delay-200 font-semibold"
-            style={{
-              opacity: 0,
-              animationFillMode: "forwards",
-              color: "var(--text-primary)",
-            }}
-          >
-            {personalInfo.title}
-          </p>
-
-          <p
-            className="text-base md:text-lg max-w-2xl mx-auto mb-10 animate-fade-in-up delay-300"
-            style={{
-              opacity: 0,
-              animationFillMode: "forwards",
-              color: "var(--text-secondary)",
-              lineHeight: 1.8,
-            }}
-          >
-            {personalInfo.tagline}
-          </p>
+          <TypedHeroIntro
+            name={personalInfo.name}
+            title={personalInfo.title}
+            tagline={personalInfo.tagline}
+          />
 
           <div
             className="flex flex-wrap justify-center gap-4 animate-fade-in-up delay-400"
@@ -125,14 +99,10 @@ export default function Home() {
             <a href="#contact" className="btn-outline">
               Get In Touch
             </a>
-            <a
-              href={socialLinks.resume}
-              target="_blank"
-              rel="noopener noreferrer"
+            <DownloadCvButton
+              resumeUrl={socialLinks.resume}
               className="btn-outline"
-            >
-              📄 Download CV
-            </a>
+            />
           </div>
 
           {/* Stats */}
@@ -191,17 +161,7 @@ export default function Home() {
             </div>
 
             {/* Bio text */}
-            <div className="flex flex-col gap-4">
-              {personalInfo.aboutParagraphs.map((p, i) => (
-                <p
-                  key={i}
-                  className="text-sm leading-relaxed"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  {p}
-                </p>
-              ))}
-            </div>
+            <TypedParagraphs paragraphs={personalInfo.aboutParagraphs} />
           </div>
 
           {/* Skill highlight cards */}

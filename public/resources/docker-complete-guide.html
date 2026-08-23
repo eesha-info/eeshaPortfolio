@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Docker — Complete Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS ============ */
+  :root {
+    --bg: #f2f5f9;
+    --surface: #ffffff;
+    --surface-2: #eaeff6;
+    --surface-3: #dfe6f0;
+    --border: #dbe2ec;
+    --ink: #0d1b2e;
+    --ink-soft: #4b5872;
+    --ink-faint: #8492a8;
+    --navy: #0A2540;
+    --navy-2: #123655;
+    --amber: #2496ED;
+    --amber-strong: #1D6FB8;
+    --amber-tint: rgba(36, 150, 237, 0.12);
+    --link: #1d5fa8;
+    --danger: #b8402b;
+    --danger-bg: rgba(184, 64, 43, 0.10);
+    --warn: #9c6a0a;
+    --warn-bg: rgba(156, 106, 10, 0.12);
+    --calm: #1f7a5c;
+    --calm-bg: rgba(31, 122, 92, 0.12);
+    --focus-ring: #2496ED;
+    --shadow: 0 12px 32px rgba(13, 27, 46, 0.10);
+    --shadow-lg: 0 24px 64px rgba(13, 27, 46, 0.28);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0a1220;
+      --surface: #111d30;
+      --surface-2: #17253c;
+      --surface-3: #1f3049;
+      --border: #26395a;
+      --ink: #ecf1f8;
+      --ink-soft: #a7b6cd;
+      --ink-faint: #71829e;
+      --navy: #123655;
+      --navy-2: #184a72;
+      --amber: #5CB6F5;
+      --amber-strong: #8ECBF7;
+      --amber-tint: rgba(92, 182, 245, 0.14);
+      --link: #7fb3f5;
+      --danger: #ff8a71;
+      --danger-bg: rgba(255, 138, 113, 0.14);
+      --warn: #ffc766;
+      --warn-bg: rgba(255, 199, 102, 0.14);
+      --calm: #5cdcb0;
+      --calm-bg: rgba(92, 220, 176, 0.14);
+      --focus-ring: #5CB6F5;
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0a1220;
+    --surface: #111d30;
+    --surface-2: #17253c;
+    --surface-3: #1f3049;
+    --border: #26395a;
+    --ink: #ecf1f8;
+    --ink-soft: #a7b6cd;
+    --ink-faint: #71829e;
+    --navy: #123655;
+    --navy-2: #184a72;
+    --amber: #5CB6F5;
+    --amber-strong: #8ECBF7;
+    --amber-tint: rgba(92, 182, 245, 0.14);
+    --link: #7fb3f5;
+    --danger: #ff8a71;
+    --danger-bg: rgba(255, 138, 113, 0.14);
+    --warn: #ffc766;
+    --warn-bg: rgba(255, 199, 102, 0.14);
+    --calm: #5cdcb0;
+    --calm-bg: rgba(92, 220, 176, 0.14);
+    --focus-ring: #5CB6F5;
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  h1, h2, h3 { font-family: "IBM Plex Mono", ui-monospace, monospace; text-wrap: balance; margin: 0; }
+  a { color: var(--link); }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  ::selection { background: var(--amber-tint); }
+
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* ============ MOBILE TOPBAR ============ */
+  .topbar {
+    display: none;
+    position: sticky; top: 0; z-index: 40;
+    align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar .brand { font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 14px; }
+  .topbar .brand span { color: var(--amber); }
+  .menu-btn {
+    width: 36px; height: 36px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--ink);
+    font-size: 16px; cursor: pointer; text-decoration: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sidebar-scrim { display: none; position: fixed; inset: 0; background: rgba(5,11,20,0.5); z-index: 45; }
+  .sidebar-scrim.show { display: block; }
+
+  /* ============ SHELL / SIDEBAR ============ */
+  .shell { display: flex; align-items: flex-start; max-width: 1360px; margin: 0 auto; }
+  .sidebar {
+    position: sticky; top: 0;
+    width: 280px; flex-shrink: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 22px 16px 60px;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+    scrollbar-width: thin;
+  }
+  .sidebar .brand {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 800;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 8px 16px;
+  }
+  .sidebar .brand span { color: var(--amber); }
+  .back-home {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 8px 18px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 600;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+  }
+  .back-home:hover { color: var(--ink); background: var(--amber-tint); border-color: var(--amber); }
+  .nav-group { margin-bottom: 4px; }
+  .nav-group-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    padding: 14px 8px 6px;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+    margin: 1px 0;
+    border-radius: 7px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 13px;
+    border-left: 2px solid transparent;
+  }
+  .nav-link:hover { background: var(--surface-2); color: var(--ink); }
+  .nav-link.active {
+    background: var(--amber-tint);
+    color: var(--ink);
+    font-weight: 600;
+    border-left: 2px solid var(--amber);
+  }
+  .nav-icon { flex-shrink: 0; width: 18px; text-align: center; font-size: 13px; }
+
+  .content { flex: 1; min-width: 0; padding: 40px 32px 90px; }
+  .topic-panel[hidden] { display: none; }
+
+  @media (max-width: 920px) {
+    .topbar { display: flex; }
+    .sidebar {
+      position: fixed; inset: 0 auto 0 0;
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+      z-index: 50;
+      width: 82vw;
+      max-width: 300px;
+      box-shadow: var(--shadow-lg);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .content { padding: 28px 18px 100px; }
+  }
+
+  /* ============ PANEL HERO (Overview only) ============ */
+  .panel-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    background: linear-gradient(150deg, #051829 0%, #0d2d47 55%, #0a2540 100%);
+    color: #eaf4fc;
+    padding: 40px 32px;
+    margin-bottom: 30px;
+  }
+  .panel-hero::before {
+    content: "";
+    position: absolute;
+    top: -120px; right: -90px;
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(92,182,245,0.32), rgba(92,182,245,0) 70%);
+    pointer-events: none;
+  }
+  .panel-hero .eyebrow {
+    position: relative;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #7cc4f7;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel-hero .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #7cc4f7; display: inline-block; }
+  .panel-hero h1 { position: relative; margin-top: 14px; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.2; font-weight: 700; color: #fff; }
+  .panel-hero h1 em { font-style: normal; color: #7cc4f7; }
+  .panel-hero p.lede { position: relative; margin-top: 12px; font-size: 15px; color: #c9dced; max-width: 68ch; font-family: "IBM Plex Sans", sans-serif; line-height: 1.75; }
+  .panel-hero .stat-chips { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .stat-chip {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    border: 1px solid rgba(255,255,255,0.22);
+    color: #dceefb;
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+  .stat-chip b { color: #fff; }
+
+  section.topic-panel h1.section-title { font-size: 22px; margin-bottom: 14px; }
+  .lede-plain { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 82ch; margin: 0 0 16px; }
+  .lede-plain b { color: var(--ink); }
+
+  /* ============ DIAGRAM BOX ============ */
+  .diagram-box {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    margin: 0 0 24px;
+  }
+  .diagram-box .d-chrome {
+    background: var(--navy);
+    color: #eaf4fc;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 11px 16px;
+  }
+  .diagram-box .d-body { padding: 22px 18px 6px; overflow-x: auto; }
+  .diagram-box .d-body svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+  .diagram-box .d-caption {
+    padding: 6px 20px 20px;
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 88ch;
+  }
+  .diagram-box .d-caption code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; color: var(--ink); }
+  .diagram-box .d-caption b { color: var(--ink); }
+
+  /* shared SVG node styles, reused by every diagram */
+  svg .d-node { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
+  svg .d-node-accent { fill: var(--amber-tint); stroke: var(--amber); stroke-width: 1.5; }
+  svg .d-node-navy { fill: var(--navy); stroke: var(--navy); }
+  svg .d-title { fill: var(--ink); font: 700 13.5px "IBM Plex Sans", sans-serif; }
+  svg .d-title-light { fill: #ffffff; font: 700 12.5px "IBM Plex Mono", monospace; }
+  svg .d-sub { fill: var(--ink-faint); font: 600 10px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-sub-light { fill: #cfe6f9; font: 600 9.5px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-text { fill: var(--ink-soft); font: 500 11px "IBM Plex Mono", monospace; }
+  svg .d-arrow { fill: none; stroke: var(--ink-faint); stroke-width: 2; }
+  svg .d-arrow-accent { fill: none; stroke: var(--amber); stroke-width: 2.25; }
+  svg .d-label { fill: var(--ink-soft); font: 600 11px "IBM Plex Sans", sans-serif; }
+  svg .d-label-accent { fill: var(--amber-strong); font: 700 11px "IBM Plex Sans", sans-serif; }
+  svg .d-boundary { fill: none; stroke: var(--link); stroke-width: 1.5; stroke-dasharray: 6 4; }
+  svg .d-boundary-label { fill: var(--link); font: 700 10.5px "IBM Plex Mono", monospace; letter-spacing: 0.05em; }
+
+  /* ============ TOPIC PANEL ============ */
+  .panel-kicker {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 10px;
+  }
+  .panel-head { display: flex; gap: 16px; align-items: flex-start; }
+  .panel-icon {
+    flex-shrink: 0;
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    background: var(--navy);
+    color: var(--amber-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+  }
+  .svc-name-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .svc-name-row h2 { font-size: 21px; color: var(--ink); }
+  .panel-tagline { margin: 6px 0 0; font-size: 13.5px; color: var(--ink-faint); font-family: "IBM Plex Sans", sans-serif; }
+  .svc-desc { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 84ch; }
+
+  .use-callout {
+    margin: 22px 0;
+    padding: 16px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--link);
+    background: var(--surface-2);
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 84ch;
+  }
+  .use-callout b { color: var(--ink); }
+  .callout-title {
+    display: block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--link);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  h3.subhead { font-size: 15px; margin: 28px 0 6px; color: var(--ink); }
+
+  .steps-list {
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 84ch;
+  }
+  .steps-list li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .steps-list li::before {
+    counter-increment: step;
+    content: counter(step);
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--amber-strong);
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+    font-size: 11.5px;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .steps-list li b { color: var(--ink); }
+  .steps-list li code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+
+  .svc-learn { margin-top: 26px; }
+  .flabel {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--ink-soft);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .svc-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    max-width: 84ch;
+  }
+  .doc-link {
+    font-size: 12.5px;
+    color: var(--link);
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .doc-link:hover { text-decoration: underline; }
+  .badge {
+    display: inline-block;
+    font-family: "IBM Plex Mono", monospace;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+  }
+  .badge-must { background: var(--danger-bg); color: var(--danger); }
+  .badge-important { background: var(--warn-bg); color: var(--warn); }
+  .badge-level { background: var(--calm-bg); color: var(--calm); }
+
+  /* ============ OVERVIEW TOPIC INDEX ============ */
+  .svc-index-group { margin-bottom: 22px; }
+  .svc-index-group h4 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    font-family: "IBM Plex Mono", monospace;
+    margin-bottom: 10px;
+  }
+  .svc-index-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    text-decoration: none;
+    color: var(--ink);
+    margin-bottom: 6px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .svc-index-item:hover { border-color: var(--amber); background: var(--amber-tint); }
+  .svc-index-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--navy);
+    color: var(--amber-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .svc-index-text { flex: 1; min-width: 0; }
+  .svc-index-text .n { font-weight: 700; font-size: 13.5px; }
+  .svc-index-text .t { font-size: 11.5px; color: var(--ink-faint); }
+
+  /* ============ SUMMARY CARDS ============ */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--amber);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+  }
+  .card h3 { font-size: 14px; color: var(--ink); margin-bottom: 12px; }
+  .card p.card-note { margin: 0 0 14px; font-size: 13px; color: var(--ink-soft); font-family: "IBM Plex Sans", sans-serif; line-height: 1.7; }
+  .seq-flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; }
+  .seq-step {
+    font-family: "IBM Plex Mono", monospace;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  .seq-arrow { color: var(--amber); font-weight: 700; }
+
+  .priority-levels { display: flex; flex-direction: column; gap: 12px; }
+  .plevel { display: flex; gap: 12px; align-items: flex-start; }
+  .plevel .lvl-tag {
+    font-family: "IBM Plex Mono", monospace;
+    flex-shrink: 0;
+    width: 72px;
+    padding: 5px 0;
+    text-align: center;
+    border-radius: 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .lvl-1 { background: var(--danger); }
+  .lvl-2 { background: var(--warn); color: #221600; }
+  .lvl-3 { background: var(--ink-faint); }
+  .plevel .lvl-items { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+
+  .doc-links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 8px 20px;
+    font-size: 12px;
+  }
+  .doc-links-grid div { color: var(--ink-soft); overflow-wrap: break-word; }
+  .doc-links-grid b { color: var(--ink); font-family: "IBM Plex Mono", monospace; font-size: 11.5px; }
+
+  /* ============ FOOTER ============ */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 28px 48px;
+    text-align: center;
+  }
+  footer .label {
+    font-family: "IBM Plex Mono", monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 10px;
+    color: var(--amber);
+    font-weight: 700;
+  }
+  footer .name { font-size: 18px; font-weight: 700; margin-top: 6px; }
+  footer .role { font-size: 12.5px; color: var(--ink-soft); margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="Open navigation">☰</button>
+  <div class="brand">DOCKER<span>::</span>DOCS</div>
+  <a class="menu-btn" href="/guides" aria-label="Back to Guides">⌂</a>
+</div>
+<div class="sidebar-scrim" id="sidebarScrim"></div>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">DOCKER<span>::</span>DOCS</div>
+    <a class="back-home" href="/guides">← Back to Guides</a>
+
+    <div class="nav-group">
+      <a class="nav-link" href="#overview"><span class="nav-icon">🏠</span> Overview</a>
+    </div>
+
+    <div class="nav-group" id="nav-group-core">
+      <div class="nav-group-label">Core Concepts</div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Reference</div>
+      <a class="nav-link" href="#summary"><span class="nav-icon">📐</span> Summary &amp; Patterns</a>
+      <a class="nav-link" href="#references"><span class="nav-icon">📄</span> Doc Links</a>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <section class="topic-panel" id="overview">
+      <div class="panel-hero">
+        <div class="eyebrow">Containers for Consistent Environments</div>
+        <h1>Docker <em>Complete Guide</em></h1>
+        <p class="lede">Docker packages an application together with everything it needs to run — code, runtime, system libraries, configuration — into a single portable image, so it behaves identically on a laptop, a CI runner, or a production server. A container is what you get when that image actually runs: an isolated process with its own filesystem and network, built on Linux kernel features rather than a full virtual machine, which is why it starts in milliseconds instead of minutes. This doc walks through the 10 concepts that make up everyday Docker usage, each with a diagram, a "where &amp; when to use it" guide, and concrete implementation steps.</p>
+        <div class="stat-chips">
+          <span class="stat-chip"><b>10</b> topics</span>
+          <span class="stat-chip"><b>10</b> diagrams</span>
+          <span class="stat-chip"><b>1</b> engine</span>
+        </div>
+      </div>
+
+      <p class="lede-plain">Use the sidebar to jump straight to any topic — each one opens its own page with a full explanation, a diagram of exactly how it fits into the container lifecycle, and the concrete steps to use it for real. If you're starting from zero, work through <b>Introduction &amp; Installation</b> and <b>Images vs Containers</b> first: everything else on this page assumes Docker is already running and that distinction already makes sense.</p>
+
+      <div class="diagram-box">
+        <div class="d-chrome">Diagram · From Dockerfile to Running Anywhere</div>
+        <div class="d-body">
+          <svg viewBox="0 0 900 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A Dockerfile builds into an image, which runs as a container, which can run identically on any Docker host. Underneath sit volumes, networks, compose, multi-stage builds, registries, and lifecycle commands.">
+            <defs>
+              <marker id="overviewArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+            </defs>
+
+            <rect class="d-node" x="20" y="40" width="110" height="60" rx="30" />
+            <text class="d-title" x="75" y="74" text-anchor="middle">Dockerfile</text>
+            <path class="d-arrow" d="M130 70 L158 70" marker-end="url(#overviewArrow)" />
+
+            <rect class="d-node-accent" x="160" y="25" width="190" height="90" rx="10" />
+            <text class="d-title" x="178" y="58">Image</text>
+            <text class="d-sub" x="178" y="76">tagged &amp; layered</text>
+            <text class="d-sub" x="178" y="92">cached, reusable</text>
+            <path class="d-arrow" d="M350 70 L378 70" marker-end="url(#overviewArrow)" />
+
+            <rect class="d-node" x="380" y="35" width="180" height="70" rx="10" />
+            <text class="d-title" x="398" y="66">Container</text>
+            <text class="d-sub" x="398" y="82">isolated, running</text>
+            <path class="d-arrow" d="M560 70 L588 70" marker-end="url(#overviewArrow)" />
+
+            <rect class="d-node-navy" x="590" y="25" width="190" height="90" rx="10" />
+            <text class="d-title-light" x="608" y="58">Any Docker Host</text>
+            <text class="d-sub-light" x="608" y="76">laptop, CI, prod server</text>
+            <text class="d-sub-light" x="608" y="92">same behavior everywhere</text>
+
+            <path class="d-boundary" d="M40 145 L 860 145" />
+            <text class="d-boundary-label" x="450" y="137" text-anchor="middle">THE CONCEPTS THAT SHAPE THIS PIPELINE</text>
+
+            <g>
+              <rect class="d-node" x="20" y="160" width="110" height="36" rx="8" /><text class="d-text" x="75" y="182" text-anchor="middle">Volumes</text>
+              <rect class="d-node" x="140" y="160" width="120" height="36" rx="8" /><text class="d-text" x="200" y="182" text-anchor="middle">Networks</text>
+              <rect class="d-node" x="270" y="160" width="110" height="36" rx="8" /><text class="d-text" x="325" y="182" text-anchor="middle">Compose</text>
+              <rect class="d-node" x="390" y="160" width="130" height="36" rx="8" /><text class="d-text" x="455" y="182" text-anchor="middle">Multi-Stage</text>
+              <rect class="d-node" x="530" y="160" width="110" height="36" rx="8" /><text class="d-text" x="585" y="182" text-anchor="middle">Registry</text>
+              <rect class="d-node" x="650" y="160" width="150" height="36" rx="8" /><text class="d-text" x="725" y="182" text-anchor="middle">Lifecycle Cmds</text>
+            </g>
+          </svg>
+        </div>
+        <p class="d-caption">A Dockerfile builds into an image once; that same image can be run as a container anywhere Docker is installed, with identical behavior every time. Everything below the line is a concept that shapes how that pipeline actually behaves in practice — each one is its own topic in this guide.</p>
+      </div>
+
+      <h3 class="subhead" style="margin-top:8px;">All 10 topics in this guide</h3>
+      <div id="svc-index"></div>
+    </section>
+
+    <!-- 10 topic panels are injected here by renderServicePanels() -->
+    <div id="service-panels"></div>
+
+    <section class="topic-panel" id="summary">
+      <h1 class="section-title">Summary &amp; Patterns</h1>
+      <p class="lede-plain">Once the individual topics make sense on their own, these references tie them together: the order to learn them in, and the single habit — layer ordering — that separates a Dockerfile that rebuilds in two seconds from one that rebuilds from scratch every time.</p>
+
+      <div class="card">
+        <h3>Recommended Learning Order</h3>
+        <div class="seq-flow" id="sequence-flow"></div>
+      </div>
+
+      <div class="card">
+        <h3>Key Concept — Why Layer Order Controls Rebuild Speed</h3>
+        <p class="card-note">The single biggest lever over how fast <code>docker build</code> feels day to day: whether dependencies are installed before or after your source code is copied in.</p>
+        <div class="diagram-box" style="margin-bottom:0; box-shadow:none;">
+          <div class="d-chrome">Diagram · Slow Rebuilds vs Fast Rebuilds</div>
+          <div class="d-body">
+            <svg viewBox="0 0 780 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Copying source code before installing dependencies invalidates the install step on every code change; copying package.json first and installing before the rest of the source keeps that step cached">
+              <defs>
+                <marker id="layerArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+              </defs>
+
+              <line class="d-boundary" x1="390" y1="20" x2="390" y2="300" />
+              <text class="d-boundary-label" x="155" y="36" text-anchor="middle">❌ DEPS AFTER SOURCE</text>
+              <text class="d-boundary-label" x="625" y="36" text-anchor="middle">✅ DEPS BEFORE SOURCE</text>
+
+              <rect class="d-node" x="30" y="50" width="250" height="50" rx="8" />
+              <text class="d-title" x="46" y="70" style="font-size:12.5px;">FROM node:20-slim</text>
+              <text class="d-sub" x="46" y="88">base layer</text>
+              <path class="d-arrow" d="M155 100 L155 113" marker-end="url(#layerArrow)" />
+
+              <rect class="d-node-accent" x="30" y="115" width="250" height="50" rx="8" />
+              <text class="d-title" x="46" y="135" style="font-size:12.5px;">COPY . .</text>
+              <text class="d-sub" x="46" y="153">copies source too early</text>
+              <path class="d-arrow" d="M155 165 L155 178" marker-end="url(#layerArrow)" />
+
+              <rect class="d-node-accent" x="30" y="180" width="250" height="50" rx="8" />
+              <text class="d-title" x="46" y="200" style="font-size:12.5px;">RUN npm install</text>
+              <text class="d-sub" x="46" y="218">reruns on every code change</text>
+              <path class="d-arrow" d="M155 230 L155 243" marker-end="url(#layerArrow)" />
+
+              <rect class="d-node-accent" x="30" y="245" width="250" height="50" rx="8" />
+              <text class="d-title" x="46" y="265" style="font-size:12.5px;">RUN npm run build</text>
+              <text class="d-sub" x="46" y="283">reruns too — nothing was cached</text>
+
+              <rect class="d-node" x="500" y="50" width="250" height="50" rx="8" />
+              <text class="d-title" x="516" y="70" style="font-size:12.5px;">FROM node:20-slim</text>
+              <text class="d-sub" x="516" y="88">base layer</text>
+              <path class="d-arrow" d="M625 100 L625 113" marker-end="url(#layerArrow)" />
+
+              <rect class="d-node" x="500" y="115" width="250" height="50" rx="8" />
+              <text class="d-title" x="516" y="135" style="font-size:12.5px;">COPY package.json .</text>
+              <text class="d-sub" x="516" y="153">only this file, first</text>
+              <path class="d-arrow" d="M625 165 L625 178" marker-end="url(#layerArrow)" />
+
+              <rect class="d-node" x="500" y="180" width="250" height="50" rx="8" />
+              <text class="d-title" x="516" y="200" style="font-size:12.5px;">RUN npm install</text>
+              <text class="d-sub" x="516" y="218">cached — reruns only if deps change</text>
+              <path class="d-arrow" d="M625 230 L625 243" marker-end="url(#layerArrow)" />
+
+              <rect class="d-node-accent" x="500" y="245" width="250" height="50" rx="8" />
+              <text class="d-title" x="516" y="265" style="font-size:12.5px;">COPY . . &amp;&amp; RUN build</text>
+              <text class="d-sub" x="516" y="283">only this re-runs on code edits</text>
+            </svg>
+          </div>
+          <p class="d-caption">Docker caches each layer and only re-runs an instruction — and everything after it — when that instruction's own inputs change. Copy source code before installing dependencies (left) and a one-line code edit invalidates the install step too, every time. Copy just <code>package.json</code> first and install before the rest of the source (right), and the same edit only invalidates the final <code>COPY</code> — <code>npm install</code> stays cached until <code>package.json</code> itself actually changes.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic-panel" id="references">
+      <h1 class="section-title">Official Documentation Reference URLs</h1>
+      <p class="lede-plain">Every topic covered in this guide, with a direct link to its official Docker docs.</p>
+      <div class="card">
+        <div class="doc-links-grid" id="doc-links"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="label">Documented By</div>
+  <div class="name">MD Eesha</div>
+  <div class="role">Sr. Software Engineer</div>
+</footer>
+
+<script>
+const PRIORITY_LABEL = {
+  must: "Must",
+  important: "Important",
+};
+const PRIORITY_CLASS = {
+  must: "badge-must",
+  important: "badge-important",
+};
+const GROUP_LABEL = {
+  core: "Docker · Core Concepts",
+};
+
+const DATA = {
+  core: [
+    { n:1, slug:"topic-intro", name:"Introduction &amp; Installation", icon:"🚀", what:"Getting Docker running on your machine", use:"The starting point for every other topic in this guide", learn:"Docker Desktop, Docker Engine, dockerd, Docker CLI, docker version, docker info, Linux containers on Mac/Windows", priority:"must", docName:"Docker Get Started Documentation", docUrl:"https://docs.docker.com/get-started/",
+      desc:"Docker Desktop bundles three things you need together: the Docker Engine (a background daemon called <code>dockerd</code> that actually builds and runs containers), the Docker CLI (the <code>docker</code> command you type), and, on Mac and Windows, a lightweight Linux VM, since containers are a Linux kernel feature and need a Linux kernel to run on even if your laptop doesn't have one natively. Once it's installed and running, every other command in this guide — <code>docker build</code>, <code>docker run</code>, <code>docker compose</code> — is really just the CLI sending instructions over a socket to that daemon. <code>docker version</code> and <code>docker info</code> are the two commands worth knowing before anything else: the first confirms the CLI and daemon are actually talking to each other, the second dumps the daemon's current state (running containers, storage driver, resource limits).",
+      useWhen:"Install Docker Desktop on a personal machine for local development; on a Linux server or CI runner, install just the Docker Engine directly (no GUI needed) since there's no host OS gap to bridge. If a <code>docker</code> command hangs or errors with something like 'Cannot connect to the Docker daemon', that almost always means the daemon isn't running yet — check Docker Desktop is actually open before debugging anything else.",
+      steps:["Install Docker Desktop (Mac/Windows) or the Docker Engine directly (Linux server).","Confirm it's running with <code>docker version</code> — it should print both a Client and a Server section.","Run <code>docker info</code> to see the daemon's current configuration and resource limits.","Test the whole pipeline with <code>docker run hello-world</code>, a tiny image that just prints a confirmation message.","Increase the CPU/memory allocated to the Docker Desktop VM if builds feel slow (Settings → Resources).","Log in to a registry once with <code>docker login</code> if you'll be pushing images later in this guide."],
+      diagram:{ left:[{name:"Docker CLI",sub:"the docker command"}], right:[{name:"Containers",sub:"built &amp; run here"}], top:{name:"Docker Desktop",sub:"Mac/Windows VM + GUI"}, coreSub:"the daemon (dockerd)",
+        caption:"Every <code>docker</code> command you type is the CLI talking to the daemon over a socket — Docker Desktop's only job on Mac/Windows is giving that daemon a Linux kernel to actually run on." } },
+
+    { n:2, slug:"topic-images-containers", name:"Images vs Containers", icon:"📦", what:"The blueprint, and the running thing built from it", use:"The one distinction the rest of Docker builds on", learn:"Image layers, Container = image + writable layer, docker images, docker ps, Ephemeral by default, docker inspect", priority:"must", docName:"Docker Concepts — Overview", docUrl:"https://docs.docker.com/get-started/overview/",
+      desc:"An image is a read-only, layered snapshot of a filesystem plus some metadata (what command to run, what ports it expects) — think of it as a class. A container is what you get when Docker runs that image: a live process with its own thin writable layer stacked on top of the image's read-only layers, plus its own network namespace and process tree — think of it as an instance. Crucially, one image can be run as any number of independent containers at once, and none of them affect the underlying image or each other, since every write a container makes lands only in its own writable layer. That writable layer is also why containers are ephemeral by default: <code>docker rm</code> throws it away, and unless you've mounted a volume, anything the container wrote is gone with it.",
+      useWhen:"Think in terms of images when you're building and versioning — an image is what you tag, push, and pull. Think in terms of containers when you're running and debugging — <code>docker ps</code> shows what's actually alive right now, and two containers from the exact same image can be in completely different states.",
+      steps:["List images you've pulled or built locally: <code>docker images</code>.","List running containers: <code>docker ps</code>; add <code>-a</code> to include stopped ones too.","Run a container from an image: <code>docker run -d --name web nginx</code>.","Inspect the full metadata of either one: <code>docker inspect web</code> or <code>docker inspect nginx</code>.","Confirm isolation by running two containers from the same image and writing a file inside only one of them.","Remove a container without touching the image it came from: <code>docker rm web</code> (the image stays cached)."],
+      diagram:{ left:[{name:"Dockerfile",sub:"builds the image"}], right:[{name:"Container A",sub:"one running instance"},{name:"Container B",sub:"another, independent"}], coreSub:"template vs. live instance", coreLabel:"Image → Container",
+        caption:"The same image can back any number of containers at once — each gets its own writable layer, so nothing one container writes ever leaks into the image or into another container." } },
+
+    { n:3, slug:"topic-dockerfile", name:"Writing a Dockerfile", icon:"📝", what:"The build instructions for an image, one layer at a time", use:"Every custom image starts as a Dockerfile", learn:"FROM, RUN / COPY / WORKDIR, CMD vs ENTRYPOINT, .dockerignore, Layer caching, EXPOSE", priority:"must", docName:"Dockerfile Reference", docUrl:"https://docs.docker.com/reference/dockerfile/",
+      desc:"A Dockerfile is a plain-text list of instructions Docker executes top to bottom to produce an image, and each instruction — <code>FROM</code>, <code>RUN</code>, <code>COPY</code> — creates its own cached layer stacked on the one before it. <code>FROM</code> picks the base image everything else builds on top of; <code>WORKDIR</code> sets the directory subsequent commands run in; <code>COPY</code> brings files from your machine into the image; <code>RUN</code> executes a shell command at build time (installing packages, compiling code); and <code>CMD</code> (or <code>ENTRYPOINT</code>) declares what actually runs when a container starts, as opposed to at build time. A <code>.dockerignore</code> file, working exactly like <code>.gitignore</code>, keeps <code>node_modules</code> and <code>.git</code> out of the build context so builds stay fast and images stay small.",
+      useWhen:"Order instructions from least to most frequently changing — dependencies before application code — so Docker can reuse cached layers for everything above the line that actually changed, instead of re-running every step on every build. Use <code>ENTRYPOINT</code> when a container should always run one specific binary and <code>CMD</code> only supplies default arguments to it; use <code>CMD</code> alone when the whole command should be freely overridable.",
+      steps:["Start from an official base image: <code>FROM node:20-slim</code>.","Set a working directory: <code>WORKDIR /app</code>.","Copy dependency manifests first, install, then copy the rest of the source: <code>COPY package*.json ./</code> → <code>RUN npm install</code> → <code>COPY . .</code>.","Declare the port the app listens on: <code>EXPOSE 3000</code>.","Set the startup command: <code>CMD [\"node\", \"server.js\"]</code>.","Add a <code>.dockerignore</code> excluding <code>node_modules</code>, <code>.git</code>, and any local env files before your first build."],
+      diagram:{ left:[{name:"FROM base image",sub:"starting layer"}], right:[{name:"Cached Layers",sub:"one per instruction"},{name:"docker build",sub:"produces the image"}], bottom:{name:".dockerignore",sub:"excludes files from context"}, coreSub:"instructions, top to bottom",
+        caption:"Each instruction is its own cached layer — reorder rarely-changing steps (installing dependencies) above frequently-changing ones (copying source) and most rebuilds only re-run the last line or two." } },
+
+    { n:4, slug:"topic-building", name:"Building Images", icon:"🔨", what:"Turning a Dockerfile into a tagged, runnable image", use:"The command that actually produces what docker run consumes", learn:"docker build, -t (tag), Build context, --no-cache, BuildKit, docker history", priority:"must", docName:"docker build CLI Reference", docUrl:"https://docs.docker.com/reference/cli/docker/build/",
+      desc:"<code>docker build</code> reads a Dockerfile and a build context — the directory of files it's allowed to <code>COPY</code> from — and produces a new image, layer by layer, caching each step so a second build with no changes finishes almost instantly. The <code>-t</code> flag tags the result with a human-readable name and version, like <code>myapp:1.2</code>, since without a tag you'd only ever be able to refer to the image by its long generated hash. Modern Docker builds run on BuildKit by default, which parallelizes independent build stages and skips steps whose inputs haven't changed, rather than strictly replaying the Dockerfile line by line. <code>docker history</code> shows exactly what each layer of an existing image actually did and how much space it added, which is the fastest way to find out why an image got unexpectedly large.",
+      useWhen:"Always tag a build (<code>-t name:version</code>) even during local development — an untagged image is easy to lose track of the moment you build a second one. Reach for <code>--no-cache</code> only when you suspect a cached layer is stale (a dependency version changed but the lockfile hash didn't) — it forces every instruction to re-run, which is slow, so it's a debugging tool, not a default habit.",
+      steps:["Run a basic build from the current directory: <code>docker build -t myapp:1.0 .</code>.","Tag a build for a specific registry destination at build time: <code>docker build -t myregistry.com/myapp:1.0 .</code>.","Force a clean rebuild, ignoring the cache, when you suspect stale layers: <code>docker build --no-cache -t myapp:1.0 .</code>.","Inspect what each layer of an image actually did: <code>docker history myapp:1.0</code>.","Pass build-time variables with <code>--build-arg KEY=value</code> for values a Dockerfile needs only during the build.","Confirm the new image exists and check its size: <code>docker images | grep myapp</code>."],
+      diagram:{ left:[{name:"Dockerfile",sub:"instructions"},{name:"Build Context",sub:"files sent to daemon"}], right:[{name:"Tagged Image",sub:"myapp:1.0"}], coreSub:"Dockerfile + context → image",
+        caption:"The build context is everything in the directory you point <code>docker build</code> at (minus <code>.dockerignore</code>'d files) — that's the only source of files any <code>COPY</code> instruction can reach." } },
+
+    { n:5, slug:"topic-multistage", name:"Multi-Stage Builds", icon:"🏗️", what:"Splitting a build into separate stages so the final image only ships what it needs", use:"Keep compiled/production images small without a separate build pipeline", learn:"Multiple FROM statements, --from=&lt;stage&gt;, Naming stages with AS, Discarding build tooling, Smaller final images", priority:"important", docName:"Docker Multi-Stage Builds", docUrl:"https://docs.docker.com/build/building/multi-stage/",
+      desc:"A multi-stage Dockerfile has more than one <code>FROM</code> line, each starting a fresh, independent stage — commonly one heavyweight stage with a full compiler/build toolchain, and one lightweight final stage that only copies the finished artifact out of the first using <code>COPY --from=&lt;stage&gt;</code>. Everything from the build stage — the compiler, dev dependencies, source maps, intermediate files — never makes it into the final image at all, since only the specific files you explicitly <code>COPY --from</code> cross the boundary between stages. This is the standard way to compile a Go binary, a TypeScript bundle, or a Java JAR in one stage and ship only the resulting binary in a minimal final image, cutting a typical image down dramatically.",
+      useWhen:"Reach for multi-stage builds for any compiled or bundled language (Go, Java, Rust, TypeScript/webpack) where the build toolchain is large but the actual output is small — there's rarely a reason not to. Name each stage with <code>AS buildname</code> the moment you have more than two stages, since referring back to <code>--from=0</code> by index gets unreadable fast.",
+      steps:["Add a first stage with the full toolchain: <code>FROM node:20 AS builder</code> → install deps → <code>RUN npm run build</code>.","Start a second, minimal stage: <code>FROM node:20-slim</code>.","Copy only the built output across: <code>COPY --from=builder /app/dist ./dist</code>.","Set the final stage's <code>CMD</code> to run just the built artifact, not the build tooling.","Compare image sizes before and after with <code>docker images</code> to confirm the final image dropped the build stage's weight.","Add a <code>--target buildname</code> flag to <code>docker build</code> if you ever need to build and inspect an intermediate stage on its own."],
+      diagram:{ left:[{name:"Build Stage",sub:"compilers, full toolchain"}], right:[{name:"Final Stage",sub:"only the artifact copied in"}], bottom:{name:"COPY --from=builder",sub:"the only bridge between stages"}, coreSub:"one Dockerfile, isolated stages", coreLabel:"Multi-Stage Build",
+        caption:"Nothing in the build stage exists in the final image except the exact files named in <code>COPY --from</code> — the compiler and every intermediate file are simply discarded." } },
+
+    { n:6, slug:"topic-volumes", name:"Volumes &amp; Persistent Data", icon:"💾", what:"Storage that outlives the container that wrote to it", use:"Anywhere a container needs data to survive being removed or replaced", learn:"docker volume create, Named volumes, Bind mounts, VOLUME in Dockerfile, docker volume ls / inspect, Anonymous volumes", priority:"must", docName:"Docker Volumes Documentation", docUrl:"https://docs.docker.com/engine/storage/volumes/",
+      desc:"A container's own writable layer disappears the moment the container is removed, which is fine for a stateless API but not for a database — a volume is Docker-managed storage that lives outside any single container's lifecycle, so it survives <code>docker rm</code> and can even be attached to a brand-new container later. Named volumes (<code>docker volume create mydata</code>) are the recommended default: Docker manages exactly where they live on disk, and you just reference them by name. Bind mounts instead map a specific path on the host straight into the container, which is what makes local development workflows like live-reloading source code possible, but they're tied to that exact host path and don't move well between machines. <code>docker volume ls</code> and <code>docker volume inspect</code> show what volumes exist and where Docker is actually storing their data.",
+      useWhen:"Use a named volume for anything a production container needs to persist — a database's data directory, uploaded user files — since it's portable and Docker manages the lifecycle. Use a bind mount specifically for local development, to map your live source code into a container so edits show up without rebuilding the image; avoid bind-mounting application data itself in production, since it couples the container to one specific host's filesystem layout.",
+      steps:["Create a named volume: <code>docker volume create db-data</code>.","Attach it when starting a container: <code>docker run -v db-data:/var/lib/postgresql/data postgres</code>.","For local dev, bind-mount your source directory instead: <code>docker run -v $(pwd):/app myapp</code>.","List what volumes currently exist: <code>docker volume ls</code>.","Find exactly where a volume's data lives on the host: <code>docker volume inspect db-data</code>.","Remove volumes you no longer need explicitly — <code>docker rm</code> on a container does not delete its volumes by default, so unused ones accumulate: <code>docker volume prune</code>."],
+      diagram:{ left:[{name:"Container",sub:"writes data"}], right:[{name:"Named Volume",sub:"Docker-managed"},{name:"Bind Mount",sub:"a host path, dev only"}], coreSub:"storage outside the container", coreLabel:"Volume",
+        caption:"Whether it's a named volume or a bind mount, the data lives outside the container's writable layer — remove or replace the container and the data is still there for the next one." } },
+
+    { n:7, slug:"topic-networking", name:"Networking", icon:"🌐", what:"How containers find and talk to each other", use:"Multi-container apps — an API reaching a database, for example", learn:"Bridge networks, docker network create, Container DNS by name, Port publishing (-p), docker network ls / inspect, Host vs container ports", priority:"important", docName:"Docker Networking Documentation", docUrl:"https://docs.docker.com/engine/network/",
+      desc:"By default, every container Docker starts joins the same default bridge network and gets its own private IP, isolated from the host and from containers on other networks. On a user-defined bridge network (the kind you get from <code>docker network create</code> or from Compose automatically), Docker also runs a built-in DNS server, so containers can reach each other by container name instead of by IP — an API container can connect to <code>postgres://db:5432</code> and Docker resolves <code>db</code> to whatever container actually has that name. Publishing a port with <code>-p 8080:80</code> is a separate, unrelated concern: it's what makes a container's port reachable from outside Docker entirely, from your host machine or the internet, by mapping a host port to a container port.",
+      useWhen:"Let containers that need to talk to each other join the same user-defined network and address one another by container name — never hardcode a container's IP, since it can change on restart. Only publish (<code>-p</code>) the ports that genuinely need to be reachable from outside Docker — a database a single API container talks to usually doesn't need a published port at all if they already share a network.",
+      steps:["Create a dedicated network for a set of related containers: <code>docker network create myapp-net</code>.","Start each container on it: <code>docker run --network myapp-net --name db postgres</code>.","From another container on the same network, connect using the container name as the hostname: <code>psql -h db -U postgres</code>.","Publish a port only for containers that need external access: <code>docker run -p 8080:80 --network myapp-net nginx</code>.","List existing networks: <code>docker network ls</code>; inspect one to see which containers are attached: <code>docker network inspect myapp-net</code>.","Remember <code>-p host:container</code> — the first number is the host port, the second is the port the app inside actually listens on."],
+      diagram:{ left:[{name:"API Container",sub:"connects by name"}], right:[{name:"Database Container",sub:"reachable as 'db'"}], bottom:{name:"-p 8080:80",sub:"published to the host, separately"}, coreSub:"container-to-container DNS", coreLabel:"Bridge Network",
+        caption:"Two containers on the same user-defined network reach each other by container name through Docker's built-in DNS — publishing a port with <code>-p</code> is a completely separate step, only needed for access from outside Docker." } },
+
+    { n:8, slug:"topic-compose", name:"Docker Compose", icon:"🎼", what:"Defining and running a multi-container app from one YAML file", use:"Local dev environments and multi-service apps that belong together", learn:"docker-compose.yml, services, docker compose up / down, depends_on, Compose networks &amp; volumes, docker compose logs", priority:"must", docName:"Docker Compose Documentation", docUrl:"https://docs.docker.com/compose/",
+      desc:"Compose lets you describe an entire multi-container application — an API, a database, a cache — as one <code>docker-compose.yml</code> file, with each container defined as a <code>service</code>, and bring the whole thing up or down with a single command instead of a long sequence of individual <code>docker run</code> flags. Compose automatically creates a shared network for all the services in the file, so they can already reach each other by service name exactly the way manually-networked containers do, and automatically namespaces named volumes so they don't collide with unrelated projects. <code>depends_on</code> controls the order containers start in, though it only waits for a dependency's container to start, not for the application inside it to actually be ready — a database container can be 'started' seconds before Postgres itself is accepting connections.",
+      useWhen:"Reach for Compose the moment a project needs more than one container to run locally — it replaces a README full of <code>docker run</code> commands with one file that's checked into the repo and simply works for anyone who clones it. Don't rely on <code>depends_on</code> alone for startup ordering when a service genuinely can't tolerate its dependency not being ready yet — pair it with a healthcheck or a retry loop in the application itself.",
+      steps:["Create <code>docker-compose.yml</code> with a <code>services:</code> key listing each container (e.g. <code>web</code>, <code>db</code>).","Give each service an <code>image</code> or a <code>build: .</code> pointing at its Dockerfile.","Add <code>ports</code> to any service that needs to be reachable from the host, and <code>environment</code> for its config.","Start everything in the background: <code>docker compose up -d</code>.","Watch logs across every service at once: <code>docker compose logs -f</code>.","Tear everything down, including the network Compose created: <code>docker compose down</code> (add <code>-v</code> to also remove volumes)."],
+      diagram:{ left:[{name:"web service",sub:"build: ."}], right:[{name:"db service",sub:"image: postgres"},{name:"Shared Network",sub:"created automatically"}], coreSub:"one file, many services", coreLabel:"docker-compose.yml",
+        caption:"<code>docker compose up</code> reads every service in the file, builds or pulls each image, and starts them all on one shared network it creates for you — the same outcome as several manual <code>docker run</code> commands, defined once." } },
+
+    { n:9, slug:"topic-registry", name:"Docker Hub &amp; Registries", icon:"📤", what:"Where built images are stored and distributed from", use:"Getting an image from your machine (or CI) onto any server that needs to run it", learn:"docker push / pull, docker login, Image naming (registry/repo:tag), Public vs private repositories, Docker Hub, Private registries (ECR, GCR)", priority:"important", docName:"Docker Hub Documentation", docUrl:"https://docs.docker.com/docker-hub/",
+      desc:"A registry is a server that stores images and serves them back on request — Docker Hub is the default public one, and most cloud providers run their own private equivalent (Amazon ECR, Google Artifact Registry). An image's full name encodes which registry it lives in: <code>docker.io/library/nginx</code> is Docker Hub's own <code>nginx</code> image, while <code>123456789.dkr.ecr.us-east-1.amazonaws.com/myapp:1.0</code> is a private image in a specific AWS account's ECR registry — if no registry hostname is given, Docker assumes Docker Hub. <code>docker push</code> uploads a locally tagged image to whichever registry its tag points at, and <code>docker pull</code> (which <code>docker run</code> also does implicitly if the image isn't cached locally) downloads it back down — this is the entire mechanism by which an image built on a laptop or in CI ends up running on a production server.",
+      useWhen:"Use Docker Hub for public, open-source images without a second thought; for anything proprietary, push to a private registry instead — most CI/CD pipelines authenticate to one automatically and push a freshly built image on every merge to main. Tag images with something more specific than <code>:latest</code> in any pipeline that deploys automatically — a commit SHA or version number — since <code>:latest</code> gives you no way to know which actual code is currently running.",
+      steps:["Authenticate to a registry once per machine: <code>docker login</code> (or <code>docker login myregistry.com</code> for a private one).","Tag a local image for the destination registry: <code>docker tag myapp:1.0 myregistry.com/myapp:1.0</code>.","Push it: <code>docker push myregistry.com/myapp:1.0</code>.","On the target server, pull it down: <code>docker pull myregistry.com/myapp:1.0</code>.","Prefer a commit SHA or semantic version as the tag over <code>:latest</code> for anything deployed automatically.","Set up a CI step that logs in, builds, tags, and pushes automatically on every merge, rather than doing this by hand."],
+      diagram:{ left:[{name:"docker push",sub:"from laptop or CI"}], right:[{name:"docker pull",sub:"on any server"}], bottom:{name:"docker login",sub:"required to push/pull private images"}, coreSub:"stores &amp; serves images", coreLabel:"Registry",
+        caption:"The registry is the handoff point — whatever gets pushed here is exactly what every <code>docker pull</code> downstream will run, whether that's a teammate's laptop or a production server." } },
+
+    { n:10, slug:"topic-lifecycle", name:"Container Lifecycle Commands", icon:"🔄", what:"Starting, stopping, inspecting, and cleaning up containers", use:"The everyday commands for working with containers you've already got running (or stopped)", learn:"docker run flags (-d, --name, --rm), docker start/stop/restart, docker exec, docker logs, docker rm, docker system prune", priority:"must", docName:"docker container CLI Reference", docUrl:"https://docs.docker.com/reference/cli/docker/container/",
+      desc:"<code>docker run</code> creates and starts a new container in one step — <code>-d</code> runs it in the background, <code>--name</code> gives it a memorable name instead of a random one, and <code>--rm</code> automatically deletes the container the moment it stops, handy for one-off tasks. Once a container exists, <code>docker start</code>/<code>docker stop</code>/<code>docker restart</code> control an existing container by name without creating a new one, <code>docker exec -it &lt;name&gt; sh</code> opens an interactive shell inside a container that's already running (essential for debugging), and <code>docker logs -f &lt;name&gt;</code> streams its stdout/stderr. Stopped containers, unused images, and dangling volumes all quietly accumulate disk space over time; <code>docker system prune</code> cleans up everything not currently in use, and is worth running periodically rather than letting a laptop's disk slowly fill up.",
+      useWhen:"Reach for <code>docker exec -it &lt;name&gt; sh</code> as the first debugging step whenever a container is running but behaving unexpectedly — it's the fastest way to actually look inside. Use <code>--rm</code> on any container you're running for a one-off command or a quick test, so you're not left cleaning up a pile of stopped containers afterward.",
+      steps:["Start a new container in the background with a name: <code>docker run -d --name web nginx</code>.","Stop and restart an existing container without recreating it: <code>docker stop web</code> / <code>docker start web</code>.","Open a shell inside a running container to look around: <code>docker exec -it web sh</code>.","Stream a container's logs live: <code>docker logs -f web</code>.","Remove a container you're done with: <code>docker rm web</code> (add <code>-f</code> to stop and remove in one step).","Periodically clean up everything unused — stopped containers, dangling images, unused networks: <code>docker system prune</code>."],
+      diagram:{ left:[{name:"docker run",sub:"create &amp; start"},{name:"docker exec",sub:"shell into a running one"}], right:[{name:"docker stop / start",sub:"pause &amp; resume"},{name:"docker rm",sub:"delete when done"}], coreSub:"create → run → stop → remove", coreLabel:"Container Lifecycle",
+        caption:"<code>docker run</code> is really create-and-start combined — once a container exists, every other lifecycle command (<code>stop</code>, <code>start</code>, <code>exec</code>, <code>rm</code>) operates on that same container by name, not a fresh one." } },
+  ],
+};
+
+/* ---------- Generic per-topic architecture diagram renderer ---------- */
+function stackBoxes(items, x, w, centerY, boxH, gap) {
+  const n = items.length;
+  if (!n) return [];
+  const totalH = n * boxH + (n - 1) * gap;
+  const startY = centerY - totalH / 2;
+  return items.map((it, i) => {
+    const y = startY + i * (boxH + gap);
+    return { ...it, x, y, w, h: boxH, cy: y + boxH / 2 };
+  });
+}
+
+function svcDiagramSVG(svc) {
+  const cfg = svc.diagram;
+  const W = 760, H = 420;
+  const coreW = 200, coreH = 90, coreCX = 380, coreCY = 210;
+  const coreX = coreCX - coreW / 2, coreY = coreCY - coreH / 2;
+  const leftX = 20, leftW = 170, rightX = 570, rightW = 170, boxH = 60, gap = 18;
+  const uid = svc.slug;
+
+  const lefts = stackBoxes(cfg.left || [], leftX, leftW, coreCY, boxH, gap);
+  const rights = stackBoxes(cfg.right || [], rightX, rightW, coreCY, boxH, gap);
+  const label = cfg.coreLabel || svc.name;
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${cfg.caption.replace(/"/g,"'")}">`;
+  svg += `<defs>
+    <marker id="m-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)"/></marker>
+    <marker id="ma-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)"/></marker>
+  </defs>`;
+
+  if (cfg.top) {
+    svg += `<rect class="d-node-navy" x="${coreX}" y="24" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title-light" x="${coreX+14}" y="47">${cfg.top.name}</text>
+      <text class="d-sub-light" x="${coreX+14}" y="62">${cfg.top.sub||""}</text>
+      <path class="d-arrow" d="M${coreCX} 70 L${coreCX} ${coreY-2}" marker-end="url(#m-${uid})"/>`;
+  }
+  if (cfg.bottom) {
+    svg += `<rect class="d-node" x="${coreX}" y="350" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title" x="${coreX+14}" y="373">${cfg.bottom.name}</text>
+      <text class="d-sub" x="${coreX+14}" y="388">${cfg.bottom.sub||""}</text>
+      <path class="d-arrow-accent" d="M${coreCX} ${coreY+coreH+2} L${coreCX} 348" marker-end="url(#ma-${uid})"/>`;
+  }
+
+  svg += `<rect class="d-node-accent" x="${coreX}" y="${coreY}" width="${coreW}" height="${coreH}" rx="12"/>
+    <text class="d-title" x="${coreCX}" y="${coreCY-6}" text-anchor="middle">${label}</text>
+    <text class="d-sub" x="${coreCX}" y="${coreCY+14}" text-anchor="middle">${cfg.coreSub||""}</text>`;
+
+  lefts.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${b.x+b.w} ${b.cy} L${coreX-2} ${coreCY}" marker-end="url(#m-${uid})"/>`;
+  });
+  rights.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${coreX+coreW+2} ${coreCY} L${b.x} ${b.cy}" marker-end="url(#m-${uid})"/>`;
+  });
+
+  svg += `</svg>`;
+  return svg;
+}
+
+function renderServicePanels() {
+  const host = document.getElementById("service-panels");
+  const html = [];
+  Object.keys(DATA).forEach(groupKey => {
+    DATA[groupKey].forEach(item => {
+      html.push(`
+        <section class="topic-panel" id="${item.slug}" hidden>
+          <div class="panel-kicker">${GROUP_LABEL[groupKey]}</div>
+          <div class="panel-head">
+            <div class="panel-icon">${item.icon}</div>
+            <div>
+              <div class="svc-name-row"><h2>${String(item.n).padStart(2,"0")} · ${item.name}</h2><span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span></div>
+              <p class="panel-tagline">${item.what} — ${item.use}</p>
+            </div>
+          </div>
+          <p class="svc-desc" style="margin-top:20px;">${item.desc}</p>
+
+          <div class="use-callout">
+            <b class="callout-title">Where &amp; when to use it</b>
+            ${item.useWhen}
+          </div>
+
+          <div class="diagram-box">
+            <div class="d-chrome">Diagram · ${item.name}</div>
+            <div class="d-body">${svcDiagramSVG(item)}</div>
+            <p class="d-caption">${item.diagram.caption}</p>
+          </div>
+
+          <h3 class="subhead">How to implement it</h3>
+          <ol class="steps-list">${item.steps.map(s => `<li>${s}</li>`).join("")}</ol>
+
+          <div class="svc-learn">
+            <div class="flabel">What you should learn</div>
+            <div class="tag-list">${item.learn.split(",").map(t => `<span class="tag">${t.trim()}</span>`).join("")}</div>
+          </div>
+
+          <div class="svc-foot">
+            <a class="back-home" style="margin:0;" href="#overview">← All topics</a>
+            <a class="doc-link" href="${item.docUrl}" target="_blank" rel="noopener">${item.docName} →</a>
+          </div>
+        </section>
+      `);
+    });
+  });
+  host.innerHTML = html.join("");
+}
+
+function renderSidebarNav() {
+  Object.keys(DATA).forEach(groupKey => {
+    const group = document.getElementById(`nav-group-${groupKey}`);
+    const links = DATA[groupKey].map(item =>
+      `<a class="nav-link" href="#${item.slug}"><span class="nav-icon">${item.icon}</span> ${item.name}</a>`
+    ).join("");
+    group.insertAdjacentHTML("beforeend", links);
+  });
+}
+
+function renderServiceIndex() {
+  const host = document.getElementById("svc-index");
+  const html = Object.keys(DATA).map(groupKey => `
+    <div class="svc-index-group">
+      <h4>${GROUP_LABEL[groupKey]}</h4>
+      ${DATA[groupKey].map(item => `
+        <a class="svc-index-item" href="#${item.slug}">
+          <span class="svc-index-icon">${item.icon}</span>
+          <span class="svc-index-text"><div class="n">${item.name}</div><div class="t">${item.what} — ${item.use}</div></span>
+          <span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span>
+        </a>
+      `).join("")}
+    </div>
+  `).join("");
+  host.innerHTML = html;
+}
+
+/* ---------- Router: show exactly one topic panel at a time ---------- */
+function showTopic(id) {
+  document.querySelectorAll(".topic-panel").forEach(p => { p.hidden = (p.id !== id); });
+  document.querySelectorAll(".nav-link").forEach(a => {
+    a.classList.toggle("active", a.getAttribute("href") === "#" + id);
+  });
+  window.scrollTo(0, 0);
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("sidebarScrim").classList.remove("show");
+}
+
+function routeFromHash() {
+  const id = (location.hash || "#overview").slice(1);
+  showTopic(document.getElementById(id) ? id : "overview");
+}
+
+renderServicePanels();
+renderSidebarNav();
+renderServiceIndex();
+window.addEventListener("hashchange", routeFromHash);
+routeFromHash();
+
+/* ---------- Mobile sidebar toggle ---------- */
+const menuBtn = document.getElementById("menuBtn");
+const sidebarEl = document.getElementById("sidebar");
+const scrimEl = document.getElementById("sidebarScrim");
+if (menuBtn) {
+  menuBtn.addEventListener("click", () => {
+    sidebarEl.classList.toggle("open");
+    scrimEl.classList.toggle("show");
+  });
+}
+scrimEl.addEventListener("click", () => {
+  sidebarEl.classList.remove("open");
+  scrimEl.classList.remove("show");
+});
+
+/* ---------- Summary + references (unchanged data) ---------- */
+const sequence = ["Introduction & Installation","Images vs Containers","Writing a Dockerfile","Building Images","Multi-Stage Builds","Volumes & Persistent Data","Networking","Docker Compose","Docker Hub & Registries","Container Lifecycle Commands"];
+document.getElementById("sequence-flow").innerHTML = sequence.map(s => `<span class="seq-step">${s}</span>`).join('<span class="seq-arrow">→</span>');
+
+const docLinks = [
+  ["Introduction & Installation","https://docs.docker.com/get-started/"],
+  ["Images vs Containers","https://docs.docker.com/get-started/overview/"],
+  ["Writing a Dockerfile","https://docs.docker.com/reference/dockerfile/"],
+  ["Building Images","https://docs.docker.com/reference/cli/docker/build/"],
+  ["Multi-Stage Builds","https://docs.docker.com/build/building/multi-stage/"],
+  ["Volumes & Persistent Data","https://docs.docker.com/engine/storage/volumes/"],
+  ["Networking","https://docs.docker.com/engine/network/"],
+  ["Docker Compose","https://docs.docker.com/compose/"],
+  ["Docker Hub & Registries","https://docs.docker.com/docker-hub/"],
+  ["Container Lifecycle Commands","https://docs.docker.com/reference/cli/docker/container/"],
+];
+document.getElementById("doc-links").innerHTML = docLinks.map(([n,u]) => `<div><b>${n}</b><br>${u}</div>`).join("");
+</script>
+
+</body>
+</html>
