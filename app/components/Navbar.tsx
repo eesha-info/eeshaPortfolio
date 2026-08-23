@@ -49,7 +49,7 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
-            href="/tech-stack"
+            href="/guides"
             className="nav-link"
             onClick={() => setMenuOpen(false)}
           >

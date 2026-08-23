@@ -81,7 +81,7 @@ export default function TechStackGrid() {
               {tech.description}
             </p>
 
-            <Link href={`/tech-stack/${tech.slug}`} className="read-docs-link">
+            <Link href={`/guides/${tech.slug}`} className="read-docs-link">
               Read More →
             </Link>
           </div>
