@@ -116,6 +116,28 @@ body {
   to   { transform: rotate(360deg); }
 }
 
+@keyframes pageBlurIn {
+  0%   { opacity: 0; filter: blur(18px); transform: scale(0.97); }
+  100% { opacity: 1; filter: blur(0px); transform: scale(1); }
+}
+.page-blur-in {
+  opacity: 0;
+  filter: blur(18px);
+  transform: scale(0.97);
+  animation: pageBlurIn 1s cubic-bezier(0.22, 1, 0.36, 1) 0.7s forwards;
+}
+
+@keyframes cardSpinIn {
+  0%   { opacity: 0; transform: perspective(900px) rotateY(-50deg) rotate(-6deg) scale(0.75); }
+  60%  { opacity: 1; transform: perspective(900px) rotateY(10deg) rotate(2deg) scale(1.03); }
+  100% { opacity: 1; transform: perspective(900px) rotateY(0deg) rotate(0deg) scale(1); }
+}
+
+@keyframes iconSpinIn {
+  0%   { transform: rotate(-160deg) scale(0.4); opacity: 0; }
+  100% { transform: rotate(0deg) scale(1); opacity: 1; }
+}
+
 @keyframes typewriter {
   from { width: 0; }
   to   { width: 100%; }
@@ -696,7 +718,8 @@ body {
   padding: 28px;
   transition: var(--transition);
   opacity: 0;
-  animation: scaleIn 0.5s ease-out forwards;
+  transform-style: preserve-3d;
+  animation: cardSpinIn 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   overflow: hidden;
 }
 .tech-stack-card::before {
@@ -729,6 +752,13 @@ body {
   background: var(--gradient-card);
   border: 1px solid var(--border);
   margin-bottom: 16px;
+  opacity: 0;
+  animation: iconSpinIn 0.5s ease-out forwards;
+  animation-delay: inherit;
+  transition: transform 0.5s ease;
+}
+.tech-stack-card:hover .tech-icon-badge {
+  transform: rotate(14deg) scale(1.08);
 }
 
 .badge-coming-soon {

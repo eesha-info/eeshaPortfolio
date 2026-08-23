@@ -15,7 +15,7 @@ const titleWords = ["Everything", "I", "Use", "—"];
 
 export default function GuidesPage() {
   return (
-    <>
+    <div className="page-blur-in">
       <Navbar />
 
       <section
@@ -159,6 +159,6 @@ export default function GuidesPage() {
       </section>
 
       <Footer />
-    </>
+    </div>
   );
 }
