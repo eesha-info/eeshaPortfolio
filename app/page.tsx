@@ -5,7 +5,8 @@ import SkillBadge from "./components/SkillBadge";
 import ExperienceCard from "./components/ExperienceCard";
 import Footer from "./components/Footer";
 import DownloadCvButton from "./components/DownloadCvButton";
-import TypedHeroTitle from "./components/TypedHeroTitle";
+import TypedHeroIntro from "./components/TypedHeroIntro";
+import TypedParagraphs from "./components/TypedParagraphs";
 import {
   projects,
   skills,
@@ -82,30 +83,11 @@ export default function Home() {
             </span>
           </div>
 
-          <TypedHeroTitle name={personalInfo.name} />
-
-          <p
-            className="text-xl md:text-2xl mb-4 animate-fade-in-up delay-200 font-semibold"
-            style={{
-              opacity: 0,
-              animationFillMode: "forwards",
-              color: "var(--text-primary)",
-            }}
-          >
-            {personalInfo.title}
-          </p>
-
-          <p
-            className="text-base md:text-lg max-w-2xl mx-auto mb-10 animate-fade-in-up delay-300"
-            style={{
-              opacity: 0,
-              animationFillMode: "forwards",
-              color: "var(--text-secondary)",
-              lineHeight: 1.8,
-            }}
-          >
-            {personalInfo.tagline}
-          </p>
+          <TypedHeroIntro
+            name={personalInfo.name}
+            title={personalInfo.title}
+            tagline={personalInfo.tagline}
+          />
 
           <div
             className="flex flex-wrap justify-center gap-4 animate-fade-in-up delay-400"
@@ -179,17 +161,7 @@ export default function Home() {
             </div>
 
             {/* Bio text */}
-            <div className="flex flex-col gap-4">
-              {personalInfo.aboutParagraphs.map((p, i) => (
-                <p
-                  key={i}
-                  className="text-sm leading-relaxed"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  {p}
-                </p>
-              ))}
-            </div>
+            <TypedParagraphs paragraphs={personalInfo.aboutParagraphs} />
           </div>
 
           {/* Skill highlight cards */}
