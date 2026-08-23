@@ -1,2 +1,2 @@
-export const basePath =
-  process.env.NODE_ENV === "production" ? "/eeshaPortfolio" : "";
+// Served from the custom domain (mdeesha.in) root — no basePath needed.
+export const basePath = "";
