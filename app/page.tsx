@@ -4,6 +4,8 @@ import ProjectCard from "./components/ProjectCard";
 import SkillBadge from "./components/SkillBadge";
 import ExperienceCard from "./components/ExperienceCard";
 import Footer from "./components/Footer";
+import DownloadCvButton from "./components/DownloadCvButton";
+import TypedHeroTitle from "./components/TypedHeroTitle";
 import {
   projects,
   skills,
@@ -80,17 +82,7 @@ export default function Home() {
             </span>
           </div>
 
-          <h1
-            className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in-up delay-100"
-            style={{
-              opacity: 0,
-              animationFillMode: "forwards",
-              lineHeight: 1.15,
-            }}
-          >
-            Hi, I&apos;m{" "}
-            <span className="gradient-text">{personalInfo.name}</span>
-          </h1>
+          <TypedHeroTitle name={personalInfo.name} />
 
           <p
             className="text-xl md:text-2xl mb-4 animate-fade-in-up delay-200 font-semibold"
@@ -125,14 +117,10 @@ export default function Home() {
             <a href="#contact" className="btn-outline">
               Get In Touch
             </a>
-            <a
-              href={socialLinks.resume}
-              target="_blank"
-              rel="noopener noreferrer"
+            <DownloadCvButton
+              resumeUrl={socialLinks.resume}
               className="btn-outline"
-            >
-              📄 Download CV
-            </a>
+            />
           </div>
 
           {/* Stats */}
