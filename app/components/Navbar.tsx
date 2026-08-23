@@ -55,15 +55,6 @@ export default function Navbar() {
           >
             Tech Stack
           </Link>
-          <a
-            href="https://drive.google.com/file/d/1Dej3Z5nv7dOQwxk7Wb5VgfaRVookjQqU/view?usp=sharing"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-primary"
-            style={{ padding: "8px 20px", fontSize: "0.85rem" }}
-          >
-            Resume ↗
-          </a>
         </div>
 
         {/* Mobile toggle */}

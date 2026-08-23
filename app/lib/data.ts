@@ -273,6 +273,8 @@ export const socialLinks = {
   twitter: "https://twitter.com",
   phone: "+91-9463258394",
   location: "Hyderabad, Telangana (India)",
+  resume:
+    "https://drive.google.com/file/d/1Dej3Z5nv7dOQwxk7Wb5VgfaRVookjQqU/view?usp=sharing",
 };
 
 const careerStartDate = new Date(2021, 8); // September 2021
