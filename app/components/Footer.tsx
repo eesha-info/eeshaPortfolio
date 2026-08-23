@@ -14,7 +14,7 @@ export default function Footer() {
             . Crafted with precision.
           </p>
           <div className="flex gap-6">
-            <Link href="/tech-stack">Tech Stack</Link>
+            <Link href="/tech-stack">Guides</Link>
             <a href={socialLinks.github} target="_blank" rel="noopener noreferrer">
               GitHub
             </a>

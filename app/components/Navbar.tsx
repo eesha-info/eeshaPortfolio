@@ -53,7 +53,7 @@ export default function Navbar() {
             className="nav-link"
             onClick={() => setMenuOpen(false)}
           >
-            Tech Stack
+            Guides
           </Link>
         </div>
 

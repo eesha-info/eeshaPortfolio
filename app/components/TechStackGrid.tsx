@@ -26,7 +26,7 @@ export default function TechStackGrid() {
           className={`category-pill ${activeCategory === "all" ? "active" : ""}`}
           onClick={() => setActiveCategory("all")}
         >
-          🚀 All
+          All
         </button>
         {techCategories.map((cat) => (
           <button
