@@ -303,6 +303,87 @@
   .diagram-box .d-caption code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; color: var(--ink); }
   .diagram-box .d-caption b { color: var(--ink); }
 
+  /* ============ LIVE PLAYGROUND ============ */
+  .playground-box {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    margin: 20px 0 24px;
+  }
+  .pg-chrome {
+    background: var(--navy);
+    color: #fbf1ea;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 11px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .pg-reset {
+    background: transparent;
+    border: 1px solid rgba(251, 241, 234, 0.35);
+    color: #fbf1ea;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .pg-reset:hover { background: rgba(251, 241, 234, 0.12); border-color: rgba(251, 241, 234, 0.6); }
+  .pg-panes {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+  }
+  .pg-pane { background: var(--surface); display: flex; flex-direction: column; min-width: 0; }
+  .pg-pane-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 8px 12px 6px;
+  }
+  .pg-editor {
+    flex: 1;
+    resize: vertical;
+    border: none;
+    outline: none;
+    background: var(--surface-2);
+    color: var(--ink);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    padding: 4px 12px 14px;
+    min-height: 380px;
+    tab-size: 2;
+  }
+  .pg-pane-preview { background: #fff; }
+  .pg-frame {
+    flex: 1;
+    width: 100%;
+    min-height: 380px;
+    border: none;
+    background: #fff;
+  }
+  @media (max-width: 780px) {
+    .pg-panes { grid-template-columns: 1fr; }
+    .pg-editor, .pg-frame { min-height: 280px; }
+  }
+
   /* shared SVG node styles, reused by every diagram */
   svg .d-node { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
   svg .d-node-accent { fill: var(--amber-tint); stroke: var(--amber); stroke-width: 1.5; }
@@ -756,63 +837,217 @@ const DATA = {
       useWhen:"Every single HTML file needs this exact skeleton — there is no scenario where you skip the doctype or the head/body split. The only real judgment call is what belongs in the head (metadata, links, scripts) versus what belongs in the body (content), and keeping that line clean as a page grows.",
       steps:["Start every file with <code>&lt;!DOCTYPE html&gt;</code> on the very first line to trigger standards mode.","Wrap everything in <code>&lt;html lang=\"en\"&gt;</code> so assistive tech and translators know the page language.","Put metadata, the <code>&lt;title&gt;</code>, and resource links inside <code>&lt;head&gt;</code> — nothing in there renders visibly.","Put all visible content inside <code>&lt;body&gt;</code>, and only inside <code>&lt;body&gt;</code>.","Keep tags properly nested and closed — a mismatched tag can silently break layout further down the page.","Run the page through the W3C Markup Validator or your browser's devtools to catch structural mistakes early."],
       diagram:{ top:{name:"&lt;!DOCTYPE html&gt;",sub:"sets rendering mode"}, left:[{name:"&lt;head&gt;",sub:"metadata, not rendered"}], right:[{name:"&lt;body&gt;",sub:"everything visible"}], bottom:{name:"Rendered Page",sub:"what the user sees"}, coreSub:"root element", coreLabel:"&lt;html&gt;",
-        caption:"The doctype sets the rendering mode before anything else loads; the head and body split metadata from visible content; the browser turns that split into the page a visitor actually sees." } },
+        caption:"The doctype sets the rendering mode before anything else loads; the head and body split metadata from visible content; the browser turns that split into the page a visitor actually sees." },
+      playground:{
+        html:`<!-- Comments never render. Nesting and void elements below do. -->
+<div class="card">
+  <h3>Card title</h3>
+  <p>
+    A paragraph with a line break.<br>
+    Second line, after a &lt;br&gt; void element.
+  </p>
+  <hr>
+  <p>The &lt;hr&gt; above needs no closing tag — try adding your own void element.</p>
+</div>`,
+        css:`body { font-family: system-ui, sans-serif; padding: 20px; margin: 0; }
+.card { border: 1px solid #d8dee8; border-radius: 10px; padding: 16px 18px; max-width: 360px; }
+.card h3 { margin: 0 0 8px; }
+.card hr { border: none; border-top: 1px solid #d8dee8; margin: 14px 0; }`
+      } },
 
     { n:2, slug:"topic-semantic", name:"Semantic Elements", icon:"🏷️", what:"Tags that describe meaning, not just layout", use:"Structure a page so it's understood, not just displayed", learn:"header/nav/main, article vs section, aside, footer, landmark roles, div vs semantic tag, accessibility tree", priority:"must", docName:"Semantics in HTML — MDN Glossary", docUrl:"https://developer.mozilla.org/en-US/docs/Glossary/Semantics#semantics_in_html",
       desc:"Semantic elements like <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;aside&gt;</code>, and <code>&lt;footer&gt;</code> describe what a block of content <i>is</i>, not just how it looks. A <code>&lt;div&gt;</code> tells the browser, screen readers, and search engines nothing about its contents, while a <code>&lt;nav&gt;</code> announces \"this is navigation\" to all of them at once. Swapping generic <code>&lt;div&gt;</code>s for the right semantic tag costs nothing in styling — CSS still targets them exactly the same way — but it adds meaning that machines and assistive technology can actually act on. This is the difference between markup that merely looks right and markup that is genuinely understood.",
       useWhen:"Reach for a semantic element whenever one accurately describes the role of a block of content — page-level navigation, a standalone article, a sidebar of related links. Fall back to a plain <code>&lt;div&gt;</code> or <code>&lt;span&gt;</code> only when nothing semantic actually fits, such as a purely presentational wrapper that exists only as a styling hook.",
       steps:["Audit every <code>&lt;div&gt;</code> on a page and ask what role it's actually playing.","Replace navigation wrappers with <code>&lt;nav&gt;</code> and the primary content region with one <code>&lt;main&gt;</code> per page.","Use <code>&lt;article&gt;</code> for self-contained, independently distributable content like a blog post or a product card.","Use <code>&lt;section&gt;</code> to group thematically related content, ideally under its own heading.","Wrap secondary content in <code>&lt;aside&gt;</code> and closing information in <code>&lt;footer&gt;</code>.","Check the browser devtools' accessibility tree to confirm the landmarks actually show up as expected."],
       diagram:{ left:[{name:"&lt;header&gt;",sub:"site/page banner"},{name:"&lt;nav&gt;",sub:"site navigation"}], right:[{name:"&lt;main&gt; / &lt;article&gt;",sub:"primary content"},{name:"&lt;aside&gt; / &lt;footer&gt;",sub:"secondary & closing"}], coreSub:"structural meaning", coreLabel:"Semantic Layout",
-        caption:"Each semantic tag on either side announces its own role directly — screen readers, search engines, and other developers all read the same signal without any extra markup." } },
+        caption:"Each semantic tag on either side announces its own role directly — screen readers, search engines, and other developers all read the same signal without any extra markup." },
+      playground:{
+        html:`<header><h3>My Site</h3></header>
+<nav><a href="#">Home</a> · <a href="#">About</a> · <a href="#">Contact</a></nav>
+<main>
+  <article>
+    <h4>Blog post title</h4>
+    <p>The main, self-contained content lives inside &lt;article&gt;.</p>
+  </article>
+  <aside>Related links live here, not in the main flow.</aside>
+</main>
+<footer>© 2026 My Site</footer>`,
+        css:`body { font-family: system-ui, sans-serif; padding: 16px; margin: 0; }
+header, nav, main, article, aside, footer { padding: 10px 14px; margin-bottom: 8px; border-radius: 8px; }
+header { background: #dbeafe; }
+nav a { margin-right: 10px; color: #1d4ed8; text-decoration: none; }
+main { background: #f3f4f6; }
+article { background: #dcfce7; margin-bottom: 8px; }
+aside { background: #fde68a; }
+footer { background: #e5e7eb; font-size: 13px; }`
+      } },
 
     { n:3, slug:"topic-text", name:"Headings & Text Fundamentals", icon:"📝", what:"Headings, paragraphs, and inline emphasis", use:"Structure and format the words on a page", learn:"heading hierarchy, paragraphs, strong vs b, em vs i, blockquote, line breaks vs paragraphs, document outline", priority:"must", docName:"HTML Text Fundamentals — MDN Learn", docUrl:"https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/HTML_text_fundamentals",
       desc:"Headings (<code>&lt;h1&gt;</code> through <code>&lt;h6&gt;</code>) and paragraphs (<code>&lt;p&gt;</code>) form the outline of every piece of written content on the web, while inline elements like <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, and <code>&lt;blockquote&gt;</code> add meaning to specific words or passages within it. Headings aren't just bigger text — browsers, screen readers, and search engines use their nesting to build a navigable outline of the page. <code>&lt;strong&gt;</code> and <code>&lt;em&gt;</code> carry semantic weight (importance and stress emphasis) that a purely visual bold or italic doesn't, even though they render the same by default. Getting this right means someone skimming with a screen reader's heading list gets the same structure as someone visually scanning the page.",
       useWhen:"Use headings to build a logical outline anywhere content has sections worth navigating to directly — articles, docs, product pages. Reach for <code>&lt;strong&gt;</code>/<code>&lt;em&gt;</code> when a word genuinely needs semantic emphasis, and plain CSS styling when you just want something to look bold or italic without implying importance.",
       steps:["Pick exactly one <code>&lt;h1&gt;</code> per page that describes the page's overall purpose.","Nest <code>&lt;h2&gt;</code> through <code>&lt;h6&gt;</code> without skipping levels, the way you'd nest an outline.","Wrap actual prose in <code>&lt;p&gt;</code> tags instead of faking paragraph breaks with repeated <code>&lt;br&gt;</code>.","Use <code>&lt;strong&gt;</code> for genuine importance and <code>&lt;em&gt;</code> for stress emphasis — not just for visual bold/italic.","Wrap quoted material in <code>&lt;blockquote&gt;</code>, with a <code>cite</code> attribute when the source is known.","Run a heading-outline checker (or your browser's accessibility tree) to confirm the levels read logically top to bottom."],
       diagram:{ left:[{name:"&lt;h1&gt;–&lt;h6&gt;",sub:"nested heading hierarchy"}], right:[{name:"&lt;strong&gt; / &lt;em&gt;",sub:"semantic emphasis"},{name:"&lt;blockquote&gt;",sub:"quoted material"}], bottom:{name:"Document Outline",sub:"generated from headings"}, coreSub:"structuring words", coreLabel:"Text Fundamentals",
-        caption:"Heading levels build the page's outline on their own; inline tags like strong and em layer meaning onto specific words within the paragraphs sitting between them." } },
+        caption:"Heading levels build the page's outline on their own; inline tags like strong and em layer meaning onto specific words within the paragraphs sitting between them." },
+      playground:{
+        html:`<h1>Heading 1</h1>
+<h2>Heading 2</h2>
+<p>A paragraph with <strong>strong importance</strong> and <em>stress emphasis</em> — try swapping which word gets which tag.</p>
+<blockquote>"Semantic emphasis carries meaning; bold and italic alone are just paint." — this is a &lt;blockquote&gt;.</blockquote>`,
+        css:`body { font-family: system-ui, sans-serif; padding: 20px; margin: 0; color: #1f2937; }
+h1 { font-size: 28px; margin: 0 0 8px; }
+h2 { font-size: 20px; color: #4b5563; margin: 0 0 12px; }
+blockquote { margin: 14px 0 0; padding: 10px 16px; border-left: 4px solid #6366f1; background: #f5f5ff; font-style: italic; }`
+      } },
 
     { n:4, slug:"topic-links", name:"Links & Navigation", icon:"🔗", what:"The anchor tag and everything it can point to", use:"Connect pages to each other and to the rest of the web", learn:"href, relative vs absolute paths, target=_blank, rel attribute, anchor/fragment links, link text accessibility, download attribute", priority:"must", docName:"The Anchor Element — MDN", docUrl:"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a",
       desc:"The <code>&lt;a&gt;</code> element with an <code>href</code> attribute is what turns the web into a web — every navigable connection between pages, sections, and resources runs through it. A relative URL points somewhere on the same site, an absolute URL points anywhere else, and a fragment (<code>#section</code>) jumps to an element with a matching <code>id</code> on the current page. Opening a link in a new tab with <code>target=\"_blank\"</code> introduces a security and performance quirk that <code>rel=\"noopener noreferrer\"</code> exists specifically to close. The link's visible text matters as much as its destination — screen reader users often navigate a page by pulling up a list of link text alone.",
       useWhen:"Use relative paths for anything on your own site so links don't break across environments, and absolute URLs only for genuinely external destinations. Reach for <code>target=\"_blank\"</code> sparingly — mainly for links that would lose the user's place, like external documentation — and always pair it with <code>rel=\"noopener noreferrer\"</code>.",
       steps:["Use relative paths (<code>/about</code>, <code>../resources</code>) for internal links and full absolute URLs only for external sites.","Add <code>rel=\"noopener noreferrer\"</code> to every link that uses <code>target=\"_blank\"</code>.","Write descriptive link text (\"read the pricing guide\") instead of \"click here\" or a bare URL.","Add an <code>id</code> to headings or sections you want to link to directly, then point a fragment link (<code>#id</code>) at it.","Use the <code>download</code> attribute when a link should save a file instead of navigating to it.","Periodically check that internal links still resolve — renamed or moved pages leave silent 404s behind."],
       diagram:{ left:[{name:"Relative URL",sub:"same-site path"},{name:"Absolute URL",sub:"external site"}], right:[{name:"target=_blank + rel",sub:"new tab, secured"}], bottom:{name:"#fragment",sub:"jumps within the page"}, coreSub:"navigation", coreLabel:"&lt;a href&gt;",
-        caption:"Every link is either pointing somewhere else on the same site, out to an external destination with its own tab-safety concerns, or down to a fragment within the current page." } },
+        caption:"Every link is either pointing somewhere else on the same site, out to an external destination with its own tab-safety concerns, or down to a fragment within the current page." },
+      playground:{
+        html:`<a href="#section">↓ Jump to the section below</a>
+<a href="https://developer.mozilla.org" target="_blank" rel="noopener noreferrer">Open MDN in a new tab ↗</a>
+
+<div style="height:120px;"></div>
+
+<div id="section">
+  <strong>You arrived via the #section fragment link.</strong>
+</div>`,
+        css:`body { font-family: system-ui, sans-serif; padding: 20px; margin: 0; }
+a { display: block; margin-bottom: 10px; color: #1d4ed8; text-decoration: none; font-weight: 600; }
+a:hover { text-decoration: underline; }
+#section { padding: 12px 14px; background: #ecfdf5; border-radius: 8px; }`
+      } },
 
     { n:5, slug:"topic-media", name:"Images & Media", icon:"🖼️", what:"Images, video, audio, and embedded content", use:"Show pictures and play media without a heavyweight player", learn:"img alt text, srcset/sizes, picture element, video/audio elements, iframe embedding, lazy loading, decorative vs meaningful images", priority:"important", docName:"Multimedia and Embedding — MDN Learn", docUrl:"https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding",
       desc:"HTML has native elements for every common media need: <code>&lt;img&gt;</code> for still images, <code>&lt;picture&gt;</code> with <code>srcset</code> for responsive image selection, <code>&lt;video&gt;</code> and <code>&lt;audio&gt;</code> for native playback with browser-built controls, and <code>&lt;iframe&gt;</code> for embedding another page's content wholesale. The <code>alt</code> attribute on an image is not optional decoration — it's the text a screen reader announces and the fallback shown if the image fails to load, and an empty <code>alt=\"\"</code> is the correct choice for purely decorative images that carry no information. Modern browsers can also defer loading offscreen media entirely with <code>loading=\"lazy\"</code>, which meaningfully speeds up long pages without any JavaScript.",
       useWhen:"Reach for <code>&lt;picture&gt;</code>/<code>srcset</code> the moment an image needs to look sharp across a real range of screen widths, not just on desktop. Use native <code>&lt;video&gt;</code>/<code>&lt;audio&gt;</code> instead of a third-party embed whenever you control the media file directly — it's lighter and more accessible than almost any JS player.",
       steps:["Give every meaningful image a real, descriptive <code>alt</code> attribute; use <code>alt=\"\"</code> for purely decorative images.","Use <code>&lt;picture&gt;</code> with <code>srcset</code>/<code>sizes</code> so the browser picks the right image size for the viewport.","Use native <code>&lt;video&gt;</code>/<code>&lt;audio&gt;</code> with the <code>controls</code> attribute instead of embedding a heavy third-party player when you own the file.","Add <code>loading=\"lazy\"</code> to images below the fold so they don't compete with above-the-fold content for bandwidth.","Give every <code>&lt;iframe&gt;</code> a descriptive <code>title</code> attribute so assistive tech can announce what it embeds.","Compress and correctly size media files before shipping them — HTML can defer loading, but it can't shrink an oversized file."],
       diagram:{ top:{name:"&lt;picture&gt; + srcset",sub:"responsive selection"}, left:[{name:"alt text",sub:"accessible description"}], right:[{name:"&lt;video&gt; / &lt;audio&gt;",sub:"native playback"},{name:"&lt;iframe&gt;",sub:"external embeds"}], coreSub:"images & media", coreLabel:"&lt;img&gt; / media",
-        caption:"A responsive source feeds the right image into place, alt text is the accessible fallback on the other side, and video/audio or an iframe cover everything beyond a still picture." } },
+        caption:"A responsive source feeds the right image into place, alt text is the accessible fallback on the other side, and video/audio or an iframe cover everything beyond a still picture." },
+      playground:{
+        html:`<figure>
+  <img
+    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='160'%3E%3Crect width='100%25' height='100%25' fill='%23e34f26'/%3E%3Ctext x='50%25' y='50%25' fill='white' font-size='20' text-anchor='middle' dy='.3em'%3EPhoto%3C/text%3E%3C/svg%3E"
+    alt="A placeholder photo standing in for a real product shot"
+  >
+  <figcaption>Try changing the alt text — it's what a screen reader announces.</figcaption>
+</figure>`,
+        css:`body { font-family: system-ui, sans-serif; padding: 20px; margin: 0; }
+figure { margin: 0; max-width: 300px; }
+img { display: block; width: 100%; border-radius: 8px; }
+figcaption { font-size: 13px; color: #6b7280; margin-top: 8px; }`
+      } },
 
     { n:6, slug:"topic-forms", name:"Forms & Inputs", icon:"📋", what:"Collecting user input", use:"Build sign-ups, search boxes, checkouts, and settings pages", learn:"form action/method, label for/id, input types, required & pattern validation, fieldset/legend, select & textarea, button vs input type=submit", priority:"must", docName:"HTML Forms — MDN Learn", docUrl:"https://developer.mozilla.org/en-US/docs/Learn/Forms",
       desc:"A <code>&lt;form&gt;</code> groups a set of controls — <code>&lt;input&gt;</code>, <code>&lt;select&gt;</code>, <code>&lt;textarea&gt;</code>, <code>&lt;button&gt;</code> — and defines where their values go when submitted via its <code>action</code> and <code>method</code> attributes. Every field needs a paired <code>&lt;label&gt;</code>, either wrapping it or linked by matching <code>for</code>/<code>id</code>, so both mouse users (who can click the label to focus the field) and screen reader users (who hear the label announced with the field) know what they're filling in. Choosing the right <code>input</code> type — <code>email</code>, <code>tel</code>, <code>number</code>, <code>date</code> — gets you the right mobile keyboard and a first line of built-in validation for free, before a single line of JavaScript runs. Attributes like <code>required</code> and <code>pattern</code> block obviously invalid submissions at the browser level, which is worth having even when server-side validation is the real source of truth.",
       useWhen:"Use native input types and validation attributes as the first line of defense on any form — they cost nothing and work without JavaScript. Reach for <code>&lt;fieldset&gt;</code>/<code>&lt;legend&gt;</code> whenever a form has more than one logical group of related fields, like separate shipping and billing sections.",
       steps:["Wrap the whole control group in <code>&lt;form&gt;</code> with an <code>action</code> and <code>method</code> that match what the backend expects.","Pair every field with a <code>&lt;label&gt;</code>, using matching <code>for</code>/<code>id</code> or by wrapping the input directly.","Choose the input type that matches the data — <code>email</code>, <code>tel</code>, <code>number</code>, <code>date</code> — not a generic <code>text</code> for everything.","Add <code>required</code>, <code>pattern</code>, <code>min</code>, and <code>max</code> for built-in browser validation before any JavaScript runs.","Group related fields with <code>&lt;fieldset&gt;</code> and a descriptive <code>&lt;legend&gt;</code>.","Test the entire form using only the keyboard, and again with a screen reader, before calling it done."],
       diagram:{ top:{name:"action + method",sub:"where/how data is sent"}, left:[{name:"&lt;label&gt; + &lt;input&gt;",sub:"field + its label"},{name:"&lt;select&gt; / &lt;textarea&gt;",sub:"other controls"}], right:[{name:"required / pattern",sub:"built-in validation"},{name:"&lt;button type=submit&gt;",sub:"submits the form"}], coreSub:"collecting input", coreLabel:"&lt;form&gt;",
-        caption:"The action/method pair decides where a submission goes; every field on the left needs a label, and the validation and submit control on the right decide whether — and how — it gets there." } },
+        caption:"The action/method pair decides where a submission goes; every field on the left needs a label, and the validation and submit control on the right decide whether — and how — it gets there." },
+      playground:{
+        html:`<form>
+  <label for="name">Name</label>
+  <input id="name" type="text" placeholder="Jane Doe" required>
+
+  <label for="email">Email</label>
+  <input id="email" type="email" placeholder="jane@example.com" required>
+
+  <label for="plan">Plan</label>
+  <select id="plan">
+    <option>Free</option>
+    <option>Pro</option>
+  </select>
+
+  <button type="submit">Sign up</button>
+</form>`,
+        css:`body { font-family: system-ui, sans-serif; padding: 20px; margin: 0; }
+form { display: flex; flex-direction: column; gap: 6px; max-width: 260px; }
+label { font-size: 12px; font-weight: 600; color: #374151; margin-top: 6px; }
+input, select { padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; }
+button { margin-top: 12px; padding: 9px; border: none; border-radius: 6px; background: #6366f1; color: #fff; font-weight: 600; cursor: pointer; }`
+      } },
 
     { n:7, slug:"topic-tables", name:"Tables", icon:"📊", what:"Genuinely tabular data", use:"Present rows and columns of related data", learn:"table/thead/tbody/tfoot, th scope, caption element, colspan/rowspan, responsive tables, tabular vs layout tables", priority:"important", docName:"HTML Tables — MDN Learn", docUrl:"https://developer.mozilla.org/en-US/docs/Learn/HTML/Tables",
       desc:"A <code>&lt;table&gt;</code> is for data that genuinely has rows and columns — pricing plans, schedules, comparison charts — not for laying out a page, which is a role CSS Grid and Flexbox have fully taken over. <code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code>, and <code>&lt;tfoot&gt;</code> group rows by their role, while <code>&lt;th scope=\"col\"&gt;</code> or <code>&lt;th scope=\"row\"&gt;</code> marks header cells so a screen reader can announce which column or row a data cell belongs to — something a plain styled <code>&lt;td&gt;</code> can never do. A <code>&lt;caption&gt;</code> gives the whole table a name that's announced before its contents, and <code>colspan</code>/<code>rowspan</code> let a single cell span multiple columns or rows when the data genuinely calls for it.",
       useWhen:"Reach for a table only when the content is actually tabular — if you're using one purely to align things visually, that's a layout job for CSS instead. Once the data is genuinely tabular, don't skip the semantic structure (<code>th scope</code>, <code>caption</code>) just because it renders the same either way — the difference only shows up for assistive technology.",
       steps:["Use <code>&lt;table&gt;</code> only for data that actually has rows and columns — never for page layout.","Add a <code>&lt;caption&gt;</code> describing what the table holds, right after the opening <code>&lt;table&gt;</code> tag.","Mark header cells with <code>&lt;th scope=\"col\"&gt;</code> or <code>&lt;th scope=\"row\"&gt;</code> instead of a styled <code>&lt;td&gt;</code>.","Group rows into <code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code>, and <code>&lt;tfoot&gt;</code> by their role.","Wrap wide tables in a horizontally-scrollable container so they don't break the page layout on small screens.","Avoid nesting a table inside another table — restructure the data instead of stacking markup."],
       diagram:{ top:{name:"&lt;caption&gt;",sub:"describes the table"}, left:[{name:"&lt;thead&gt;",sub:"column headers"}], right:[{name:"&lt;tbody&gt;",sub:"data rows"},{name:"&lt;tfoot&gt;",sub:"totals/summary"}], coreSub:"rows & columns", coreLabel:"&lt;table&gt;",
-        caption:"A caption names the table before a screen reader ever reaches its contents; the header row above feeds meaning into every data row and summary row below it." } },
+        caption:"A caption names the table before a screen reader ever reaches its contents; the header row above feeds meaning into every data row and summary row below it." },
+      playground:{
+        html:`<table>
+  <caption>Quarterly Revenue</caption>
+  <thead>
+    <tr><th scope="col">Quarter</th><th scope="col">Revenue</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Q1</td><td>$12,400</td></tr>
+    <tr><td>Q2</td><td>$15,900</td></tr>
+    <tr><td>Q3</td><td>$18,200</td></tr>
+  </tbody>
+</table>`,
+        css:`body { font-family: system-ui, sans-serif; padding: 20px; margin: 0; }
+table { border-collapse: collapse; width: 100%; max-width: 320px; font-size: 14px; }
+caption { text-align: left; font-weight: 700; margin-bottom: 8px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #e5e7eb; }
+th { background: #f3f4f6; }
+tbody tr:nth-child(even) { background: #fafafa; }`
+      } },
 
     { n:8, slug:"topic-lists", name:"Lists", icon:"📃", what:"Ordered, unordered, and description lists", use:"Group related items, steps, or terms", learn:"ul vs ol, li nesting, description lists (dl/dt/dd), list-style CSS vs semantics, ordered vs unordered meaning", priority:"must", docName:"The Unordered List Element — MDN", docUrl:"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul",
       desc:"HTML has three list types, and each one signals something specific: <code>&lt;ul&gt;</code> for a group where order doesn't matter, <code>&lt;ol&gt;</code> for a sequence where it does (steps, rankings), and <code>&lt;dl&gt;</code> paired with <code>&lt;dt&gt;</code>/<code>&lt;dd&gt;</code> for term-definition pairs like a glossary or a key-value spec sheet. Every item inside a <code>&lt;ul&gt;</code> or <code>&lt;ol&gt;</code> must be an <code>&lt;li&gt;</code> — there's no valid way to fake a bullet with a dash character and still get real list semantics. Lists can nest a full <code>&lt;ul&gt;</code> or <code>&lt;ol&gt;</code> inside a parent <code>&lt;li&gt;</code> for sub-items, and CSS's <code>list-style</code> can restyle or hide bullets/numbers without removing the underlying list semantics a screen reader still announces.",
       useWhen:"Choose <code>&lt;ol&gt;</code> the moment the order of items actually carries meaning — instructions, rankings, a recipe's steps — and <code>&lt;ul&gt;</code> for everything else that's just a group. Reach for <code>&lt;dl&gt;</code> specifically for paired data like a glossary, an FAQ, or metadata key/value pairs, rather than forcing that shape into a regular list.",
       steps:["Use <code>&lt;ul&gt;</code> for unordered groups and <code>&lt;ol&gt;</code> whenever the sequence itself matters.","Put every list entry inside an <code>&lt;li&gt;</code> — never fake bullets with plain text characters.","Use <code>&lt;dl&gt;</code>/<code>&lt;dt&gt;</code>/<code>&lt;dd&gt;</code> for term-definition pairs like a glossary or spec sheet.","Nest a complete <code>&lt;ul&gt;</code> or <code>&lt;ol&gt;</code> inside a parent <code>&lt;li&gt;</code> for sub-steps or sub-groups.","Restyle bullets or numbers with the CSS <code>list-style</code> property instead of extra markup.","Keep the semantic list even when hiding bullets visually — the screen reader announcement doesn't depend on how it looks."],
       diagram:{ left:[{name:"&lt;li&gt;",sub:"each list item"}], right:[{name:"&lt;dl&gt;/&lt;dt&gt;/&lt;dd&gt;",sub:"term-definition pairs"}], bottom:{name:"Nested &lt;ul&gt;/&lt;ol&gt;",sub:"sub-list inside an &lt;li&gt;"}, coreSub:"grouping items", coreLabel:"&lt;ul&gt; / &lt;ol&gt;",
-        caption:"Every list item feeds into the same underlying list semantics, whether it sits inside a simple unordered/ordered list, a description list of term-definition pairs, or nested one level deeper." } },
+        caption:"Every list item feeds into the same underlying list semantics, whether it sits inside a simple unordered/ordered list, a description list of term-definition pairs, or nested one level deeper." },
+      playground:{
+        html:`<h4>Unordered — order doesn't matter</h4>
+<ul>
+  <li>Coffee</li>
+  <li>Tea</li>
+</ul>
+
+<h4>Ordered — sequence matters</h4>
+<ol>
+  <li>Preheat the oven</li>
+  <li>Mix the ingredients</li>
+</ol>
+
+<h4>Description list — term/definition pairs</h4>
+<dl>
+  <dt>HTML</dt><dd>Structure</dd>
+  <dt>CSS</dt><dd>Style</dd>
+</dl>`,
+        css:`body { font-family: system-ui, sans-serif; padding: 20px; margin: 0; }
+h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; color: #6b7280; margin: 16px 0 4px; }
+h4:first-child { margin-top: 0; }
+ul, ol { margin: 0 0 4px; padding-left: 20px; }
+dl { margin: 0; }
+dt { font-weight: 700; }
+dd { margin: 0 0 6px 12px; color: #374151; }`
+      } },
 
     { n:9, slug:"topic-a11y", name:"Accessibility (ARIA & alt text)", icon:"♿", what:"Making pages usable by everyone, including assistive tech", use:"Ensure screen readers, keyboards, and other AT can use the page", learn:"alt text, ARIA roles, labels & aria-label, focus order & tabindex, aria-live regions, semantic-first principle, screen reader testing", priority:"important", docName:"ARIA — MDN", docUrl:"https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA",
       desc:"Accessibility in HTML is mostly the payoff of everything else in this guide done correctly: real semantic elements, real <code>alt</code> text, real <code>&lt;label&gt;</code>s. ARIA attributes — <code>role</code>, <code>aria-label</code>, <code>aria-expanded</code>, <code>aria-live</code> — exist to fill gaps native HTML doesn't cover, most often on custom interactive widgets built from generic elements. The golden rule, sometimes called \"no ARIA is better than bad ARIA,\" is to reach for a native semantic element first and only add ARIA when nothing built-in expresses the same thing. Keyboard focus order matters just as much as markup: if the visual tab order doesn't match the DOM order, keyboard and screen reader users experience a confusing, scrambled page even when the markup looks fine visually.",
       useWhen:"Reach for ARIA specifically when you're building a custom widget — a tab panel, a combobox, a modal — out of generic elements that have no native equivalent. Skip ARIA entirely, and just use the right semantic tag, whenever a native element already does the job; a native <code>&lt;button&gt;</code> beats a <code>&lt;div role=\"button\"&gt;</code> every time.",
       steps:["Reach for a native semantic element before ever adding an ARIA role to a generic <code>&lt;div&gt;</code> or <code>&lt;span&gt;</code>.","Give every image a real <code>alt</code> and every form control a real, associated <code>&lt;label&gt;</code>.","Make sure the visual tab order matches the DOM order — don't reorder purely with CSS in a way that breaks keyboard flow.","Use <code>aria-*</code> attributes (<code>aria-label</code>, <code>aria-live</code>, <code>aria-expanded</code>) only to fill gaps native HTML genuinely doesn't cover.","Test with a real screen reader — VoiceOver or NVDA — not just an automated linter.","Run an automated audit (axe, Lighthouse) as a baseline floor, never as proof the page is actually accessible."],
       diagram:{ left:[{name:"Semantic tags",sub:"native roles first"},{name:"alt / label text",sub:"text alternatives"}], right:[{name:"ARIA roles/attrs",sub:"fills the gaps"},{name:"Focus order",sub:"keyboard navigation"}], bottom:{name:"Screen Reader / AT",sub:"what actually consumes it"}, coreSub:"usable by everyone", coreLabel:"Accessible HTML",
-        caption:"Native semantics and real text alternatives do most of the work on the left; ARIA and focus order patch the remaining gaps on the right — and assistive technology is the audience for all of it." } },
+        caption:"Native semantics and real text alternatives do most of the work on the left; ARIA and focus order patch the remaining gaps on the right — and assistive technology is the audience for all of it." },
+      playground:{
+        html:`<button aria-label="Close dialog">×</button>
+
+<div role="alert">
+  This is an ARIA live alert region — screen readers announce it immediately.
+</div>
+
+<button aria-expanded="false" aria-controls="panel">Toggle panel ▾</button>
+<div id="panel">Hidden panel content, linked via aria-controls.</div>`,
+        css:`body { font-family: system-ui, sans-serif; padding: 20px; margin: 0; }
+button { display: block; margin-bottom: 12px; padding: 8px 14px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; font-size: 14px; cursor: pointer; }
+[role="alert"] { padding: 10px 12px; background: #fee2e2; border-radius: 6px; color: #991b1b; font-size: 13.5px; margin-bottom: 14px; }
+#panel { padding: 10px 12px; background: #f3f4f6; border-radius: 6px; font-size: 13.5px; color: #4b5563; }`
+      } },
 
     { n:10, slug:"topic-meta-seo", name:"Metadata & SEO Basics", icon:"🔍", what:"Everything inside &lt;head&gt; that shapes discovery", use:"Control how a page appears in tabs, search results, and shared links", learn:"meta charset, viewport meta, title & meta description, Open Graph tags, canonical links, favicon, structured data basics", priority:"important", docName:"The Meta Element — MDN", docUrl:"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta",
       desc:"The <code>&lt;head&gt;</code> carries a page's metadata — nothing in it renders directly, but almost all of it shapes how the page shows up elsewhere. <code>&lt;meta charset=\"UTF-8\"&gt;</code> sets the character encoding, and a viewport <code>&lt;meta&gt;</code> tag tells mobile browsers to render at the device's actual width instead of a zoomed-out desktop layout. The <code>&lt;title&gt;</code> and <code>&lt;meta name=\"description\"&gt;</code> become the clickable headline and snippet in search results, while Open Graph tags control the preview card shown when a link is shared on social platforms or messaging apps. A <code>&lt;link rel=\"canonical\"&gt;</code> tells search engines which URL is the authoritative one when the same content is reachable at more than one address.",
@@ -923,6 +1158,8 @@ function renderServicePanels() {
             <div class="tag-list">${item.learn.split(",").map(t => `<span class="tag">${t.trim()}</span>`).join("")}</div>
           </div>
 
+          ${item.playground ? renderPlaygroundHTML(item) : ""}
+
           <div class="svc-foot">
             <a class="back-home" style="margin:0;" href="#overview">← All topics</a>
             <a class="doc-link" href="${item.docUrl}" target="_blank" rel="noopener">${item.docName} →</a>
@@ -932,6 +1169,65 @@ function renderServicePanels() {
     });
   });
   host.innerHTML = html.join("");
+  initPlaygrounds();
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function renderPlaygroundHTML(item) {
+  return `
+    <h3 class="subhead">Try it live</h3>
+    <div class="playground-box" data-slug="${item.slug}">
+      <div class="pg-chrome">
+        <span>Live example · ${item.name}</span>
+        <button class="pg-reset" type="button" data-action="reset">Reset</button>
+      </div>
+      <div class="pg-panes">
+        <div class="pg-pane">
+          <div class="pg-pane-label">HTML</div>
+          <textarea class="pg-editor" data-editor="html" spellcheck="false">${escapeHtml(item.playground.html)}</textarea>
+        </div>
+        <div class="pg-pane">
+          <div class="pg-pane-label">CSS</div>
+          <textarea class="pg-editor" data-editor="css" spellcheck="false">${escapeHtml(item.playground.css)}</textarea>
+        </div>
+        <div class="pg-pane pg-pane-preview">
+          <div class="pg-pane-label">Preview</div>
+          <iframe class="pg-frame" sandbox="allow-popups allow-popups-to-escape-sandbox" title="Live preview of ${item.name}"></iframe>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function initPlaygrounds() {
+  document.querySelectorAll(".playground-box").forEach(box => {
+    const htmlEditor = box.querySelector('[data-editor="html"]');
+    const cssEditor = box.querySelector('[data-editor="css"]');
+    const frame = box.querySelector(".pg-frame");
+    const resetBtn = box.querySelector('[data-action="reset"]');
+    const defaults = { html: htmlEditor.value, css: cssEditor.value };
+    let debounceTimer = null;
+
+    function update() {
+      frame.srcdoc = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>${cssEditor.value}</style></head><body>${htmlEditor.value}</body></html>`;
+    }
+    function scheduleUpdate() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(update, 200);
+    }
+
+    htmlEditor.addEventListener("input", scheduleUpdate);
+    cssEditor.addEventListener("input", scheduleUpdate);
+    resetBtn.addEventListener("click", () => {
+      htmlEditor.value = defaults.html;
+      cssEditor.value = defaults.css;
+      update();
+    });
+    update();
+  });
 }
 
 function renderSidebarNav() {

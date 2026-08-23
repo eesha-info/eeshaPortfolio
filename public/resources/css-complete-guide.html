@@ -303,6 +303,87 @@
   .diagram-box .d-caption code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; color: var(--ink); }
   .diagram-box .d-caption b { color: var(--ink); }
 
+  /* ============ LIVE PLAYGROUND ============ */
+  .playground-box {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    margin: 20px 0 24px;
+  }
+  .pg-chrome {
+    background: var(--navy);
+    color: #fbf1ea;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 11px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .pg-reset {
+    background: transparent;
+    border: 1px solid rgba(251, 241, 234, 0.35);
+    color: #fbf1ea;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .pg-reset:hover { background: rgba(251, 241, 234, 0.12); border-color: rgba(251, 241, 234, 0.6); }
+  .pg-panes {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+  }
+  .pg-pane { background: var(--surface); display: flex; flex-direction: column; min-width: 0; }
+  .pg-pane-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 8px 12px 6px;
+  }
+  .pg-editor {
+    flex: 1;
+    resize: vertical;
+    border: none;
+    outline: none;
+    background: var(--surface-2);
+    color: var(--ink);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    padding: 4px 12px 14px;
+    min-height: 380px;
+    tab-size: 2;
+  }
+  .pg-pane-preview { background: #fff; }
+  .pg-frame {
+    flex: 1;
+    width: 100%;
+    min-height: 380px;
+    border: none;
+    background: #fff;
+  }
+  @media (max-width: 780px) {
+    .pg-panes { grid-template-columns: 1fr; }
+    .pg-editor, .pg-frame { min-height: 280px; }
+  }
+
   /* shared SVG node styles, reused by every diagram */
   svg .d-node { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
   svg .d-node-accent { fill: var(--amber-tint); stroke: var(--amber); stroke-width: 1.5; }
@@ -763,61 +844,191 @@ const DATA = {
       useWhen:"Reach for simple type and class selectors for most everyday styling — they're predictable and easy to override later. Use attribute selectors (<code>[type=\"email\"]</code>) and combinators (<code>&gt;</code>, <code>+</code>, <code>~</code>) when you need to target elements based on structure or state without adding extra classes, and save ID selectors and <code>!important</code> for the rare cases where nothing else will do, since both are hard to override later.",
       steps:["Start every component with a single class selector as its styling hook.","Use combinators (descendant, child <code>&gt;</code>, sibling <code>+</code>/<code>~</code>) to target elements relative to a parent instead of adding more classes.","Calculate specificity as (inline, IDs, classes/attributes/pseudo-classes, elements) and compare left to right when two rules conflict.","Avoid ID selectors for styling — reserve <code>id</code> attributes for JS hooks and anchor links.","Avoid <code>!important</code> except as a last-resort override; it breaks the normal cascade for everyone after you.","Use browser DevTools' 'Computed' panel to see exactly which rule won and why."],
       diagram:{ left:[{name:"Tag selector",sub:"div, p, a"},{name:"Class selector",sub:".card"}], right:[{name:"ID selector",sub:"#header"},{name:"Attribute selector",sub:"[type=text]"}], top:{name:"The Cascade",sub:"source order + specificity"}, coreSub:"which rule wins", coreLabel:"Specificity",
-        caption:"Every rule that could apply to an element is compared by specificity first, then by source order — that comparison, run for every property on every element, is the entire cascade." } },
+        caption:"Every rule that could apply to an element is compared by specificity first, then by source order — that comparison, run for every property on every element, is the entire cascade." },
+      playground:{ html:`<p>Plain paragraph — element selector only</p>
+<p class="highlight">Class selector overrides the element rule</p>
+<p id="unique" class="highlight">ID selector outranks the class</p>
+<p class="highlight card-title">Two classes combined outrank one class alone</p>`,
+        css:`p { color: #6b7280; font-family: system-ui, sans-serif; }
+.highlight { color: #2563eb; font-weight: 600; }
+#unique { color: #16a34a; }
+.card-title.highlight { color: #dc2626; text-decoration: underline; }` } },
     { n:2, slug:"css-box-model", name:"The Box Model", icon:"📦", what:"Content, padding, border and margin", use:"Control the size and spacing of every element", learn:"content box, padding, border, margin, box-sizing, margin collapsing", priority:"must", docName:"MDN: CSS box model", docUrl:"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_box_model",
       desc:"Every element on a page renders as a rectangular box made of four layers: the content itself, padding around that content, a border around the padding, and margin outside the border separating it from other elements. By default (<code>content-box</code>), width and height only measure the content area, so padding and border quietly add extra size on top of what you set — a common source of unexpected overflow. Setting <code>box-sizing: border-box</code> flips that so width/height include padding and border, which is why most modern resets apply it globally. Margins between block elements can also 'collapse' — two vertical margins touching each other merge into the larger one instead of adding together.",
       useWhen:"Apply <code>box-sizing: border-box</code> globally at the top of every project so element sizing behaves the way you'd expect. Reach for <code>margin</code> when spacing elements apart from their neighbors, and <code>padding</code> when adding breathing room inside an element's own border.",
       steps:["Add <code>* { box-sizing: border-box; }</code> near the top of your stylesheet.","Use <code>padding</code> for space inside an element's border, <code>margin</code> for space outside it.","Remember margins on adjacent block elements can collapse into a single larger margin.","Use DevTools' box model diagram to see the actual computed content/padding/border/margin for any element.","Prefer margin on one side only (e.g. <code>margin-bottom</code>) to avoid double-margin collisions between siblings.","Use <code>outline</code> instead of <code>border</code> when you need a focus indicator that shouldn't affect layout."],
       diagram:{ left:[{name:"Margin",sub:"outside spacing"}], right:[{name:"Border",sub:"edge line"},{name:"Padding",sub:"inner spacing"}], coreSub:"the actual content", coreLabel:"Content Box",
-        caption:"Margin, border, and padding all wrap around the content in that order from the outside in — box-sizing decides whether width/height measure just the content, or the whole stack." } },
+        caption:"Margin, border, and padding all wrap around the content in that order from the outside in — box-sizing decides whether width/height measure just the content, or the whole stack." },
+      playground:{ html:`<div class="wrap">
+  <div class="box content-box">content-box<br>width: 200px</div>
+  <div class="box border-box">border-box<br>width: 200px</div>
+</div>`,
+        css:`.wrap { display: flex; gap: 20px; background: #f3f4f6; padding: 20px; font-family: system-ui, sans-serif; font-size: 13px; }
+.box { width: 200px; padding: 20px; border: 8px solid #2563eb; background: #fff; text-align: center; }
+.content-box { box-sizing: content-box; }
+.border-box { box-sizing: border-box; background: #eff6ff; }` } },
     { n:3, slug:"css-colors-units", name:"Colors & Units", icon:"🎨", what:"Values: colors and lengths", use:"Express size, color and spacing that scale correctly", learn:"hex/rgb/hsl color, absolute vs relative units, px/em/rem, %, vw/vh, calc()", priority:"must", docName:"MDN: CSS values and units", docUrl:"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Values_and_Units",
       desc:"CSS values come in two broad families: colors (hex codes, <code>rgb()</code>/<code>rgba()</code>, <code>hsl()</code>/<code>hsla()</code>, and newer functions like <code>oklch()</code>) and units of measurement, split between absolute units like <code>px</code> and relative units like <code>em</code>, <code>rem</code>, <code>%</code>, and viewport units (<code>vw</code>, <code>vh</code>). A relative unit's actual size depends on something else — <code>em</code> is relative to the parent's font-size, <code>rem</code> is relative to the root <code>html</code> element's font-size, and <code>%</code> is relative to the parent's corresponding dimension. <code>calc()</code> lets you mix units in a single expression, like <code>width: calc(100% - 40px)</code>, which is essential for layouts that need to be both fluid and precisely offset. Choosing the right unit is what makes a layout scale gracefully across screen sizes and respect a user's font-size preferences.",
       useWhen:"Use <code>rem</code> for font-size and spacing so everything scales together if a user changes their browser's base font size. Use <code>%</code> or <code>fr</code> for fluid widths inside a flex/grid container, viewport units sparingly for things that should genuinely track the screen (like a full-height hero), and <code>calc()</code> whenever you need to combine a fluid and a fixed value in one expression.",
       steps:["Leave the base font-size on <code>html</code> at the browser default (usually 16px) unless you have a specific reason not to.","Use <code>rem</code> for font sizes and most spacing so it scales with the user's preferences.","Use <code>em</code> for spacing that should scale with a specific element's own font-size (e.g. padding on a button).","Reach for <code>calc()</code> to mix relative and absolute values, e.g. <code>calc(100vh - 64px)</code>.","Use <code>hsl()</code>/<code>hsla()</code> over hex when you want to programmatically adjust lightness or saturation for hover/active states.","Avoid raw <code>px</code> for body text font-size — it respects the user's browser zoom/accessibility settings less gracefully than <code>rem</code>."],
       diagram:{ left:[{name:"Absolute units",sub:"px, cm, in"}], right:[{name:"Relative units",sub:"em, rem, %, vw/vh"}], bottom:{name:"calc()",sub:"mixes units in one expression"}, coreSub:"CSS values", coreLabel:"Units & Colors",
-        caption:"Absolute units always mean the same physical size; relative units are computed against something else — the parent, the root, or the viewport — and calc() is how you combine both in a single value." } },
+        caption:"Absolute units always mean the same physical size; relative units are computed against something else — the parent, the root, or the viewport — and calc() is how you combine both in a single value." },
+      playground:{ html:`<div class="swatches">
+  <div class="swatch hex">#2563eb</div>
+  <div class="swatch rgb">rgb()</div>
+  <div class="swatch hsl">hsl()</div>
+</div>
+<div class="units">
+  <div class="unit px">150px wide</div>
+  <div class="unit rem">9.375rem wide</div>
+  <div class="unit pct">50% wide</div>
+</div>`,
+        css:`body { font-family: system-ui, sans-serif; font-size: 12px; }
+.swatches { display: flex; gap: 10px; margin-bottom: 16px; }
+.swatch { width: 100px; height: 50px; border-radius: 8px; color: #fff; display: flex; align-items: center; justify-content: center; }
+.hex { background: #2563eb; }
+.rgb { background: rgb(37, 99, 235); }
+.hsl { background: hsl(221, 83%, 53%); }
+.units { width: 300px; background: #f3f4f6; padding: 10px; }
+.unit { color: #1f2937; margin-bottom: 6px; padding: 6px; background: #e0e7ff; }
+.px { width: 150px; }
+.rem { width: 9.375rem; }
+.pct { width: 50%; }` } },
     { n:4, slug:"css-custom-properties", name:"Custom Properties (Variables)", icon:"🧬", what:"Reusable, cascading CSS values", use:"Define a value once and reuse/theme it everywhere", learn:"--variable syntax, var(), fallback values, :root scoping, runtime theming, JS interop", priority:"important", docName:"MDN: Using CSS custom properties", docUrl:"https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties",
       desc:"Custom properties (commonly called 'CSS variables') let you define a value once, under a name starting with two dashes like <code>--accent-color</code>, and reuse it anywhere with <code>var(--accent-color)</code>. Unlike Sass variables, they are real runtime values that follow the normal CSS cascade — you can redefine the same variable at different points in the DOM (like inside a <code>.dark-theme</code> class) and everything using <code>var()</code> underneath automatically picks up the new value, no rebuild step required. <code>var()</code> also accepts a second, fallback argument (<code>var(--gap, 16px)</code>) that's used if the variable isn't defined anywhere. Because they're live in the DOM, JavaScript can read and write them too, which is exactly how a dark-mode toggle or a user-adjustable theme color usually works under the hood.",
       useWhen:"Define your color palette, spacing scale, and font stacks as custom properties on <code>:root</code> once, then theme dark mode or brand variants by overriding those same variable names on a wrapper class or a media query — never by duplicating whole rule blocks.",
       steps:["Declare shared values on <code>:root</code>, e.g. <code>:root { --accent: #1572b6; --radius: 8px; }</code>.","Consume them everywhere with <code>var(--accent)</code> instead of repeating literal values.","Give <code>var()</code> a fallback for optional properties: <code>var(--gap, 16px)</code>.","Override the same variable names inside a scoped selector (e.g. <code>[data-theme=\"dark\"]</code>) to retheme everything beneath it for free.","Use JavaScript's <code>style.setProperty('--accent', value)</code> for values that need to change at runtime, like a user-picked color.","Keep variable names semantic (<code>--accent</code>, <code>--surface</code>) rather than describing their current value (<code>--blue</code>)."],
       diagram:{ left:[{name:":root",sub:"--accent: #1572b6"}], right:[{name:"var(--accent)",sub:"used anywhere"}], top:{name:"[data-theme=\"dark\"]",sub:"overrides the same name"}, coreSub:"one name, many values", coreLabel:"Custom Property",
-        caption:"The variable is declared once on :root; a scoped override further up the cascade (like a dark-theme attribute) reaches every var(--accent) beneath it without touching a single rule." } },
+        caption:"The variable is declared once on :root; a scoped override further up the cascade (like a dark-theme attribute) reaches every var(--accent) beneath it without touching a single rule." },
+      playground:{ html:`<div class="card">
+  <h4>Card One</h4>
+  <button class="btn">Action</button>
+</div>
+<div class="card alt">
+  <h4>Card Two</h4>
+  <button class="btn">Action</button>
+</div>`,
+        css:`:root {
+  --brand: #7c3aed;
+  --radius: 12px;
+  --gap: 14px;
+}
+body { font-family: system-ui, sans-serif; padding: 10px; display: flex; gap: var(--gap); }
+.card { border: 2px solid var(--brand); border-radius: var(--radius); padding: 16px; flex: 1; }
+.card.alt { background: var(--brand); color: #fff; }
+.btn { background: var(--brand); color: #fff; border: none; border-radius: var(--radius); padding: 8px 14px; cursor: pointer; }` } },
     { n:5, slug:"css-flexbox", name:"Flexbox", icon:"↔️", what:"One-dimensional layout model", use:"Arrange items in a row or column with flexible sizing", learn:"display:flex, flex-direction, justify-content, align-items, flex-grow/shrink/basis, gap", priority:"must", docName:"MDN: CSS flexible box layout", docUrl:"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout",
       desc:"Flexbox lays child elements out along a single axis — a row or a column, set by <code>flex-direction</code> — and is built specifically for distributing space and aligning items when their sizes are unknown or need to flex. <code>justify-content</code> controls alignment along the main axis (e.g. spreading items apart in a navbar), while <code>align-items</code> controls alignment on the cross axis (e.g. vertically centering icons next to text). Each child's <code>flex-grow</code>, <code>flex-shrink</code>, and <code>flex-basis</code> (usually written together as the <code>flex</code> shorthand) decide how it grows or shrinks relative to its siblings when there's extra or insufficient space. It solved, almost overnight, layout problems — vertical centering, equal-height columns, evenly spaced toolbars — that used to require float and table hacks.",
       useWhen:"Reach for flexbox for anything that's fundamentally a single row or column: navbars, button groups, card headers, centering one thing inside another, or a sidebar-plus-content split. The moment you need to align content across both rows and columns at once, that's Grid's job instead.",
       steps:["Set <code>display: flex</code> on the parent to make its direct children flex items.","Choose <code>flex-direction: row</code> (default) or <code>column</code> for the main axis.","Use <code>justify-content</code> to control spacing along the main axis (<code>flex-start</code>, <code>center</code>, <code>space-between</code>…).","Use <code>align-items</code> to control alignment along the cross axis.","Use <code>gap</code> instead of margins between flex items — it doesn't add extra space at the edges.","Give individual items <code>flex: 1</code> to let them grow and fill remaining space, or <code>flex: 0 0 auto</code> to keep them fixed-size."],
       diagram:{ left:[{name:"flex-direction: row",sub:"main axis"}], right:[{name:"align-items",sub:"cross-axis alignment"}], top:{name:"justify-content",sub:"main-axis spacing"}, coreSub:"one-dimensional layout", coreLabel:"display: flex",
-        caption:"flex-direction picks the main axis; justify-content spaces items along it, and align-items aligns them on the perpendicular cross axis." } },
+        caption:"flex-direction picks the main axis; justify-content spaces items along it, and align-items aligns them on the perpendicular cross axis." },
+      playground:{ html:`<div class="flex-row">
+  <div class="box">1</div>
+  <div class="box grow">2 (flex: 1)</div>
+  <div class="box tall">3</div>
+</div>`,
+        css:`.flex-row { display: flex; justify-content: space-between; align-items: center; height: 140px; background: #f3f4f6; padding: 10px; gap: 10px; font-family: system-ui, sans-serif; }
+.box { background: #2563eb; color: #fff; padding: 14px; border-radius: 8px; text-align: center; }
+.grow { flex: 1; background: #7c3aed; }
+.tall { align-self: flex-start; background: #16a34a; }` } },
     { n:6, slug:"css-grid", name:"Grid", icon:"▦", what:"Two-dimensional layout model", use:"Lay elements out across explicit rows and columns", learn:"display:grid, grid-template-columns/rows, fr unit, gap, grid-area, auto-fit/auto-fill, minmax()", priority:"must", docName:"MDN: CSS grid layout", docUrl:"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout",
       desc:"Grid lays elements out across both rows and columns at once, defined explicitly with <code>grid-template-columns</code> and <code>grid-template-rows</code>, rather than flowing along a single axis like flexbox. The <code>fr</code> unit distributes leftover space proportionally (<code>grid-template-columns: 1fr 2fr</code> gives the second column twice the first's width), and <code>minmax()</code> combines a floor and a ceiling for a track's size — the classic <code>minmax(200px, 1fr)</code> card grid that adds columns as the viewport widens. Named <code>grid-area</code> regions let you place a header, sidebar, and footer visually in the CSS itself, which reads almost like a diagram of the page. Combined with <code>repeat(auto-fit, minmax(...))</code>, a single line of CSS can produce a fully responsive card grid with zero media queries.",
       useWhen:"Choose Grid for anything that's a genuine two-dimensional layout — page shells with header/sidebar/footer, photo galleries, dashboards, or any card grid that needs to reflow its column count responsively. If you're only ever arranging items along one line, flexbox is simpler and usually the better fit.",
       steps:["Set <code>display: grid</code> on the container and define <code>grid-template-columns</code>/<code>rows</code>.","Use the <code>fr</code> unit to split remaining space proportionally between tracks.","Use <code>repeat(auto-fit, minmax(200px, 1fr))</code> for a responsive card grid with no media queries.","Name regions with <code>grid-template-areas</code> and place children with <code>grid-area</code> for readable page layouts.","Use <code>gap</code> for spacing between grid cells instead of margins.","Reach for <code>grid-column</code>/<code>grid-row</code> spans to let specific items occupy more than one track."],
       diagram:{ left:[{name:"grid-template-columns",sub:"1fr 2fr 1fr"}], right:[{name:"grid-template-areas",sub:"named regions"}], top:{name:"minmax() + auto-fit",sub:"responsive tracks"}, coreSub:"two-dimensional layout", coreLabel:"display: grid",
-        caption:"Explicit column/row tracks define the grid; auto-fit and minmax() let those tracks add or drop columns responsively without a single media query." } },
+        caption:"Explicit column/row tracks define the grid; auto-fit and minmax() let those tracks add or drop columns responsively without a single media query." },
+      playground:{ html:`<div class="grid">
+  <div class="cell wide">spans 2 columns</div>
+  <div class="cell">3</div>
+  <div class="cell">4</div>
+  <div class="cell wide">spans 2 columns</div>
+  <div class="cell">6</div>
+</div>`,
+        css:`.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-family: system-ui, sans-serif; }
+.cell { background: #eff6ff; border: 1px solid #93c5fd; border-radius: 6px; padding: 16px; text-align: center; }
+.wide { grid-column: span 2; background: #2563eb; color: #fff; }` } },
     { n:7, slug:"css-positioning", name:"Positioning", icon:"📍", what:"Taking an element out of normal flow", use:"Overlay, stick, or precisely place elements", learn:"static, relative, absolute, fixed, sticky, top/right/bottom/left, z-index, stacking context", priority:"must", docName:"MDN: position", docUrl:"https://developer.mozilla.org/en-US/docs/Web/CSS/position",
       desc:"By default every element is <code>static</code> — positioned exactly where normal document flow puts it, with <code>top</code>/<code>left</code>/etc. having no effect. Setting <code>position: relative</code> keeps an element in flow but lets you nudge it with offsets and, importantly, turns it into the reference point for any absolutely positioned descendant. <code>position: absolute</code> removes an element from flow entirely and places it relative to its nearest positioned ancestor (or the page, if there isn't one) — the standard way to build tooltips, dropdowns, and badges. <code>fixed</code> positions relative to the viewport itself so the element stays put even as the page scrolls, while <code>sticky</code> is a hybrid that behaves like relative until a scroll threshold, then locks in place like fixed. When positioned elements overlap, <code>z-index</code> (and the stacking context each one creates) decides which one renders on top.",
       useWhen:"Use <code>relative</code> + <code>absolute</code> together for tooltips, dropdown menus, and badges pinned to a corner of a card. Use <code>fixed</code> for a floating action button or an always-visible chat widget, <code>sticky</code> for a table header or section nav that should stay visible while its own container scrolls past, and reach for <code>z-index</code> only once you actually have overlapping elements — not preemptively.",
       steps:["Leave elements <code>static</code> (the default) unless something specifically needs to break out of flow.","Set <code>position: relative</code> on a container to make it the positioning reference for absolute children.","Use <code>position: absolute</code> with <code>top</code>/<code>right</code>/<code>bottom</code>/<code>left</code> for overlays, badges, and dropdowns.","Use <code>position: fixed</code> for elements that must stay in the same viewport spot regardless of scroll.","Use <code>position: sticky</code> with a <code>top</code> offset for headers/nav that should stick once scrolled to.","Only introduce <code>z-index</code> when two positioned elements actually overlap, and keep values low and intentional (10, 20, 100) rather than escalating arbitrarily."],
       diagram:{ left:[{name:"relative",sub:"reference point"}], right:[{name:"absolute",sub:"positioned against it"}], top:{name:"fixed",sub:"pinned to viewport"}, bottom:{name:"z-index",sub:"stacking order"}, coreSub:"out of normal flow", coreLabel:"position",
-        caption:"A relative ancestor becomes the anchor an absolute child positions itself against; fixed ignores that anchor entirely, and z-index only matters once two positioned elements overlap." } },
+        caption:"A relative ancestor becomes the anchor an absolute child positions itself against; fixed ignores that anchor entirely, and z-index only matters once two positioned elements overlap." },
+      playground:{ html:`<div class="relative-box">
+  Relative container
+  <span class="badge">absolute, top-right</span>
+</div>
+
+<div class="scroll-box">
+  <div class="sticky-header">Sticky header</div>
+  <p>Scroll down inside this box...</p>
+  <p>Keep scrolling...</p>
+  <p>The header above stays pinned.</p>
+  <p>More content below...</p>
+</div>`,
+        css:`body { font-family: system-ui, sans-serif; padding: 10px; }
+.relative-box { position: relative; height: 90px; background: #f3f4f6; border-radius: 8px; margin-bottom: 16px; padding: 10px; }
+.badge { position: absolute; top: 8px; right: 8px; background: #dc2626; color: #fff; font-size: 11px; padding: 4px 8px; border-radius: 999px; }
+.scroll-box { height: 120px; overflow-y: auto; border: 1px solid #d1d5db; border-radius: 8px; }
+.sticky-header { position: sticky; top: 0; background: #2563eb; color: #fff; padding: 6px 10px; }
+.scroll-box p { padding: 0 10px; font-size: 13px; }` } },
     { n:8, slug:"css-typography", name:"Typography", icon:"🔤", what:"Styling and controlling text", use:"Make text legible, on-brand, and readable at scale", learn:"font-family stacks, font-weight/style, line-height, letter-spacing, @font-face, web fonts, font-display", priority:"important", docName:"MDN: Fundamental text and font styling", docUrl:"https://developer.mozilla.org/en-US/docs/Learn/CSS/Styling_text",
       desc:"Typography in CSS covers everything from which typeface renders (<code>font-family</code>, ideally a stack ending in a generic fallback like <code>sans-serif</code>) to how that text is spaced and shaped: <code>font-weight</code> and <code>font-style</code> for emphasis, <code>line-height</code> for vertical rhythm within a paragraph, <code>letter-spacing</code> for tracking between characters, and <code>text-align</code>/<code>text-transform</code> for alignment and casing. <code>line-height</code> in particular is one of the highest-leverage typography decisions in CSS — a unitless value like <code>1.5</code> scales with the element's own font-size and is almost always the right call over a fixed pixel height. <code>@font-face</code> (or a service like Google Fonts) is how a custom typeface actually gets loaded into the page rather than falling back to whatever's installed on the user's device.",
       useWhen:"Set a base font-family stack, font-size, and line-height on <code>body</code> once and let most elements inherit it; reach for <code>@font-face</code> or a Google Fonts <code>&lt;link&gt;</code> only when the brand genuinely needs a specific typeface, since every extra font is real page-weight and load-time cost.",
       steps:["Define a font stack ending in a generic family: <code>font-family: \"Inter\", system-ui, sans-serif;</code>.","Set a comfortable base <code>line-height</code> (1.5–1.7 for body copy) as a unitless value.","Load custom fonts via <code>@font-face</code> or a <code>&lt;link&gt;</code> and set <code>font-display: swap</code> to avoid invisible text while loading.","Limit a design to 2–3 font-weights actually used, rather than importing every weight available.","Use <code>letter-spacing</code> sparingly — mostly for small uppercase labels, not body paragraphs.","Constrain paragraph width (e.g. <code>max-width: 65ch</code>) so lines don't run too long to read comfortably."],
       diagram:{ left:[{name:"font-family stack",sub:"custom → fallback"}], right:[{name:"line-height",sub:"vertical rhythm"}], top:{name:"@font-face",sub:"loads the real typeface"}, coreSub:"text on screen", coreLabel:"Typography",
-        caption:"@font-face is what actually loads a custom face before it can be used; the font stack is the fallback chain the browser walks if it can't — line-height then sets the rhythm around whichever face renders." } },
+        caption:"@font-face is what actually loads a custom face before it can be used; the font stack is the fallback chain the browser walks if it can't — line-height then sets the rhythm around whichever face renders." },
+      playground:{ html:`<div class="block serif">
+  <h4>Serif Heading</h4>
+  <p>Georgia serif, relaxed line-height, tight letter-spacing for an editorial feel.</p>
+</div>
+<div class="block mono">
+  <h4>MONO HEADING</h4>
+  <p>Monospace, bold weight, wider letter-spacing, tighter line-height for a technical feel.</p>
+</div>`,
+        css:`body { padding: 16px; }
+.block { max-width: 320px; margin-bottom: 20px; font-family: system-ui, sans-serif; }
+.serif h4 { font-family: Georgia, serif; font-weight: 400; letter-spacing: -0.01em; }
+.serif p { font-family: Georgia, serif; line-height: 1.8; color: #374151; }
+.mono h4 { font-family: "Courier New", monospace; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.mono p { font-family: "Courier New", monospace; line-height: 1.3; letter-spacing: 0.03em; color: #374151; font-size: 13px; }` } },
     { n:9, slug:"css-animations", name:"Transitions & Animations", icon:"🎬", what:"Motion between and within states", use:"Add smooth, GPU-friendly motion without JavaScript", learn:"transition, timing functions, @keyframes, animation shorthand, transform, prefers-reduced-motion", priority:"important", docName:"MDN: CSS animations", docUrl:"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations",
       desc:"<code>transition</code> animates a property smoothly between its old and new value whenever that value changes — a hover state, a class toggle — and needs only a property list, duration, and timing function. <code>@keyframes</code> goes further, defining an explicit sequence of styles at named percentages (0%, 50%, 100%) that the <code>animation</code> shorthand then plays on a loop, in reverse, or with a delay, independent of any state change triggering it. Both are dramatically cheaper to run than JavaScript-driven animation when the animated property is <code>transform</code> or <code>opacity</code>, because the browser can hand those off to the GPU compositor without re-running layout or paint on every frame. Accessibility matters here too: some users experience real discomfort from motion, so respecting the <code>prefers-reduced-motion</code> media query to shorten or disable animations isn't optional polish.",
       useWhen:"Use <code>transition</code> for simple two-state changes — a button darkening on hover, a menu sliding open. Reach for <code>@keyframes</code> when you need a multi-step sequence (a loading spinner, an attention-grabbing pulse) or something that should play automatically rather than in response to a state change, and always animate <code>transform</code>/<code>opacity</code> rather than layout-affecting properties like <code>width</code> or <code>top</code> when performance matters.",
       steps:["Add <code>transition: &lt;properties&gt; &lt;duration&gt; &lt;timing-function&gt;;</code> to the resting state of an element, not the hover state.","Prefer animating <code>transform</code> and <code>opacity</code> over <code>width</code>/<code>height</code>/<code>top</code>/<code>left</code> for GPU-accelerated, jank-free motion.","Define multi-step sequences with <code>@keyframes</code> and named percentage stops.","Apply them with the <code>animation</code> shorthand, controlling duration, iteration-count, and direction.","Wrap non-essential motion in <code>@media (prefers-reduced-motion: reduce)</code> to shorten or disable it for users who've opted out.","Use DevTools' Performance/Rendering panel to confirm an animation isn't triggering layout thrashing."],
       diagram:{ left:[{name:"transition",sub:"state A → state B"}], right:[{name:"@keyframes",sub:"multi-step sequence"}], bottom:{name:"prefers-reduced-motion",sub:"respects user setting"}, coreSub:"motion over time", coreLabel:"Animation",
-        caption:"transition covers a simple two-state change; @keyframes scripts an explicit multi-step sequence — either way, prefers-reduced-motion is the check that decides whether it should play at all." } },
+        caption:"transition covers a simple two-state change; @keyframes scripts an explicit multi-step sequence — either way, prefers-reduced-motion is the check that decides whether it should play at all." },
+      playground:{ html:`<button class="hover-btn">Hover me</button>
+<div class="pulse">Auto-animating</div>`,
+        css:`body { font-family: system-ui, sans-serif; padding: 20px; display: flex; gap: 20px; align-items: center; }
+.hover-btn { padding: 10px 18px; border: none; border-radius: 8px; background: #2563eb; color: #fff; cursor: pointer; transition: background 0.25s ease, transform 0.25s ease; }
+.hover-btn:hover { background: #7c3aed; transform: translateY(-3px); }
+.pulse { padding: 10px 18px; border-radius: 8px; background: #16a34a; color: #fff; animation: pulse 1.5s ease-in-out infinite; }
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.08); opacity: 0.85; }
+}` } },
     { n:10, slug:"css-pseudo", name:"Pseudo-classes & Pseudo-elements", icon:"✨", what:"Styling states and generated content", use:"Style interaction states and inject content without extra markup", learn:":hover/:focus/:active, :nth-child(), :is()/:where()/:has(), ::before/::after, ::placeholder", priority:"important", docName:"MDN: Pseudo-classes", docUrl:"https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes",
       desc:"Pseudo-classes (single colon: <code>:hover</code>, <code>:focus</code>, <code>:nth-child(2)</code>, <code>:checked</code>) select elements based on a state or position that isn't visible in the HTML itself — like whether the mouse is currently over a link, or an element's position among its siblings. <code>:has()</code> is a newer, more powerful pseudo-class that lets a selector match a parent based on what it contains, effectively giving CSS a 'parent selector' for the first time. Pseudo-elements (double colon: <code>::before</code>, <code>::after</code>, <code>::placeholder</code>) target a sub-part of an element that doesn't exist as its own DOM node — <code>::before</code> and <code>::after</code> in particular can inject generated content, which is how countless icons, tooltips, and decorative shapes are added without any extra HTML. Together they let a stylesheet react to interaction and inject small bits of content, instead of every state needing a class toggled by JavaScript.",
       useWhen:"Use <code>:hover</code>/<code>:focus</code>/<code>:active</code> for interactive feedback on links, buttons, and form fields, <code>:nth-child()</code>/<code>:first-child</code> for styling based on position without extra classes, <code>:has()</code> when a parent's styling genuinely depends on what's inside it, and <code>::before</code>/<code>::after</code> for small decorative content (icons, quote marks, tooltip arrows) that doesn't belong in your markup.",
       steps:["Style <code>:hover</code> and <code>:focus-visible</code> together on interactive elements — never <code>:hover</code> alone, or keyboard users lose the affordance.","Use <code>:nth-child()</code>/<code>:first-child</code>/<code>:last-child</code> to style based on position instead of adding a class in a loop.","Reach for <code>:has()</code> to style a parent conditionally based on its children, e.g. a form field's container when it <code>:has(:invalid)</code>.","Use <code>::before</code>/<code>::after</code> with <code>content: \"\"</code> for decorative shapes, and <code>content: attr(...)</code> to pull in data from the markup.","Style native form pseudo-elements like <code>::placeholder</code> for consistent styling across browsers.","Combine <code>:is()</code>/<code>:where()</code> to shorten repetitive selector lists without inflating specificity."],
       diagram:{ left:[{name:":hover / :focus",sub:"interaction state"}], right:[{name:"::before / ::after",sub:"generated content"}], top:{name:":has()",sub:"parent selector"}, coreSub:"states & generated content", coreLabel:"Pseudo",
-        caption:":has() is the one pseudo-class that looks down into children rather than at the element itself — everything else here either reacts to interaction or injects content that was never in the HTML." } },
+        caption:":has() is the one pseudo-class that looks down into children rather than at the element itself — everything else here either reacts to interaction or injects content that was never in the HTML." },
+      playground:{ html:`<ul class="link-list">
+  <li><a href="#">First link</a></li>
+  <li><a href="#">Second link</a></li>
+  <li><a href="#">Third link</a></li>
+  <li><a href="#">Fourth link</a></li>
+</ul>
+<div class="tag">Decorated with ::before/::after</div>`,
+        css:`body { font-family: system-ui, sans-serif; padding: 16px; }
+.link-list { list-style: none; padding: 0; width: 220px; }
+.link-list li:nth-child(even) { background: #f3f4f6; }
+.link-list a { display: block; padding: 8px 10px; color: #2563eb; text-decoration: none; }
+.link-list a:hover { background: #dbeafe; color: #1e3a8a; }
+.tag { position: relative; display: inline-block; margin-top: 16px; padding: 8px 20px; background: #eef2ff; border-radius: 6px; }
+.tag::before { content: "★ "; color: #f59e0b; }
+.tag::after { content: " ✓"; color: #16a34a; }` } },
   ],
 };
 
@@ -921,6 +1132,8 @@ function renderServicePanels() {
             <div class="tag-list">${item.learn.split(",").map(t => `<span class="tag">${t.trim()}</span>`).join("")}</div>
           </div>
 
+          ${item.playground ? renderPlaygroundHTML(item) : ""}
+
           <div class="svc-foot">
             <a class="back-home" style="margin:0;" href="#overview">← All topics</a>
             <a class="doc-link" href="${item.docUrl}" target="_blank" rel="noopener">${item.docName} →</a>
@@ -930,6 +1143,65 @@ function renderServicePanels() {
     });
   });
   host.innerHTML = html.join("");
+  initPlaygrounds();
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function renderPlaygroundHTML(item) {
+  return `
+    <h3 class="subhead">Try it live</h3>
+    <div class="playground-box" data-slug="${item.slug}">
+      <div class="pg-chrome">
+        <span>Live example · ${item.name}</span>
+        <button class="pg-reset" type="button" data-action="reset">Reset</button>
+      </div>
+      <div class="pg-panes">
+        <div class="pg-pane">
+          <div class="pg-pane-label">HTML</div>
+          <textarea class="pg-editor" data-editor="html" spellcheck="false">${escapeHtml(item.playground.html)}</textarea>
+        </div>
+        <div class="pg-pane">
+          <div class="pg-pane-label">CSS</div>
+          <textarea class="pg-editor" data-editor="css" spellcheck="false">${escapeHtml(item.playground.css)}</textarea>
+        </div>
+        <div class="pg-pane pg-pane-preview">
+          <div class="pg-pane-label">Preview</div>
+          <iframe class="pg-frame" sandbox="allow-popups allow-popups-to-escape-sandbox" title="Live preview of ${item.name}"></iframe>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function initPlaygrounds() {
+  document.querySelectorAll(".playground-box").forEach(box => {
+    const htmlEditor = box.querySelector('[data-editor="html"]');
+    const cssEditor = box.querySelector('[data-editor="css"]');
+    const frame = box.querySelector(".pg-frame");
+    const resetBtn = box.querySelector('[data-action="reset"]');
+    const defaults = { html: htmlEditor.value, css: cssEditor.value };
+    let debounceTimer = null;
+
+    function update() {
+      frame.srcdoc = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>${cssEditor.value}</style></head><body>${htmlEditor.value}</body></html>`;
+    }
+    function scheduleUpdate() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(update, 200);
+    }
+
+    htmlEditor.addEventListener("input", scheduleUpdate);
+    cssEditor.addEventListener("input", scheduleUpdate);
+    resetBtn.addEventListener("click", () => {
+      htmlEditor.value = defaults.html;
+      cssEditor.value = defaults.css;
+      update();
+    });
+    update();
+  });
 }
 
 function renderSidebarNav() {
