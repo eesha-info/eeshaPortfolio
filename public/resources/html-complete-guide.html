@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HTML — Complete Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS ============ */
+  :root {
+    --bg: #faf6f2;
+    --surface: #ffffff;
+    --surface-2: #f3ece3;
+    --surface-3: #ece0d2;
+    --border: #e6d8c8;
+    --ink: #271408;
+    --ink-soft: #6b4a37;
+    --ink-faint: #a8836c;
+    --navy: #3b1d0f;
+    --navy-2: #4a2513;
+    --amber: #e34f26;
+    --amber-strong: #c43d1c;
+    --amber-tint: rgba(227, 79, 38, 0.12);
+    --link: #1d5fa8;
+    --danger: #b8402b;
+    --danger-bg: rgba(184, 64, 43, 0.10);
+    --warn: #9c6a0a;
+    --warn-bg: rgba(156, 106, 10, 0.12);
+    --calm: #1f7a5c;
+    --calm-bg: rgba(31, 122, 92, 0.12);
+    --focus-ring: #e34f26;
+    --shadow: 0 12px 32px rgba(39, 20, 8, 0.10);
+    --shadow-lg: 0 24px 64px rgba(39, 20, 8, 0.28);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #170e08;
+      --surface: #241407;
+      --surface-2: #2e1c0f;
+      --surface-3: #3a2513;
+      --border: #4a3020;
+      --ink: #f8ece4;
+      --ink-soft: #d9b8a4;
+      --ink-faint: #a9826c;
+      --navy: #5a3018;
+      --navy-2: #6b3d20;
+      --amber: #ff7a54;
+      --amber-strong: #ff9470;
+      --amber-tint: rgba(255, 122, 84, 0.14);
+      --link: #7fb3f5;
+      --danger: #ff8a71;
+      --danger-bg: rgba(255, 138, 113, 0.14);
+      --warn: #ffc766;
+      --warn-bg: rgba(255, 199, 102, 0.14);
+      --calm: #5cdcb0;
+      --calm-bg: rgba(92, 220, 176, 0.14);
+      --focus-ring: #ff7a54;
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #170e08;
+    --surface: #241407;
+    --surface-2: #2e1c0f;
+    --surface-3: #3a2513;
+    --border: #4a3020;
+    --ink: #f8ece4;
+    --ink-soft: #d9b8a4;
+    --ink-faint: #a9826c;
+    --navy: #5a3018;
+    --navy-2: #6b3d20;
+    --amber: #ff7a54;
+    --amber-strong: #ff9470;
+    --amber-tint: rgba(255, 122, 84, 0.14);
+    --link: #7fb3f5;
+    --danger: #ff8a71;
+    --danger-bg: rgba(255, 138, 113, 0.14);
+    --warn: #ffc766;
+    --warn-bg: rgba(255, 199, 102, 0.14);
+    --calm: #5cdcb0;
+    --calm-bg: rgba(92, 220, 176, 0.14);
+    --focus-ring: #ff7a54;
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  h1, h2, h3 { font-family: "IBM Plex Mono", ui-monospace, monospace; text-wrap: balance; margin: 0; }
+  a { color: var(--link); }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  ::selection { background: var(--amber-tint); }
+
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* ============ MOBILE TOPBAR ============ */
+  .topbar {
+    display: none;
+    position: sticky; top: 0; z-index: 40;
+    align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar .brand { font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 14px; }
+  .topbar .brand span { color: var(--amber); }
+  .menu-btn {
+    width: 36px; height: 36px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--ink);
+    font-size: 16px; cursor: pointer; text-decoration: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sidebar-scrim { display: none; position: fixed; inset: 0; background: rgba(23,14,8,0.5); z-index: 45; }
+  .sidebar-scrim.show { display: block; }
+
+  /* ============ SHELL / SIDEBAR ============ */
+  .shell { display: flex; align-items: flex-start; max-width: 1360px; margin: 0 auto; }
+  .sidebar {
+    position: sticky; top: 0;
+    width: 280px; flex-shrink: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 22px 16px 60px;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+    scrollbar-width: thin;
+  }
+  .sidebar .brand {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 800;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 8px 16px;
+  }
+  .sidebar .brand span { color: var(--amber); }
+  .back-home {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 8px 18px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 600;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+  }
+  .back-home:hover { color: var(--ink); background: var(--amber-tint); border-color: var(--amber); }
+  .nav-group { margin-bottom: 4px; }
+  .nav-group-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    padding: 14px 8px 6px;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+    margin: 1px 0;
+    border-radius: 7px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 13px;
+    border-left: 2px solid transparent;
+  }
+  .nav-link:hover { background: var(--surface-2); color: var(--ink); }
+  .nav-link.active {
+    background: var(--amber-tint);
+    color: var(--ink);
+    font-weight: 600;
+    border-left: 2px solid var(--amber);
+  }
+  .nav-icon { flex-shrink: 0; width: 18px; text-align: center; font-size: 13px; }
+
+  .content { flex: 1; min-width: 0; padding: 40px 32px 90px; }
+  .topic-panel[hidden] { display: none; }
+
+  @media (max-width: 920px) {
+    .topbar { display: flex; }
+    .sidebar {
+      position: fixed; inset: 0 auto 0 0;
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+      z-index: 50;
+      width: 82vw;
+      max-width: 300px;
+      box-shadow: var(--shadow-lg);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .content { padding: 28px 18px 100px; }
+  }
+
+  /* ============ PANEL HERO (Overview only) ============ */
+  .panel-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    background: linear-gradient(150deg, #24140a 0%, #3d2210 55%, #2b1608 100%);
+    color: #fbf2ec;
+    padding: 40px 32px;
+    margin-bottom: 30px;
+  }
+  .panel-hero::before {
+    content: "";
+    position: absolute;
+    top: -120px; right: -90px;
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(227,79,38,0.35), rgba(227,79,38,0) 70%);
+    pointer-events: none;
+  }
+  .panel-hero .eyebrow {
+    position: relative;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #ff9a68;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel-hero .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #ff9a68; display: inline-block; }
+  .panel-hero h1 { position: relative; margin-top: 14px; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.2; font-weight: 700; color: #fff; }
+  .panel-hero h1 em { font-style: normal; color: #ff9a68; }
+  .panel-hero p.lede { position: relative; margin-top: 12px; font-size: 15px; color: #e6d3c6; max-width: 68ch; font-family: "IBM Plex Sans", sans-serif; line-height: 1.75; }
+  .panel-hero .stat-chips { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .stat-chip {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    border: 1px solid rgba(255,255,255,0.22);
+    color: #f3e3d7;
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+  .stat-chip b { color: #fff; }
+
+  section.topic-panel h1.section-title { font-size: 22px; margin-bottom: 14px; }
+  .lede-plain { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 82ch; margin: 0 0 16px; }
+  .lede-plain b { color: var(--ink); }
+
+  /* ============ DIAGRAM BOX ============ */
+  .diagram-box {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    margin: 0 0 24px;
+  }
+  .diagram-box .d-chrome {
+    background: var(--navy);
+    color: #fbf1ea;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 11px 16px;
+  }
+  .diagram-box .d-body { padding: 22px 18px 6px; overflow-x: auto; }
+  .diagram-box .d-body svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+  .diagram-box .d-caption {
+    padding: 6px 20px 20px;
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 88ch;
+  }
+  .diagram-box .d-caption code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; color: var(--ink); }
+  .diagram-box .d-caption b { color: var(--ink); }
+
+  /* shared SVG node styles, reused by every diagram */
+  svg .d-node { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
+  svg .d-node-accent { fill: var(--amber-tint); stroke: var(--amber); stroke-width: 1.5; }
+  svg .d-node-navy { fill: var(--navy); stroke: var(--navy); }
+  svg .d-title { fill: var(--ink); font: 700 13.5px "IBM Plex Sans", sans-serif; }
+  svg .d-title-light { fill: #ffffff; font: 700 12.5px "IBM Plex Mono", monospace; }
+  svg .d-sub { fill: var(--ink-faint); font: 600 10px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-sub-light { fill: #ecd3c2; font: 600 9.5px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-text { fill: var(--ink-soft); font: 500 11px "IBM Plex Mono", monospace; }
+  svg .d-arrow { fill: none; stroke: var(--ink-faint); stroke-width: 2; }
+  svg .d-arrow-accent { fill: none; stroke: var(--amber); stroke-width: 2.25; }
+  svg .d-label { fill: var(--ink-soft); font: 600 11px "IBM Plex Sans", sans-serif; }
+  svg .d-label-accent { fill: var(--amber-strong); font: 700 11px "IBM Plex Sans", sans-serif; }
+  svg .d-boundary { fill: none; stroke: var(--link); stroke-width: 1.5; stroke-dasharray: 6 4; }
+  svg .d-boundary-label { fill: var(--link); font: 700 10.5px "IBM Plex Mono", monospace; letter-spacing: 0.05em; }
+
+  /* ============ TOPIC PANEL ============ */
+  .panel-kicker {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 10px;
+  }
+  .panel-head { display: flex; gap: 16px; align-items: flex-start; }
+  .panel-icon {
+    flex-shrink: 0;
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    background: var(--navy);
+    color: var(--amber-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+  }
+  .svc-name-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .svc-name-row h2 { font-size: 21px; color: var(--ink); }
+  .panel-tagline { margin: 6px 0 0; font-size: 13.5px; color: var(--ink-faint); font-family: "IBM Plex Sans", sans-serif; }
+  .svc-desc { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 84ch; }
+
+  .use-callout {
+    margin: 22px 0;
+    padding: 16px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--link);
+    background: var(--surface-2);
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 84ch;
+  }
+  .use-callout b { color: var(--ink); }
+  .callout-title {
+    display: block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--link);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  h3.subhead { font-size: 15px; margin: 28px 0 6px; color: var(--ink); }
+
+  .steps-list {
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 84ch;
+  }
+  .steps-list li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .steps-list li::before {
+    counter-increment: step;
+    content: counter(step);
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--amber-strong);
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+    font-size: 11.5px;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .steps-list li b { color: var(--ink); }
+  .steps-list li code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+
+  .svc-learn { margin-top: 26px; }
+  .flabel {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--ink-soft);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .svc-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    max-width: 84ch;
+  }
+  .doc-link {
+    font-size: 12.5px;
+    color: var(--link);
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .doc-link:hover { text-decoration: underline; }
+  .badge {
+    display: inline-block;
+    font-family: "IBM Plex Mono", monospace;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+  }
+  .badge-must { background: var(--danger-bg); color: var(--danger); }
+  .badge-important { background: var(--warn-bg); color: var(--warn); }
+  .badge-level { background: var(--calm-bg); color: var(--calm); }
+
+  /* ============ OVERVIEW TOPIC INDEX ============ */
+  .svc-index-group { margin-bottom: 22px; }
+  .svc-index-group h4 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    font-family: "IBM Plex Mono", monospace;
+    margin-bottom: 10px;
+  }
+  .svc-index-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    text-decoration: none;
+    color: var(--ink);
+    margin-bottom: 6px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .svc-index-item:hover { border-color: var(--amber); background: var(--amber-tint); }
+  .svc-index-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--navy);
+    color: var(--amber-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .svc-index-text { flex: 1; min-width: 0; }
+  .svc-index-text .n { font-weight: 700; font-size: 13.5px; }
+  .svc-index-text .t { font-size: 11.5px; color: var(--ink-faint); }
+
+  /* ============ SUMMARY CARDS ============ */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--amber);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+  }
+  .card h3 { font-size: 14px; color: var(--ink); margin-bottom: 12px; }
+  .card p.card-note { margin: 0 0 14px; font-size: 13px; color: var(--ink-soft); font-family: "IBM Plex Sans", sans-serif; line-height: 1.7; }
+  .seq-flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; }
+  .seq-step {
+    font-family: "IBM Plex Mono", monospace;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  .seq-arrow { color: var(--amber); font-weight: 700; }
+
+  .priority-levels { display: flex; flex-direction: column; gap: 12px; }
+  .plevel { display: flex; gap: 12px; align-items: flex-start; }
+  .plevel .lvl-tag {
+    font-family: "IBM Plex Mono", monospace;
+    flex-shrink: 0;
+    width: 72px;
+    padding: 5px 0;
+    text-align: center;
+    border-radius: 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .lvl-1 { background: var(--danger); }
+  .lvl-2 { background: var(--warn); color: #221600; }
+  .lvl-3 { background: var(--ink-faint); }
+  .plevel .lvl-items { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+
+  .doc-links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 8px 20px;
+    font-size: 12px;
+  }
+  .doc-links-grid div { color: var(--ink-soft); overflow-wrap: break-word; }
+  .doc-links-grid b { color: var(--ink); font-family: "IBM Plex Mono", monospace; font-size: 11.5px; }
+
+  /* ============ FOOTER ============ */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 28px 48px;
+    text-align: center;
+  }
+  footer .label {
+    font-family: "IBM Plex Mono", monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 10px;
+    color: var(--amber);
+    font-weight: 700;
+  }
+  footer .name { font-size: 18px; font-weight: 700; margin-top: 6px; }
+  footer .role { font-size: 12.5px; color: var(--ink-soft); margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="Open navigation">☰</button>
+  <div class="brand">HTML<span>::</span>DOCS</div>
+  <a class="menu-btn" href="/guides" aria-label="Back to Guides">⌂</a>
+</div>
+<div class="sidebar-scrim" id="sidebarScrim"></div>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">HTML<span>::</span>DOCS</div>
+    <a class="back-home" href="/guides">← Back to Guides</a>
+
+    <div class="nav-group">
+      <a class="nav-link" href="#overview"><span class="nav-icon">🏠</span> Overview</a>
+    </div>
+
+    <div class="nav-group" id="nav-topics">
+      <div class="nav-group-label">HTML Topics</div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Reference</div>
+      <a class="nav-link" href="#summary"><span class="nav-icon">📐</span> Summary &amp; Patterns</a>
+      <a class="nav-link" href="#references"><span class="nav-icon">📄</span> Doc Links</a>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <section class="topic-panel" id="overview">
+      <div class="panel-hero">
+        <div class="eyebrow">Web Fundamentals</div>
+        <h1>HTML <em>Complete Guide</em></h1>
+        <p class="lede">HTML (HyperText Markup Language) is the markup language that structures every web page — headings, paragraphs, links, images, forms, tables, and media all get their shape from HTML tags. It doesn't style anything and it doesn't add behavior; it's the skeleton that CSS paints and JavaScript animates on top of. This doc walks through the 10 HTML topics every developer actually needs, in a sensible learning order, with a diagram, a "where to use it" guide, and concrete implementation steps for every single one.</p>
+        <div class="stat-chips">
+          <span class="stat-chip"><b>10</b> topics</span>
+          <span class="stat-chip"><b>12</b> diagrams</span>
+          <span class="stat-chip"><b>2</b> priority levels</span>
+        </div>
+      </div>
+
+      <p class="lede-plain">Use the sidebar to jump straight to any topic — each one opens its own page with a full explanation, a diagram of how it fits together, and the concrete steps to actually write it. If you're starting from zero, work through <b>Document Structure</b>, <b>Semantic Elements</b>, and <b>Headings &amp; Text Fundamentals</b> first: everything else in this guide assumes you already know how an HTML document is put together.</p>
+
+      <div class="diagram-box">
+        <div class="d-chrome">Diagram · How HTML Fits Into the Page</div>
+        <div class="d-body">
+          <svg viewBox="0 0 860 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A browser parses HTML source into a DOM tree, which CSS styles and JavaScript manipulates, producing the rendered page the user sees">
+            <defs>
+              <marker id="ovArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+              <marker id="ovArrowAccent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)" /></marker>
+            </defs>
+
+            <rect class="d-node" x="20" y="110" width="130" height="60" rx="10" />
+            <text class="d-title" x="38" y="136">HTML Source</text>
+            <text class="d-sub" x="38" y="152">.html file</text>
+            <path class="d-arrow" d="M150 140 L188 140" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node" x="190" y="110" width="120" height="60" rx="10" />
+            <text class="d-title" x="208" y="136">Parser</text>
+            <text class="d-sub" x="208" y="152">reads top to bottom</text>
+            <path class="d-arrow" d="M310 140 L348 140" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node-accent" x="350" y="100" width="150" height="80" rx="10" />
+            <text class="d-title" x="368" y="132">DOM Tree</text>
+            <text class="d-sub" x="368" y="150">the structural layer</text>
+            <path class="d-arrow-accent" d="M500 118 L 540 60" marker-end="url(#ovArrowAccent)" />
+            <path class="d-arrow-accent" d="M500 162 L 540 220" marker-end="url(#ovArrowAccent)" />
+
+            <rect class="d-node" x="550" y="20" width="150" height="60" rx="10" />
+            <text class="d-title" x="568" y="46">CSS / CSSOM</text>
+            <text class="d-sub" x="568" y="62">styles it</text>
+            <path class="d-arrow" d="M700 50 L 740 100" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node" x="550" y="190" width="150" height="60" rx="10" />
+            <text class="d-title" x="568" y="216">JavaScript</text>
+            <text class="d-sub" x="568" y="232">manipulates it</text>
+            <path class="d-arrow" d="M700 210 L 740 160" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node-navy" x="740" y="100" width="105" height="80" rx="10" />
+            <text class="d-title-light" x="752" y="130">Rendered</text>
+            <text class="d-title-light" x="752" y="146">Page</text>
+            <text class="d-sub-light" x="752" y="162">what users see</text>
+
+            <path class="d-boundary" d="M330 20 L 330 280" />
+            <text class="d-boundary-label" x="30" y="270">HTML — THE STRUCTURAL LAYER EVERYTHING ELSE ATTACHES TO</text>
+          </svg>
+        </div>
+        <p class="d-caption">The browser parses raw HTML source into a <b>DOM tree</b> — a live, structured representation of the document. CSS then styles that tree and JavaScript can read or rewrite it, but both are reacting to structure HTML already put in place. Get the structure wrong and no amount of styling or scripting fixes it cleanly — this is why HTML always comes first.</p>
+      </div>
+
+      <h3 class="subhead" style="margin-top:8px;">All 10 topics in this guide</h3>
+      <div id="svc-index"></div>
+    </section>
+
+    <!-- 10 topic panels are injected here by renderServicePanels() -->
+    <div id="service-panels"></div>
+
+    <section class="topic-panel" id="summary">
+      <h1 class="section-title">Summary &amp; Patterns</h1>
+      <p class="lede-plain">Once the individual topics make sense on their own, these two references tie them together: the order to learn them in, and the rendering pipeline every one of them ultimately feeds into.</p>
+
+      <div class="card">
+        <h3>Recommended Learning Order</h3>
+        <div class="seq-flow" id="sequence-flow"></div>
+      </div>
+
+      <div class="card">
+        <h3>How a Browser Renders a Page</h3>
+        <p class="card-note">Every topic in this guide ends up somewhere in this pipeline — this is the mental model worth keeping above all the individual tags.</p>
+        <div class="diagram-box" style="margin-bottom:0; box-shadow:none;">
+          <div class="d-chrome">Diagram · HTML → DOM → CSSOM → Render Tree → Paint</div>
+          <div class="d-body">
+            <svg viewBox="0 0 820 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="HTML is parsed into a DOM, combined with CSS parsed into a CSSOM to build a render tree, which is then laid out and painted to the screen">
+              <defs>
+                <marker id="pipeArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+                <marker id="pipeArrowAccent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)" /></marker>
+              </defs>
+
+              <rect class="d-node" x="16" y="80" width="120" height="60" rx="10" />
+              <text class="d-title" x="34" y="106">HTML</text>
+              <text class="d-sub" x="34" y="122">parsed first</text>
+              <path class="d-arrow" d="M136 110 L172 110" marker-end="url(#pipeArrow)" />
+
+              <rect class="d-node" x="176" y="80" width="120" height="60" rx="10" />
+              <text class="d-title" x="194" y="106">DOM</text>
+              <text class="d-sub" x="194" y="122">document tree</text>
+              <path class="d-arrow" d="M296 110 L332 110" marker-end="url(#pipeArrow)" />
+
+              <rect class="d-node" x="336" y="80" width="120" height="60" rx="10" />
+              <text class="d-title" x="354" y="106">CSSOM</text>
+              <text class="d-sub" x="354" y="122">style tree</text>
+              <path class="d-arrow" d="M456 110 L492 110" marker-end="url(#pipeArrow)" />
+
+              <rect class="d-node-accent" x="496" y="80" width="140" height="60" rx="10" />
+              <text class="d-title" x="514" y="106">Render Tree</text>
+              <text class="d-sub" x="514" y="122">DOM + styles merged</text>
+              <path class="d-arrow-accent" d="M636 110 L 672 110" marker-end="url(#pipeArrowAccent)" />
+
+              <rect class="d-node-navy" x="676" y="70" width="128" height="80" rx="10" />
+              <text class="d-title-light" x="692" y="102">Layout</text>
+              <text class="d-title-light" x="692" y="120">+ Paint</text>
+              <text class="d-sub-light" x="692" y="136">pixels on screen</text>
+
+              <text class="d-label" x="40" y="176">Missing/invalid HTML breaks the DOM before CSS or JS ever run.</text>
+            </svg>
+          </div>
+          <p class="d-caption">HTML is parsed into the <b>DOM</b>; CSS is parsed separately into the <b>CSSOM</b>. The browser merges the two into a <b>render tree</b> — only the nodes that will actually be visible — then computes <b>layout</b> (where everything goes) and <b>paints</b> the final pixels. Every topic in this guide is upstream of this pipeline: get the HTML wrong and everything downstream inherits the mistake.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic-panel" id="references">
+      <h1 class="section-title">Official Documentation Reference URLs</h1>
+      <p class="lede-plain">Every topic covered in this guide, with a direct link to its official MDN documentation.</p>
+      <div class="card">
+        <div class="doc-links-grid" id="doc-links"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="label">Documented By</div>
+  <div class="name">MD Eesha</div>
+  <div class="role">Sr. Software Engineer</div>
+</footer>
+
+<script>
+const PRIORITY_LABEL = {
+  must: "Core",
+  important: "Level Up",
+};
+const PRIORITY_CLASS = {
+  must: "badge-must",
+  important: "badge-important",
+};
+const PHASE_LABEL = {
+  1: "HTML Topics",
+};
+
+const DATA = {
+  1: [
+    { n:1, slug:"topic-doc-structure", name:"Document Structure", icon:"🏗️", what:"The skeleton of every HTML page", use:"Set up doctype, html, head, and body correctly", learn:"DOCTYPE, html/head/body, lang attribute, void elements, nesting rules, standards vs quirks mode, W3C validation", priority:"must", docName:"HTML Basics — MDN", docUrl:"https://developer.mozilla.org/en-US/docs/Web/HTML/Basics",
+      desc:"Every HTML document starts with the same fixed skeleton: a <code>&lt;!DOCTYPE html&gt;</code> declaration, followed by an <code>&lt;html&gt;</code> element containing exactly one <code>&lt;head&gt;</code> and one <code>&lt;body&gt;</code>. The doctype tells the browser to render in standards mode instead of a legacy quirks mode that behaves inconsistently. The <code>&lt;head&gt;</code> holds metadata and resource links that never render directly on the page, while the <code>&lt;body&gt;</code> holds everything a visitor actually sees. Every other topic in this guide happens inside that <code>&lt;body&gt;</code> tag, which is why getting this skeleton right is the very first thing to learn.",
+      useWhen:"Every single HTML file needs this exact skeleton — there is no scenario where you skip the doctype or the head/body split. The only real judgment call is what belongs in the head (metadata, links, scripts) versus what belongs in the body (content), and keeping that line clean as a page grows.",
+      steps:["Start every file with <code>&lt;!DOCTYPE html&gt;</code> on the very first line to trigger standards mode.","Wrap everything in <code>&lt;html lang=\"en\"&gt;</code> so assistive tech and translators know the page language.","Put metadata, the <code>&lt;title&gt;</code>, and resource links inside <code>&lt;head&gt;</code> — nothing in there renders visibly.","Put all visible content inside <code>&lt;body&gt;</code>, and only inside <code>&lt;body&gt;</code>.","Keep tags properly nested and closed — a mismatched tag can silently break layout further down the page.","Run the page through the W3C Markup Validator or your browser's devtools to catch structural mistakes early."],
+      diagram:{ top:{name:"&lt;!DOCTYPE html&gt;",sub:"sets rendering mode"}, left:[{name:"&lt;head&gt;",sub:"metadata, not rendered"}], right:[{name:"&lt;body&gt;",sub:"everything visible"}], bottom:{name:"Rendered Page",sub:"what the user sees"}, coreSub:"root element", coreLabel:"&lt;html&gt;",
+        caption:"The doctype sets the rendering mode before anything else loads; the head and body split metadata from visible content; the browser turns that split into the page a visitor actually sees." } },
+
+    { n:2, slug:"topic-semantic", name:"Semantic Elements", icon:"🏷️", what:"Tags that describe meaning, not just layout", use:"Structure a page so it's understood, not just displayed", learn:"header/nav/main, article vs section, aside, footer, landmark roles, div vs semantic tag, accessibility tree", priority:"must", docName:"Semantics in HTML — MDN Glossary", docUrl:"https://developer.mozilla.org/en-US/docs/Glossary/Semantics#semantics_in_html",
+      desc:"Semantic elements like <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;aside&gt;</code>, and <code>&lt;footer&gt;</code> describe what a block of content <i>is</i>, not just how it looks. A <code>&lt;div&gt;</code> tells the browser, screen readers, and search engines nothing about its contents, while a <code>&lt;nav&gt;</code> announces \"this is navigation\" to all of them at once. Swapping generic <code>&lt;div&gt;</code>s for the right semantic tag costs nothing in styling — CSS still targets them exactly the same way — but it adds meaning that machines and assistive technology can actually act on. This is the difference between markup that merely looks right and markup that is genuinely understood.",
+      useWhen:"Reach for a semantic element whenever one accurately describes the role of a block of content — page-level navigation, a standalone article, a sidebar of related links. Fall back to a plain <code>&lt;div&gt;</code> or <code>&lt;span&gt;</code> only when nothing semantic actually fits, such as a purely presentational wrapper that exists only as a styling hook.",
+      steps:["Audit every <code>&lt;div&gt;</code> on a page and ask what role it's actually playing.","Replace navigation wrappers with <code>&lt;nav&gt;</code> and the primary content region with one <code>&lt;main&gt;</code> per page.","Use <code>&lt;article&gt;</code> for self-contained, independently distributable content like a blog post or a product card.","Use <code>&lt;section&gt;</code> to group thematically related content, ideally under its own heading.","Wrap secondary content in <code>&lt;aside&gt;</code> and closing information in <code>&lt;footer&gt;</code>.","Check the browser devtools' accessibility tree to confirm the landmarks actually show up as expected."],
+      diagram:{ left:[{name:"&lt;header&gt;",sub:"site/page banner"},{name:"&lt;nav&gt;",sub:"site navigation"}], right:[{name:"&lt;main&gt; / &lt;article&gt;",sub:"primary content"},{name:"&lt;aside&gt; / &lt;footer&gt;",sub:"secondary & closing"}], coreSub:"structural meaning", coreLabel:"Semantic Layout",
+        caption:"Each semantic tag on either side announces its own role directly — screen readers, search engines, and other developers all read the same signal without any extra markup." } },
+
+    { n:3, slug:"topic-text", name:"Headings & Text Fundamentals", icon:"📝", what:"Headings, paragraphs, and inline emphasis", use:"Structure and format the words on a page", learn:"heading hierarchy, paragraphs, strong vs b, em vs i, blockquote, line breaks vs paragraphs, document outline", priority:"must", docName:"HTML Text Fundamentals — MDN Learn", docUrl:"https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/HTML_text_fundamentals",
+      desc:"Headings (<code>&lt;h1&gt;</code> through <code>&lt;h6&gt;</code>) and paragraphs (<code>&lt;p&gt;</code>) form the outline of every piece of written content on the web, while inline elements like <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, and <code>&lt;blockquote&gt;</code> add meaning to specific words or passages within it. Headings aren't just bigger text — browsers, screen readers, and search engines use their nesting to build a navigable outline of the page. <code>&lt;strong&gt;</code> and <code>&lt;em&gt;</code> carry semantic weight (importance and stress emphasis) that a purely visual bold or italic doesn't, even though they render the same by default. Getting this right means someone skimming with a screen reader's heading list gets the same structure as someone visually scanning the page.",
+      useWhen:"Use headings to build a logical outline anywhere content has sections worth navigating to directly — articles, docs, product pages. Reach for <code>&lt;strong&gt;</code>/<code>&lt;em&gt;</code> when a word genuinely needs semantic emphasis, and plain CSS styling when you just want something to look bold or italic without implying importance.",
+      steps:["Pick exactly one <code>&lt;h1&gt;</code> per page that describes the page's overall purpose.","Nest <code>&lt;h2&gt;</code> through <code>&lt;h6&gt;</code> without skipping levels, the way you'd nest an outline.","Wrap actual prose in <code>&lt;p&gt;</code> tags instead of faking paragraph breaks with repeated <code>&lt;br&gt;</code>.","Use <code>&lt;strong&gt;</code> for genuine importance and <code>&lt;em&gt;</code> for stress emphasis — not just for visual bold/italic.","Wrap quoted material in <code>&lt;blockquote&gt;</code>, with a <code>cite</code> attribute when the source is known.","Run a heading-outline checker (or your browser's accessibility tree) to confirm the levels read logically top to bottom."],
+      diagram:{ left:[{name:"&lt;h1&gt;–&lt;h6&gt;",sub:"nested heading hierarchy"}], right:[{name:"&lt;strong&gt; / &lt;em&gt;",sub:"semantic emphasis"},{name:"&lt;blockquote&gt;",sub:"quoted material"}], bottom:{name:"Document Outline",sub:"generated from headings"}, coreSub:"structuring words", coreLabel:"Text Fundamentals",
+        caption:"Heading levels build the page's outline on their own; inline tags like strong and em layer meaning onto specific words within the paragraphs sitting between them." } },
+
+    { n:4, slug:"topic-links", name:"Links & Navigation", icon:"🔗", what:"The anchor tag and everything it can point to", use:"Connect pages to each other and to the rest of the web", learn:"href, relative vs absolute paths, target=_blank, rel attribute, anchor/fragment links, link text accessibility, download attribute", priority:"must", docName:"The Anchor Element — MDN", docUrl:"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a",
+      desc:"The <code>&lt;a&gt;</code> element with an <code>href</code> attribute is what turns the web into a web — every navigable connection between pages, sections, and resources runs through it. A relative URL points somewhere on the same site, an absolute URL points anywhere else, and a fragment (<code>#section</code>) jumps to an element with a matching <code>id</code> on the current page. Opening a link in a new tab with <code>target=\"_blank\"</code> introduces a security and performance quirk that <code>rel=\"noopener noreferrer\"</code> exists specifically to close. The link's visible text matters as much as its destination — screen reader users often navigate a page by pulling up a list of link text alone.",
+      useWhen:"Use relative paths for anything on your own site so links don't break across environments, and absolute URLs only for genuinely external destinations. Reach for <code>target=\"_blank\"</code> sparingly — mainly for links that would lose the user's place, like external documentation — and always pair it with <code>rel=\"noopener noreferrer\"</code>.",
+      steps:["Use relative paths (<code>/about</code>, <code>../resources</code>) for internal links and full absolute URLs only for external sites.","Add <code>rel=\"noopener noreferrer\"</code> to every link that uses <code>target=\"_blank\"</code>.","Write descriptive link text (\"read the pricing guide\") instead of \"click here\" or a bare URL.","Add an <code>id</code> to headings or sections you want to link to directly, then point a fragment link (<code>#id</code>) at it.","Use the <code>download</code> attribute when a link should save a file instead of navigating to it.","Periodically check that internal links still resolve — renamed or moved pages leave silent 404s behind."],
+      diagram:{ left:[{name:"Relative URL",sub:"same-site path"},{name:"Absolute URL",sub:"external site"}], right:[{name:"target=_blank + rel",sub:"new tab, secured"}], bottom:{name:"#fragment",sub:"jumps within the page"}, coreSub:"navigation", coreLabel:"&lt;a href&gt;",
+        caption:"Every link is either pointing somewhere else on the same site, out to an external destination with its own tab-safety concerns, or down to a fragment within the current page." } },
+
+    { n:5, slug:"topic-media", name:"Images & Media", icon:"🖼️", what:"Images, video, audio, and embedded content", use:"Show pictures and play media without a heavyweight player", learn:"img alt text, srcset/sizes, picture element, video/audio elements, iframe embedding, lazy loading, decorative vs meaningful images", priority:"important", docName:"Multimedia and Embedding — MDN Learn", docUrl:"https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding",
+      desc:"HTML has native elements for every common media need: <code>&lt;img&gt;</code> for still images, <code>&lt;picture&gt;</code> with <code>srcset</code> for responsive image selection, <code>&lt;video&gt;</code> and <code>&lt;audio&gt;</code> for native playback with browser-built controls, and <code>&lt;iframe&gt;</code> for embedding another page's content wholesale. The <code>alt</code> attribute on an image is not optional decoration — it's the text a screen reader announces and the fallback shown if the image fails to load, and an empty <code>alt=\"\"</code> is the correct choice for purely decorative images that carry no information. Modern browsers can also defer loading offscreen media entirely with <code>loading=\"lazy\"</code>, which meaningfully speeds up long pages without any JavaScript.",
+      useWhen:"Reach for <code>&lt;picture&gt;</code>/<code>srcset</code> the moment an image needs to look sharp across a real range of screen widths, not just on desktop. Use native <code>&lt;video&gt;</code>/<code>&lt;audio&gt;</code> instead of a third-party embed whenever you control the media file directly — it's lighter and more accessible than almost any JS player.",
+      steps:["Give every meaningful image a real, descriptive <code>alt</code> attribute; use <code>alt=\"\"</code> for purely decorative images.","Use <code>&lt;picture&gt;</code> with <code>srcset</code>/<code>sizes</code> so the browser picks the right image size for the viewport.","Use native <code>&lt;video&gt;</code>/<code>&lt;audio&gt;</code> with the <code>controls</code> attribute instead of embedding a heavy third-party player when you own the file.","Add <code>loading=\"lazy\"</code> to images below the fold so they don't compete with above-the-fold content for bandwidth.","Give every <code>&lt;iframe&gt;</code> a descriptive <code>title</code> attribute so assistive tech can announce what it embeds.","Compress and correctly size media files before shipping them — HTML can defer loading, but it can't shrink an oversized file."],
+      diagram:{ top:{name:"&lt;picture&gt; + srcset",sub:"responsive selection"}, left:[{name:"alt text",sub:"accessible description"}], right:[{name:"&lt;video&gt; / &lt;audio&gt;",sub:"native playback"},{name:"&lt;iframe&gt;",sub:"external embeds"}], coreSub:"images & media", coreLabel:"&lt;img&gt; / media",
+        caption:"A responsive source feeds the right image into place, alt text is the accessible fallback on the other side, and video/audio or an iframe cover everything beyond a still picture." } },
+
+    { n:6, slug:"topic-forms", name:"Forms & Inputs", icon:"📋", what:"Collecting user input", use:"Build sign-ups, search boxes, checkouts, and settings pages", learn:"form action/method, label for/id, input types, required & pattern validation, fieldset/legend, select & textarea, button vs input type=submit", priority:"must", docName:"HTML Forms — MDN Learn", docUrl:"https://developer.mozilla.org/en-US/docs/Learn/Forms",
+      desc:"A <code>&lt;form&gt;</code> groups a set of controls — <code>&lt;input&gt;</code>, <code>&lt;select&gt;</code>, <code>&lt;textarea&gt;</code>, <code>&lt;button&gt;</code> — and defines where their values go when submitted via its <code>action</code> and <code>method</code> attributes. Every field needs a paired <code>&lt;label&gt;</code>, either wrapping it or linked by matching <code>for</code>/<code>id</code>, so both mouse users (who can click the label to focus the field) and screen reader users (who hear the label announced with the field) know what they're filling in. Choosing the right <code>input</code> type — <code>email</code>, <code>tel</code>, <code>number</code>, <code>date</code> — gets you the right mobile keyboard and a first line of built-in validation for free, before a single line of JavaScript runs. Attributes like <code>required</code> and <code>pattern</code> block obviously invalid submissions at the browser level, which is worth having even when server-side validation is the real source of truth.",
+      useWhen:"Use native input types and validation attributes as the first line of defense on any form — they cost nothing and work without JavaScript. Reach for <code>&lt;fieldset&gt;</code>/<code>&lt;legend&gt;</code> whenever a form has more than one logical group of related fields, like separate shipping and billing sections.",
+      steps:["Wrap the whole control group in <code>&lt;form&gt;</code> with an <code>action</code> and <code>method</code> that match what the backend expects.","Pair every field with a <code>&lt;label&gt;</code>, using matching <code>for</code>/<code>id</code> or by wrapping the input directly.","Choose the input type that matches the data — <code>email</code>, <code>tel</code>, <code>number</code>, <code>date</code> — not a generic <code>text</code> for everything.","Add <code>required</code>, <code>pattern</code>, <code>min</code>, and <code>max</code> for built-in browser validation before any JavaScript runs.","Group related fields with <code>&lt;fieldset&gt;</code> and a descriptive <code>&lt;legend&gt;</code>.","Test the entire form using only the keyboard, and again with a screen reader, before calling it done."],
+      diagram:{ top:{name:"action + method",sub:"where/how data is sent"}, left:[{name:"&lt;label&gt; + &lt;input&gt;",sub:"field + its label"},{name:"&lt;select&gt; / &lt;textarea&gt;",sub:"other controls"}], right:[{name:"required / pattern",sub:"built-in validation"},{name:"&lt;button type=submit&gt;",sub:"submits the form"}], coreSub:"collecting input", coreLabel:"&lt;form&gt;",
+        caption:"The action/method pair decides where a submission goes; every field on the left needs a label, and the validation and submit control on the right decide whether — and how — it gets there." } },
+
+    { n:7, slug:"topic-tables", name:"Tables", icon:"📊", what:"Genuinely tabular data", use:"Present rows and columns of related data", learn:"table/thead/tbody/tfoot, th scope, caption element, colspan/rowspan, responsive tables, tabular vs layout tables", priority:"important", docName:"HTML Tables — MDN Learn", docUrl:"https://developer.mozilla.org/en-US/docs/Learn/HTML/Tables",
+      desc:"A <code>&lt;table&gt;</code> is for data that genuinely has rows and columns — pricing plans, schedules, comparison charts — not for laying out a page, which is a role CSS Grid and Flexbox have fully taken over. <code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code>, and <code>&lt;tfoot&gt;</code> group rows by their role, while <code>&lt;th scope=\"col\"&gt;</code> or <code>&lt;th scope=\"row\"&gt;</code> marks header cells so a screen reader can announce which column or row a data cell belongs to — something a plain styled <code>&lt;td&gt;</code> can never do. A <code>&lt;caption&gt;</code> gives the whole table a name that's announced before its contents, and <code>colspan</code>/<code>rowspan</code> let a single cell span multiple columns or rows when the data genuinely calls for it.",
+      useWhen:"Reach for a table only when the content is actually tabular — if you're using one purely to align things visually, that's a layout job for CSS instead. Once the data is genuinely tabular, don't skip the semantic structure (<code>th scope</code>, <code>caption</code>) just because it renders the same either way — the difference only shows up for assistive technology.",
+      steps:["Use <code>&lt;table&gt;</code> only for data that actually has rows and columns — never for page layout.","Add a <code>&lt;caption&gt;</code> describing what the table holds, right after the opening <code>&lt;table&gt;</code> tag.","Mark header cells with <code>&lt;th scope=\"col\"&gt;</code> or <code>&lt;th scope=\"row\"&gt;</code> instead of a styled <code>&lt;td&gt;</code>.","Group rows into <code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code>, and <code>&lt;tfoot&gt;</code> by their role.","Wrap wide tables in a horizontally-scrollable container so they don't break the page layout on small screens.","Avoid nesting a table inside another table — restructure the data instead of stacking markup."],
+      diagram:{ top:{name:"&lt;caption&gt;",sub:"describes the table"}, left:[{name:"&lt;thead&gt;",sub:"column headers"}], right:[{name:"&lt;tbody&gt;",sub:"data rows"},{name:"&lt;tfoot&gt;",sub:"totals/summary"}], coreSub:"rows & columns", coreLabel:"&lt;table&gt;",
+        caption:"A caption names the table before a screen reader ever reaches its contents; the header row above feeds meaning into every data row and summary row below it." } },
+
+    { n:8, slug:"topic-lists", name:"Lists", icon:"📃", what:"Ordered, unordered, and description lists", use:"Group related items, steps, or terms", learn:"ul vs ol, li nesting, description lists (dl/dt/dd), list-style CSS vs semantics, ordered vs unordered meaning", priority:"must", docName:"The Unordered List Element — MDN", docUrl:"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul",
+      desc:"HTML has three list types, and each one signals something specific: <code>&lt;ul&gt;</code> for a group where order doesn't matter, <code>&lt;ol&gt;</code> for a sequence where it does (steps, rankings), and <code>&lt;dl&gt;</code> paired with <code>&lt;dt&gt;</code>/<code>&lt;dd&gt;</code> for term-definition pairs like a glossary or a key-value spec sheet. Every item inside a <code>&lt;ul&gt;</code> or <code>&lt;ol&gt;</code> must be an <code>&lt;li&gt;</code> — there's no valid way to fake a bullet with a dash character and still get real list semantics. Lists can nest a full <code>&lt;ul&gt;</code> or <code>&lt;ol&gt;</code> inside a parent <code>&lt;li&gt;</code> for sub-items, and CSS's <code>list-style</code> can restyle or hide bullets/numbers without removing the underlying list semantics a screen reader still announces.",
+      useWhen:"Choose <code>&lt;ol&gt;</code> the moment the order of items actually carries meaning — instructions, rankings, a recipe's steps — and <code>&lt;ul&gt;</code> for everything else that's just a group. Reach for <code>&lt;dl&gt;</code> specifically for paired data like a glossary, an FAQ, or metadata key/value pairs, rather than forcing that shape into a regular list.",
+      steps:["Use <code>&lt;ul&gt;</code> for unordered groups and <code>&lt;ol&gt;</code> whenever the sequence itself matters.","Put every list entry inside an <code>&lt;li&gt;</code> — never fake bullets with plain text characters.","Use <code>&lt;dl&gt;</code>/<code>&lt;dt&gt;</code>/<code>&lt;dd&gt;</code> for term-definition pairs like a glossary or spec sheet.","Nest a complete <code>&lt;ul&gt;</code> or <code>&lt;ol&gt;</code> inside a parent <code>&lt;li&gt;</code> for sub-steps or sub-groups.","Restyle bullets or numbers with the CSS <code>list-style</code> property instead of extra markup.","Keep the semantic list even when hiding bullets visually — the screen reader announcement doesn't depend on how it looks."],
+      diagram:{ left:[{name:"&lt;li&gt;",sub:"each list item"}], right:[{name:"&lt;dl&gt;/&lt;dt&gt;/&lt;dd&gt;",sub:"term-definition pairs"}], bottom:{name:"Nested &lt;ul&gt;/&lt;ol&gt;",sub:"sub-list inside an &lt;li&gt;"}, coreSub:"grouping items", coreLabel:"&lt;ul&gt; / &lt;ol&gt;",
+        caption:"Every list item feeds into the same underlying list semantics, whether it sits inside a simple unordered/ordered list, a description list of term-definition pairs, or nested one level deeper." } },
+
+    { n:9, slug:"topic-a11y", name:"Accessibility (ARIA & alt text)", icon:"♿", what:"Making pages usable by everyone, including assistive tech", use:"Ensure screen readers, keyboards, and other AT can use the page", learn:"alt text, ARIA roles, labels & aria-label, focus order & tabindex, aria-live regions, semantic-first principle, screen reader testing", priority:"important", docName:"ARIA — MDN", docUrl:"https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA",
+      desc:"Accessibility in HTML is mostly the payoff of everything else in this guide done correctly: real semantic elements, real <code>alt</code> text, real <code>&lt;label&gt;</code>s. ARIA attributes — <code>role</code>, <code>aria-label</code>, <code>aria-expanded</code>, <code>aria-live</code> — exist to fill gaps native HTML doesn't cover, most often on custom interactive widgets built from generic elements. The golden rule, sometimes called \"no ARIA is better than bad ARIA,\" is to reach for a native semantic element first and only add ARIA when nothing built-in expresses the same thing. Keyboard focus order matters just as much as markup: if the visual tab order doesn't match the DOM order, keyboard and screen reader users experience a confusing, scrambled page even when the markup looks fine visually.",
+      useWhen:"Reach for ARIA specifically when you're building a custom widget — a tab panel, a combobox, a modal — out of generic elements that have no native equivalent. Skip ARIA entirely, and just use the right semantic tag, whenever a native element already does the job; a native <code>&lt;button&gt;</code> beats a <code>&lt;div role=\"button\"&gt;</code> every time.",
+      steps:["Reach for a native semantic element before ever adding an ARIA role to a generic <code>&lt;div&gt;</code> or <code>&lt;span&gt;</code>.","Give every image a real <code>alt</code> and every form control a real, associated <code>&lt;label&gt;</code>.","Make sure the visual tab order matches the DOM order — don't reorder purely with CSS in a way that breaks keyboard flow.","Use <code>aria-*</code> attributes (<code>aria-label</code>, <code>aria-live</code>, <code>aria-expanded</code>) only to fill gaps native HTML genuinely doesn't cover.","Test with a real screen reader — VoiceOver or NVDA — not just an automated linter.","Run an automated audit (axe, Lighthouse) as a baseline floor, never as proof the page is actually accessible."],
+      diagram:{ left:[{name:"Semantic tags",sub:"native roles first"},{name:"alt / label text",sub:"text alternatives"}], right:[{name:"ARIA roles/attrs",sub:"fills the gaps"},{name:"Focus order",sub:"keyboard navigation"}], bottom:{name:"Screen Reader / AT",sub:"what actually consumes it"}, coreSub:"usable by everyone", coreLabel:"Accessible HTML",
+        caption:"Native semantics and real text alternatives do most of the work on the left; ARIA and focus order patch the remaining gaps on the right — and assistive technology is the audience for all of it." } },
+
+    { n:10, slug:"topic-meta-seo", name:"Metadata & SEO Basics", icon:"🔍", what:"Everything inside &lt;head&gt; that shapes discovery", use:"Control how a page appears in tabs, search results, and shared links", learn:"meta charset, viewport meta, title & meta description, Open Graph tags, canonical links, favicon, structured data basics", priority:"important", docName:"The Meta Element — MDN", docUrl:"https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta",
+      desc:"The <code>&lt;head&gt;</code> carries a page's metadata — nothing in it renders directly, but almost all of it shapes how the page shows up elsewhere. <code>&lt;meta charset=\"UTF-8\"&gt;</code> sets the character encoding, and a viewport <code>&lt;meta&gt;</code> tag tells mobile browsers to render at the device's actual width instead of a zoomed-out desktop layout. The <code>&lt;title&gt;</code> and <code>&lt;meta name=\"description\"&gt;</code> become the clickable headline and snippet in search results, while Open Graph tags control the preview card shown when a link is shared on social platforms or messaging apps. A <code>&lt;link rel=\"canonical\"&gt;</code> tells search engines which URL is the authoritative one when the same content is reachable at more than one address.",
+      useWhen:"Treat charset and viewport meta as non-negotiable on every page — skipping either causes real, visible rendering bugs, not just missed SEO points. Add Open Graph tags and a canonical link the moment a page is meant to be shared or is reachable from more than one URL (with and without a trailing slash, tracking parameters, etc.).",
+      steps:["Set <code>&lt;meta charset=\"UTF-8\"&gt;</code> as the very first thing inside <code>&lt;head&gt;</code>.","Add a responsive <code>&lt;meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"&gt;</code>.","Write a unique, descriptive <code>&lt;title&gt;</code> and <code>&lt;meta name=\"description\"&gt;</code> for every page.","Add Open Graph and Twitter Card tags so shared links render a proper preview card.","Add a <code>&lt;link rel=\"canonical\"&gt;</code> whenever the same content is reachable from more than one URL.","Verify with a social-preview debugger and a search-console URL inspection before calling metadata done."],
+      diagram:{ top:{name:"&lt;title&gt;",sub:"tab title & search result title"}, left:[{name:"&lt;meta charset&gt;",sub:"character encoding"},{name:"&lt;meta viewport&gt;",sub:"responsive scaling"}], right:[{name:"&lt;meta description&gt;",sub:"search snippet"},{name:"Open Graph tags",sub:"social preview cards"}], bottom:{name:"&lt;link rel=canonical&gt;",sub:"preferred URL for duplicates"}, coreSub:"page metadata", coreLabel:"&lt;head&gt;",
+        caption:"The title anchors both the browser tab and the search result; charset and viewport keep rendering correct; description and Open Graph tags shape how the link looks everywhere it's shared or indexed." } },
+  ],
+};
+
+/* ---------- Generic per-topic architecture diagram renderer ---------- */
+function stackBoxes(items, x, w, centerY, boxH, gap) {
+  const n = items.length;
+  if (!n) return [];
+  const totalH = n * boxH + (n - 1) * gap;
+  const startY = centerY - totalH / 2;
+  return items.map((it, i) => {
+    const y = startY + i * (boxH + gap);
+    return { ...it, x, y, w, h: boxH, cy: y + boxH / 2 };
+  });
+}
+
+function svcDiagramSVG(svc) {
+  const cfg = svc.diagram;
+  const W = 760, H = 420;
+  const coreW = 200, coreH = 90, coreCX = 380, coreCY = 210;
+  const coreX = coreCX - coreW / 2, coreY = coreCY - coreH / 2;
+  const leftX = 20, leftW = 170, rightX = 570, rightW = 170, boxH = 60, gap = 18;
+  const uid = svc.slug;
+
+  const lefts = stackBoxes(cfg.left || [], leftX, leftW, coreCY, boxH, gap);
+  const rights = stackBoxes(cfg.right || [], rightX, rightW, coreCY, boxH, gap);
+  const label = cfg.coreLabel || svc.name;
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${cfg.caption.replace(/"/g,"'")}">`;
+  svg += `<defs>
+    <marker id="m-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)"/></marker>
+    <marker id="ma-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)"/></marker>
+  </defs>`;
+
+  if (cfg.top) {
+    svg += `<rect class="d-node-navy" x="${coreX}" y="24" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title-light" x="${coreX+14}" y="47">${cfg.top.name}</text>
+      <text class="d-sub-light" x="${coreX+14}" y="62">${cfg.top.sub||""}</text>
+      <path class="d-arrow" d="M${coreCX} 70 L${coreCX} ${coreY-2}" marker-end="url(#m-${uid})"/>`;
+  }
+  if (cfg.bottom) {
+    svg += `<rect class="d-node" x="${coreX}" y="350" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title" x="${coreX+14}" y="373">${cfg.bottom.name}</text>
+      <text class="d-sub" x="${coreX+14}" y="388">${cfg.bottom.sub||""}</text>
+      <path class="d-arrow-accent" d="M${coreCX} ${coreY+coreH+2} L${coreCX} 348" marker-end="url(#ma-${uid})"/>`;
+  }
+
+  svg += `<rect class="d-node-accent" x="${coreX}" y="${coreY}" width="${coreW}" height="${coreH}" rx="12"/>
+    <text class="d-title" x="${coreCX}" y="${coreCY-6}" text-anchor="middle">${label}</text>
+    <text class="d-sub" x="${coreCX}" y="${coreCY+14}" text-anchor="middle">${cfg.coreSub||""}</text>`;
+
+  lefts.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${b.x+b.w} ${b.cy} L${coreX-2} ${coreCY}" marker-end="url(#m-${uid})"/>`;
+  });
+  rights.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${coreX+coreW+2} ${coreCY} L${b.x} ${b.cy}" marker-end="url(#m-${uid})"/>`;
+  });
+
+  svg += `</svg>`;
+  return svg;
+}
+
+function renderServicePanels() {
+  const host = document.getElementById("service-panels");
+  const html = [];
+  Object.keys(DATA).forEach(phaseKey => {
+    DATA[phaseKey].forEach(item => {
+      html.push(`
+        <section class="topic-panel" id="${item.slug}" hidden>
+          <div class="panel-kicker">${PHASE_LABEL[phaseKey]}</div>
+          <div class="panel-head">
+            <div class="panel-icon">${item.icon}</div>
+            <div>
+              <div class="svc-name-row"><h2>${String(item.n).padStart(2,"0")} · ${item.name}</h2><span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span></div>
+              <p class="panel-tagline">${item.what} — ${item.use}</p>
+            </div>
+          </div>
+          <p class="svc-desc" style="margin-top:20px;">${item.desc}</p>
+
+          <div class="use-callout">
+            <b class="callout-title">Where &amp; when to use it</b>
+            ${item.useWhen}
+          </div>
+
+          <div class="diagram-box">
+            <div class="d-chrome">Diagram · ${item.name}</div>
+            <div class="d-body">${svcDiagramSVG(item)}</div>
+            <p class="d-caption">${item.diagram.caption}</p>
+          </div>
+
+          <h3 class="subhead">How to implement it</h3>
+          <ol class="steps-list">${item.steps.map(s => `<li>${s}</li>`).join("")}</ol>
+
+          <div class="svc-learn">
+            <div class="flabel">What you should learn</div>
+            <div class="tag-list">${item.learn.split(",").map(t => `<span class="tag">${t.trim()}</span>`).join("")}</div>
+          </div>
+
+          <div class="svc-foot">
+            <a class="back-home" style="margin:0;" href="#overview">← All topics</a>
+            <a class="doc-link" href="${item.docUrl}" target="_blank" rel="noopener">${item.docName} →</a>
+          </div>
+        </section>
+      `);
+    });
+  });
+  host.innerHTML = html.join("");
+}
+
+function renderSidebarNav() {
+  Object.keys(DATA).forEach(phaseKey => {
+    const group = document.getElementById("nav-topics");
+    const links = DATA[phaseKey].map(item =>
+      `<a class="nav-link" href="#${item.slug}"><span class="nav-icon">${item.icon}</span> ${item.name}</a>`
+    ).join("");
+    group.insertAdjacentHTML("beforeend", links);
+  });
+}
+
+function renderServiceIndex() {
+  const host = document.getElementById("svc-index");
+  const html = Object.keys(DATA).map(phaseKey => `
+    <div class="svc-index-group">
+      ${DATA[phaseKey].map(item => `
+        <a class="svc-index-item" href="#${item.slug}">
+          <span class="svc-index-icon">${item.icon}</span>
+          <span class="svc-index-text"><div class="n">${item.name}</div><div class="t">${item.what} — ${item.use}</div></span>
+          <span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span>
+        </a>
+      `).join("")}
+    </div>
+  `).join("");
+  host.innerHTML = html;
+}
+
+/* ---------- Router: show exactly one topic panel at a time ---------- */
+function showTopic(id) {
+  document.querySelectorAll(".topic-panel").forEach(p => { p.hidden = (p.id !== id); });
+  document.querySelectorAll(".nav-link").forEach(a => {
+    a.classList.toggle("active", a.getAttribute("href") === "#" + id);
+  });
+  window.scrollTo(0, 0);
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("sidebarScrim").classList.remove("show");
+}
+
+function routeFromHash() {
+  const id = (location.hash || "#overview").slice(1);
+  showTopic(document.getElementById(id) ? id : "overview");
+}
+
+renderServicePanels();
+renderSidebarNav();
+renderServiceIndex();
+window.addEventListener("hashchange", routeFromHash);
+routeFromHash();
+
+/* ---------- Mobile sidebar toggle ---------- */
+const menuBtn = document.getElementById("menuBtn");
+const sidebarEl = document.getElementById("sidebar");
+const scrimEl = document.getElementById("sidebarScrim");
+if (menuBtn) {
+  menuBtn.addEventListener("click", () => {
+    sidebarEl.classList.toggle("open");
+    scrimEl.classList.toggle("show");
+  });
+}
+scrimEl.addEventListener("click", () => {
+  sidebarEl.classList.remove("open");
+  scrimEl.classList.remove("show");
+});
+
+/* ---------- Summary + references ---------- */
+const sequence = ["Document Structure","Semantic Elements","Headings & Text Fundamentals","Links & Navigation","Images & Media","Forms & Inputs","Tables","Lists","Accessibility (ARIA & alt text)","Metadata & SEO Basics"];
+document.getElementById("sequence-flow").innerHTML = sequence.map(s => `<span class="seq-step">${s}</span>`).join('<span class="seq-arrow">→</span>');
+
+const docLinks = [
+  ["Document Structure","https://developer.mozilla.org/en-US/docs/Web/HTML/Basics"],
+  ["Semantic Elements","https://developer.mozilla.org/en-US/docs/Glossary/Semantics#semantics_in_html"],
+  ["Headings & Text Fundamentals","https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/HTML_text_fundamentals"],
+  ["Links & Navigation","https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a"],
+  ["Images & Media","https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding"],
+  ["Forms & Inputs","https://developer.mozilla.org/en-US/docs/Learn/Forms"],
+  ["Tables","https://developer.mozilla.org/en-US/docs/Learn/HTML/Tables"],
+  ["Lists","https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul"],
+  ["Accessibility (ARIA & alt text)","https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA"],
+  ["Metadata & SEO Basics","https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta"],
+];
+document.getElementById("doc-links").innerHTML = docLinks.map(([n,u]) => `<div><b>${n}</b><br>${u}</div>`).join("");
+</script>
+
+</body>
+</html>

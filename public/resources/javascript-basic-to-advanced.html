@@ -183,6 +183,23 @@ code.inline {
   font-weight: 700; font-size: 13px;
   flex-shrink: 0;
 }
+.back-home {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 8px 18px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+.back-home:hover { color: var(--ink); background: var(--accent-tint); border-color: var(--accent); }
+
 .nav-group { margin-bottom: 6px; }
 .nav-group-label {
   font-family: "JetBrains Mono", monospace;
@@ -664,13 +681,14 @@ footer.doc-footer .role { font-size: 12.5px; color: var(--ink-soft); margin-top:
 <div class="topbar">
   <button class="menu-btn" id="menuBtn" aria-label="Open navigation">☰</button>
   <div class="brand">JS<span>::</span>DOCS</div>
-  <span style="width:36px;"></span>
+  <a class="menu-btn" href="/guides" aria-label="Back to Guides" style="display:flex;align-items:center;justify-content:center;text-decoration:none;">⌂</a>
 </div>
 <div class="sidebar-scrim" id="sidebarScrim"></div>
 
 <div class="shell">
   <aside class="sidebar" id="sidebar">
     <div class="brand"><span class="badge-js">JS</span> JavaScript Docs</div>
+    <a class="back-home" href="/guides">← Back to Guides</a>
 
     <div class="nav-group">
       <div class="nav-group-label">Start Here</div>

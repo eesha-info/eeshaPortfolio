@@ -19,12 +19,12 @@ export async function generateMetadata({
   const tech = getTechBySlug(slug);
   if (!tech) return {};
   return {
-    title: `${tech.name} | Tech Stack | Mohammad Eesha`,
+    title: `${tech.name} | Guides | Mohammad Eesha`,
     description: tech.description,
   };
 }
 
-export default async function TechDetailPage({
+export default async function GuideDetailPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -56,8 +56,8 @@ export default async function TechDetailPage({
         />
 
         <div className="max-w-4xl mx-auto px-6 relative z-10">
-          <Link href="/tech-stack" className="back-link mb-8 inline-flex">
-            ← Back to Tech Stack
+          <Link href="/guides" className="back-link mb-8 inline-flex">
+            ← Back to Guides
           </Link>
 
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6 animate-fade-in-up">

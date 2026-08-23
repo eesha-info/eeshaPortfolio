@@ -6,12 +6,12 @@ import TechStackGrid from "@/app/components/TechStackGrid";
 import { techStack } from "@/app/lib/techStack";
 
 export const metadata: Metadata = {
-  title: "Tech Stack & Learning Resources | Mohammad Eesha",
+  title: "Guides | Mohammad Eesha",
   description:
-    "A guided tour of the languages, databases, and cloud tools I work with — with quick explainers and links to official documentation.",
+    "In-depth guides on the languages, databases, and cloud tools I work with — with quick explainers and links to official documentation.",
 };
 
-export default function TechStackPage() {
+export default function GuidesPage() {
   return (
     <>
       <Navbar />
@@ -52,13 +52,13 @@ export default function TechStackPage() {
               animationFillMode: "forwards",
             }}
           >
-            📚 Learning Resources
+            📚 Guides
           </span>
           <h1
             className="text-4xl md:text-6xl font-bold mb-5 animate-fade-in-up delay-100"
             style={{ opacity: 0, animationFillMode: "forwards", lineHeight: 1.15 }}
           >
-            Explore the <span className="gradient-text">Tech Stack</span>
+            Explore the <span className="gradient-text">Guides</span>
           </h1>
           <p
             className="text-base md:text-lg animate-fade-in-up delay-200"

@@ -125,6 +125,14 @@ export default function Home() {
             <a href="#contact" className="btn-outline">
               Get In Touch
             </a>
+            <a
+              href={socialLinks.resume}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-outline"
+            >
+              📄 Download CV
+            </a>
           </div>
 
           {/* Stats */}

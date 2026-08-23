@@ -49,21 +49,12 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
-            href="/tech-stack"
+            href="/guides"
             className="nav-link"
             onClick={() => setMenuOpen(false)}
           >
-            Tech Stack
+            Guides
           </Link>
-          <a
-            href="https://drive.google.com/file/d/1Dej3Z5nv7dOQwxk7Wb5VgfaRVookjQqU/view?usp=sharing"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-primary"
-            style={{ padding: "8px 20px", fontSize: "0.85rem" }}
-          >
-            Resume ↗
-          </a>
         </div>
 
         {/* Mobile toggle */}

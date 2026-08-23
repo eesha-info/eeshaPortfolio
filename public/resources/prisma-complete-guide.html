@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prisma — Complete Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS ============ */
+  :root {
+    --bg: #f2f5f9;
+    --surface: #ffffff;
+    --surface-2: #eaeff6;
+    --surface-3: #dfe6f0;
+    --border: #dbe2ec;
+    --ink: #0d1b2e;
+    --ink-soft: #4b5872;
+    --ink-faint: #8492a8;
+    --navy: #161e2e;
+    --navy-2: #1f2a40;
+    --amber: #5a67d8;
+    --amber-strong: #4c51bf;
+    --amber-tint: rgba(90, 103, 216, 0.12);
+    --link: #4453c4;
+    --danger: #b8402b;
+    --danger-bg: rgba(184, 64, 43, 0.10);
+    --warn: #9c6a0a;
+    --warn-bg: rgba(156, 106, 10, 0.12);
+    --calm: #1f7a5c;
+    --calm-bg: rgba(31, 122, 92, 0.12);
+    --focus-ring: #5a67d8;
+    --shadow: 0 12px 32px rgba(13, 27, 46, 0.10);
+    --shadow-lg: 0 24px 64px rgba(13, 27, 46, 0.28);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0a1220;
+      --surface: #111d30;
+      --surface-2: #17253c;
+      --surface-3: #1f3049;
+      --border: #26395a;
+      --ink: #ecf1f8;
+      --ink-soft: #a7b6cd;
+      --ink-faint: #71829e;
+      --navy: #2a3550;
+      --navy-2: #34406b;
+      --amber: #8b95f0;
+      --amber-strong: #a5acf5;
+      --amber-tint: rgba(139, 149, 240, 0.16);
+      --link: #9aa4f5;
+      --danger: #ff8a71;
+      --danger-bg: rgba(255, 138, 113, 0.14);
+      --warn: #ffc766;
+      --warn-bg: rgba(255, 199, 102, 0.14);
+      --calm: #5cdcb0;
+      --calm-bg: rgba(92, 220, 176, 0.14);
+      --focus-ring: #8b95f0;
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0a1220;
+    --surface: #111d30;
+    --surface-2: #17253c;
+    --surface-3: #1f3049;
+    --border: #26395a;
+    --ink: #ecf1f8;
+    --ink-soft: #a7b6cd;
+    --ink-faint: #71829e;
+    --navy: #2a3550;
+    --navy-2: #34406b;
+    --amber: #8b95f0;
+    --amber-strong: #a5acf5;
+    --amber-tint: rgba(139, 149, 240, 0.16);
+    --link: #9aa4f5;
+    --danger: #ff8a71;
+    --danger-bg: rgba(255, 138, 113, 0.14);
+    --warn: #ffc766;
+    --warn-bg: rgba(255, 199, 102, 0.14);
+    --calm: #5cdcb0;
+    --calm-bg: rgba(92, 220, 176, 0.14);
+    --focus-ring: #8b95f0;
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  h1, h2, h3 { font-family: "IBM Plex Mono", ui-monospace, monospace; text-wrap: balance; margin: 0; }
+  a { color: var(--link); }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  ::selection { background: var(--amber-tint); }
+
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* ============ MOBILE TOPBAR ============ */
+  .topbar {
+    display: none;
+    position: sticky; top: 0; z-index: 40;
+    align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar .brand { font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 14px; }
+  .topbar .brand span { color: var(--amber); }
+  .menu-btn {
+    width: 36px; height: 36px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--ink);
+    font-size: 16px; cursor: pointer; text-decoration: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sidebar-scrim { display: none; position: fixed; inset: 0; background: rgba(5,11,20,0.5); z-index: 45; }
+  .sidebar-scrim.show { display: block; }
+
+  /* ============ SHELL / SIDEBAR ============ */
+  .shell { display: flex; align-items: flex-start; max-width: 1360px; margin: 0 auto; }
+  .sidebar {
+    position: sticky; top: 0;
+    width: 280px; flex-shrink: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 22px 16px 60px;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+    scrollbar-width: thin;
+  }
+  .sidebar .brand {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 800;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 8px 16px;
+  }
+  .sidebar .brand span { color: var(--amber); }
+  .back-home {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 8px 18px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 600;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+  }
+  .back-home:hover { color: var(--ink); background: var(--amber-tint); border-color: var(--amber); }
+  .nav-group { margin-bottom: 4px; }
+  .nav-group-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    padding: 14px 8px 6px;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+    margin: 1px 0;
+    border-radius: 7px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 13px;
+    border-left: 2px solid transparent;
+  }
+  .nav-link:hover { background: var(--surface-2); color: var(--ink); }
+  .nav-link.active {
+    background: var(--amber-tint);
+    color: var(--ink);
+    font-weight: 600;
+    border-left: 2px solid var(--amber);
+  }
+  .nav-icon { flex-shrink: 0; width: 18px; text-align: center; font-size: 13px; }
+
+  .content { flex: 1; min-width: 0; padding: 40px 32px 90px; }
+  .topic-panel[hidden] { display: none; }
+
+  @media (max-width: 920px) {
+    .topbar { display: flex; }
+    .sidebar {
+      position: fixed; inset: 0 auto 0 0;
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+      z-index: 50;
+      width: 82vw;
+      max-width: 300px;
+      box-shadow: var(--shadow-lg);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .content { padding: 28px 18px 100px; }
+  }
+
+  /* ============ PANEL HERO (Overview only) ============ */
+  .panel-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    background: linear-gradient(150deg, #12162b 0%, #1c2247 55%, #171b38 100%);
+    color: #eef2f8;
+    padding: 40px 32px;
+    margin-bottom: 30px;
+  }
+  .panel-hero::before {
+    content: "";
+    position: absolute;
+    top: -120px; right: -90px;
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(90,103,216,0.35), rgba(90,103,216,0) 70%);
+    pointer-events: none;
+  }
+  .panel-hero .eyebrow {
+    position: relative;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #a7b0f5;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel-hero .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #a7b0f5; display: inline-block; }
+  .panel-hero h1 { position: relative; margin-top: 14px; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.2; font-weight: 700; color: #fff; }
+  .panel-hero h1 em { font-style: normal; color: #a7b0f5; }
+  .panel-hero p.lede { position: relative; margin-top: 12px; font-size: 15px; color: #c3d0e3; max-width: 68ch; font-family: "IBM Plex Sans", sans-serif; line-height: 1.75; }
+  .panel-hero .stat-chips { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .stat-chip {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    border: 1px solid rgba(255,255,255,0.22);
+    color: #dbe6f5;
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+  .stat-chip b { color: #fff; }
+
+  section.topic-panel h1.section-title { font-size: 22px; margin-bottom: 14px; }
+  .lede-plain { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 82ch; margin: 0 0 16px; }
+  .lede-plain b { color: var(--ink); }
+
+  /* ============ DIAGRAM BOX ============ */
+  .diagram-box {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    margin: 0 0 24px;
+  }
+  .diagram-box .d-chrome {
+    background: var(--navy);
+    color: #eef3fb;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 11px 16px;
+  }
+  .diagram-box .d-body { padding: 22px 18px 6px; overflow-x: auto; }
+  .diagram-box .d-body svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+  .diagram-box .d-caption {
+    padding: 6px 20px 20px;
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 88ch;
+  }
+  .diagram-box .d-caption code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; color: var(--ink); }
+  .diagram-box .d-caption b { color: var(--ink); }
+
+  /* shared SVG node styles, reused by every diagram */
+  svg .d-node { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
+  svg .d-node-accent { fill: var(--amber-tint); stroke: var(--amber); stroke-width: 1.5; }
+  svg .d-node-navy { fill: var(--navy); stroke: var(--navy); }
+  svg .d-title { fill: var(--ink); font: 700 13.5px "IBM Plex Sans", sans-serif; }
+  svg .d-title-light { fill: #ffffff; font: 700 12.5px "IBM Plex Mono", monospace; }
+  svg .d-sub { fill: var(--ink-faint); font: 600 10px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-sub-light { fill: #c7cdf5; font: 600 9.5px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-text { fill: var(--ink-soft); font: 500 11px "IBM Plex Mono", monospace; }
+  svg .d-arrow { fill: none; stroke: var(--ink-faint); stroke-width: 2; }
+  svg .d-arrow-accent { fill: none; stroke: var(--amber); stroke-width: 2.25; }
+  svg .d-label { fill: var(--ink-soft); font: 600 11px "IBM Plex Sans", sans-serif; }
+  svg .d-label-accent { fill: var(--amber-strong); font: 700 11px "IBM Plex Sans", sans-serif; }
+  svg .d-boundary { fill: none; stroke: var(--link); stroke-width: 1.5; stroke-dasharray: 6 4; }
+  svg .d-boundary-label { fill: var(--link); font: 700 10.5px "IBM Plex Mono", monospace; letter-spacing: 0.05em; }
+
+  /* ============ TOPIC PANEL ============ */
+  .panel-kicker {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 10px;
+  }
+  .panel-head { display: flex; gap: 16px; align-items: flex-start; }
+  .panel-icon {
+    flex-shrink: 0;
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    background: var(--navy);
+    color: var(--amber-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+  }
+  .svc-name-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .svc-name-row h2 { font-size: 21px; color: var(--ink); }
+  .panel-tagline { margin: 6px 0 0; font-size: 13.5px; color: var(--ink-faint); font-family: "IBM Plex Sans", sans-serif; }
+  .svc-desc { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 84ch; }
+
+  .use-callout {
+    margin: 22px 0;
+    padding: 16px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--link);
+    background: var(--surface-2);
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 84ch;
+  }
+  .use-callout b { color: var(--ink); }
+  .callout-title {
+    display: block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--link);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  h3.subhead { font-size: 15px; margin: 28px 0 6px; color: var(--ink); }
+
+  .steps-list {
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 84ch;
+  }
+  .steps-list li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .steps-list li::before {
+    counter-increment: step;
+    content: counter(step);
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--amber-strong);
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+    font-size: 11.5px;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .steps-list li b { color: var(--ink); }
+  .steps-list li code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+
+  .svc-learn { margin-top: 26px; }
+  .flabel {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--ink-soft);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .svc-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    max-width: 84ch;
+  }
+  .doc-link {
+    font-size: 12.5px;
+    color: var(--link);
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .doc-link:hover { text-decoration: underline; }
+  .badge {
+    display: inline-block;
+    font-family: "IBM Plex Mono", monospace;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+  }
+  .badge-must { background: var(--danger-bg); color: var(--danger); }
+  .badge-important { background: var(--warn-bg); color: var(--warn); }
+  .badge-level { background: var(--calm-bg); color: var(--calm); }
+
+  /* ============ OVERVIEW TOPIC INDEX ============ */
+  .svc-index-group { margin-bottom: 22px; }
+  .svc-index-group h4 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    font-family: "IBM Plex Mono", monospace;
+    margin-bottom: 10px;
+  }
+  .svc-index-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    text-decoration: none;
+    color: var(--ink);
+    margin-bottom: 6px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .svc-index-item:hover { border-color: var(--amber); background: var(--amber-tint); }
+  .svc-index-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--navy);
+    color: var(--amber-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .svc-index-text { flex: 1; min-width: 0; }
+  .svc-index-text .n { font-weight: 700; font-size: 13.5px; }
+  .svc-index-text .t { font-size: 11.5px; color: var(--ink-faint); }
+
+  /* ============ SUMMARY CARDS ============ */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--amber);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+  }
+  .card h3 { font-size: 14px; color: var(--ink); margin-bottom: 12px; }
+  .card p.card-note { margin: 0 0 14px; font-size: 13px; color: var(--ink-soft); font-family: "IBM Plex Sans", sans-serif; line-height: 1.7; }
+  .seq-flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; }
+  .seq-step {
+    font-family: "IBM Plex Mono", monospace;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  .seq-arrow { color: var(--amber); font-weight: 700; }
+
+  .priority-levels { display: flex; flex-direction: column; gap: 12px; }
+  .plevel { display: flex; gap: 12px; align-items: flex-start; }
+  .plevel .lvl-tag {
+    font-family: "IBM Plex Mono", monospace;
+    flex-shrink: 0;
+    width: 72px;
+    padding: 5px 0;
+    text-align: center;
+    border-radius: 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .lvl-1 { background: var(--danger); }
+  .lvl-2 { background: var(--warn); color: #221600; }
+  .lvl-3 { background: var(--ink-faint); }
+  .plevel .lvl-items { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+
+  .doc-links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 8px 20px;
+    font-size: 12px;
+  }
+  .doc-links-grid div { color: var(--ink-soft); overflow-wrap: break-word; }
+  .doc-links-grid b { color: var(--ink); font-family: "IBM Plex Mono", monospace; font-size: 11.5px; }
+
+  /* ============ FOOTER ============ */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 28px 48px;
+    text-align: center;
+  }
+  footer .label {
+    font-family: "IBM Plex Mono", monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 10px;
+    color: var(--amber);
+    font-weight: 700;
+  }
+  footer .name { font-size: 18px; font-weight: 700; margin-top: 6px; }
+  footer .role { font-size: 12.5px; color: var(--ink-soft); margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="Open navigation">☰</button>
+  <div class="brand">PRISMA<span>::</span>DOCS</div>
+  <a class="menu-btn" href="/guides" aria-label="Back to Guides">⌂</a>
+</div>
+<div class="sidebar-scrim" id="sidebarScrim"></div>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">PRISMA<span>::</span>DOCS</div>
+    <a class="back-home" href="/guides">← Back to Guides</a>
+
+    <div class="nav-group">
+      <a class="nav-link" href="#overview"><span class="nav-icon">🏠</span> Overview</a>
+    </div>
+
+    <div class="nav-group" id="nav-group-1">
+      <div class="nav-group-label">Core Topics</div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Reference</div>
+      <a class="nav-link" href="#summary"><span class="nav-icon">📐</span> Summary &amp; Order</a>
+      <a class="nav-link" href="#references"><span class="nav-icon">📄</span> Doc Links</a>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <section class="topic-panel" id="overview">
+      <div class="panel-hero">
+        <div class="eyebrow">Next-Generation ORM</div>
+        <h1>Prisma <em>Complete Guide</em></h1>
+        <p class="lede">Prisma is a type-safe ORM for Node.js and TypeScript that replaces raw SQL and hand-written query builders with a single declarative schema file. You describe your tables as <code>model</code> blocks once, run one command, and Prisma generates a fully type-safe query client tailored exactly to that schema — autocomplete for every field and relation, compile-time errors when a query is wrong, and no raw SQL required for the vast majority of everyday queries. This doc walks through the 8 things you actually need to learn to use Prisma confidently in a real project: setup, the schema file, migrations, querying, relations, filtering/sorting/pagination, transactions, and the developer tools that make local development pleasant.</p>
+        <div class="stat-chips">
+          <span class="stat-chip"><b>8</b> topics</span>
+          <span class="stat-chip"><b>10</b> diagrams</span>
+          <span class="stat-chip"><b>1</b> schema file</span>
+          <span class="stat-chip"><b>0</b> raw SQL required</span>
+        </div>
+      </div>
+
+      <p class="lede-plain">Use the sidebar to jump straight to any topic — each one opens its own page with a full explanation, a diagram of how it fits into the rest of the workflow, and concrete steps (with real schema/query snippets) to actually use it. If you're starting from zero, work through the topics in order: nothing else makes sense until <b>Introduction &amp; Setup</b> and the <b>Schema File</b> are in place.</p>
+
+      <div class="diagram-box">
+        <div class="d-chrome">Diagram · From Schema to Query — The Prisma Pipeline</div>
+        <div class="d-body">
+          <svg viewBox="0 0 920 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="schema.prisma flows through prisma generate into a type-safe Prisma Client, which your app code imports to query the underlying database">
+            <defs>
+              <marker id="ovArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+            </defs>
+
+            <rect class="d-node-accent" x="10" y="70" width="150" height="70" rx="10" />
+            <text class="d-title" x="28" y="100">schema.prisma</text>
+            <text class="d-sub" x="28" y="118">models + datasource</text>
+            <path class="d-arrow" d="M160 105 L 198 105" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node" x="200" y="70" width="150" height="70" rx="10" />
+            <text class="d-title" x="218" y="100">prisma generate</text>
+            <text class="d-sub" x="218" y="118">CLI command</text>
+            <path class="d-arrow" d="M350 105 L 388 105" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node-navy" x="390" y="70" width="170" height="70" rx="10" />
+            <text class="d-title-light" x="408" y="100">Prisma Client</text>
+            <text class="d-sub-light" x="408" y="118">type-safe, autocompleted</text>
+            <path class="d-arrow" d="M560 105 L 598 105" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node" x="600" y="70" width="150" height="70" rx="10" />
+            <text class="d-title" x="618" y="100">Your App Code</text>
+            <text class="d-sub" x="618" y="118">imports the client</text>
+            <path class="d-arrow" d="M750 105 L 788 105" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node" x="790" y="70" width="120" height="70" rx="10" />
+            <text class="d-title" x="806" y="100">Database</text>
+            <text class="d-sub" x="806" y="118">Postgres/MySQL…</text>
+          </svg>
+        </div>
+        <p class="d-caption">Everything starts from one file. <code>schema.prisma</code> describes your models; <code>prisma generate</code> turns that description into a fully typed client; your application code imports that client instead of writing SQL by hand; and the client itself is what actually talks to the underlying database.</p>
+      </div>
+
+      <h3 class="subhead" style="margin-top:8px;">All 8 topics in this guide</h3>
+      <div id="svc-index"></div>
+    </section>
+
+    <!-- 8 topic panels are injected here by renderServicePanels() -->
+    <div id="service-panels"></div>
+
+    <section class="topic-panel" id="summary">
+      <h1 class="section-title">Summary &amp; Recommended Order</h1>
+      <p class="lede-plain">Once each topic makes sense on its own, this page ties them together: the order to learn them in, and the single idea worth internalizing above all others — that Prisma pushes correctness checks from runtime to compile time.</p>
+
+      <div class="card">
+        <h3>Recommended Learning Order</h3>
+        <div class="seq-flow" id="sequence-flow"></div>
+      </div>
+
+      <div class="card">
+        <h3>Prisma's Type-Safety Pipeline</h3>
+        <p class="card-note">The single most useful thing to understand about Prisma: mistakes that would normally surface as a runtime SQL error instead show up as a red squiggly line in your editor, before the code ever runs.</p>
+        <div class="diagram-box" style="margin-bottom:0; box-shadow:none;">
+          <div class="d-chrome">Diagram · Schema → Generated Types → Compile-Time Safety</div>
+          <div class="d-body">
+            <svg viewBox="0 0 800 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="schema.prisma generates TypeScript types, which the compiler checks against every query in your code, catching mistakes before runtime">
+              <defs>
+                <marker id="tsArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+                <marker id="tsArrowAccent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)" /></marker>
+              </defs>
+
+              <rect class="d-node-accent" x="20" y="100" width="160" height="70" rx="10" />
+              <text class="d-title" x="38" y="130">schema.prisma</text>
+              <text class="d-sub" x="38" y="148">model User { … }</text>
+              <path class="d-arrow" d="M180 135 L 218 135" marker-end="url(#tsArrow)" />
+              <text class="d-label" x="182" y="120">generate</text>
+
+              <rect class="d-node" x="220" y="100" width="180" height="70" rx="10" />
+              <text class="d-title" x="238" y="130">Generated Types</text>
+              <text class="d-sub" x="238" y="148">User, Prisma.UserWhereInput…</text>
+              <path class="d-arrow" d="M400 135 L 438 135" marker-end="url(#tsArrow)" />
+
+              <rect class="d-node" x="440" y="100" width="160" height="70" rx="10" />
+              <text class="d-title" x="458" y="130">TS Compiler</text>
+              <text class="d-sub" x="458" y="148">checks every query call</text>
+              <path class="d-arrow-accent" d="M600 120 C 640 90, 660 60, 640 30" marker-end="url(#tsArrowAccent)" />
+              <path class="d-arrow" d="M600 150 L 638 175" marker-end="url(#tsArrow)" />
+
+              <rect class="d-node" x="560" y="0" width="200" height="50" rx="10" />
+              <text class="d-title" x="576" y="30" style="font-size:12px;">Red squiggly in editor</text>
+
+              <rect class="d-node" x="640" y="180" width="140" height="60" rx="10" />
+              <text class="d-title" x="656" y="208">Runtime</text>
+              <text class="d-sub" x="656" y="224">query actually runs</text>
+            </svg>
+          </div>
+          <p class="d-caption">A typo'd field name, a wrong relation, or a filter on a column that doesn't exist gets caught by <b>the compiler</b>, not by a failed query in production — the mistake never makes it past the top branch to the bottom one.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic-panel" id="references">
+      <h1 class="section-title">Official Documentation Reference URLs</h1>
+      <p class="lede-plain">Every topic covered in this guide, with a direct link to its official Prisma docs page.</p>
+      <div class="card">
+        <div class="doc-links-grid" id="doc-links"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="label">Documented By</div>
+  <div class="name">MD Eesha</div>
+  <div class="role">Sr. Software Engineer</div>
+</footer>
+
+<script>
+const PRIORITY_LABEL = {
+  must: "Must",
+  important: "Important",
+};
+const PRIORITY_CLASS = {
+  must: "badge-must",
+  important: "badge-important",
+};
+const GROUP_LABEL = {
+  1: "Core Topics",
+};
+
+const DATA = {
+  1: [
+    { n:1, slug:"topic-intro", name:"Introduction &amp; Setup", icon:"🚀", what:"Installing Prisma &amp; wiring up a database", use:"Bootstrap a new project with a type-safe client", learn:"npm install, prisma init, .env, DATABASE_URL, prisma generate, project structure", priority:"must", docName:"Prisma Getting Started", docUrl:"https://www.prisma.io/docs/getting-started",
+      desc:"Prisma adds three pieces to a Node.js/TypeScript project: the <code>prisma</code> CLI for migrations and tooling, the <code>@prisma/client</code> runtime library your application code actually imports, and a <code>schema.prisma</code> file that declares your database connection and data model in one place. Running <code>prisma init</code> scaffolds that schema file plus a <code>.env</code> file with a <code>DATABASE_URL</code> placeholder, so the CLI is wired to a real connection string from the very first command. From that point forward, every workflow in this guide — migrating, querying, seeding, inspecting data — flows through that single schema file as the source of truth for what your data looks like.",
+      useWhen:"Run this setup once, at the very start of any new Node.js or TypeScript project that talks to a SQL database — PostgreSQL, MySQL, SQLite, SQL Server, CockroachDB, or MongoDB. It's the right starting point whether you're building a REST API, a GraphQL server, or the backend of a full-stack framework; Prisma doesn't care which HTTP layer sits on top of it.",
+      steps:["Install the CLI as a dev dependency and the client as a regular dependency: <code>npm install prisma --save-dev &amp;&amp; npm install @prisma/client</code>.","Scaffold the project: <code>npx prisma init --datasource-provider postgresql</code> — this creates <code>prisma/schema.prisma</code> and a starter <code>.env</code> file.","Set the real connection string in <code>.env</code>: <code>DATABASE_URL=\"postgresql://user:pass@localhost:5432/mydb\"</code>.","Define at least one <code>model</code> block in <code>schema.prisma</code> (the next topic covers this in depth).","Generate the type-safe client from the schema: <code>npx prisma generate</code>.","Import and instantiate it in your app: <code>import { PrismaClient } from '@prisma/client'; const prisma = new PrismaClient();</code>."],
+      diagram:{ left:[{name:"npm install",sub:"prisma + @prisma/client"},{name:".env",sub:"DATABASE_URL"}], right:[{name:"schema.prisma",sub:"created by init"}], bottom:{name:"prisma generate",sub:"builds the typed client"}, coreSub:"scaffolds the project", coreLabel:"prisma init",
+        caption:"<code>prisma init</code> creates the schema file and env placeholder in one step; once a real connection string and at least one model exist, <code>prisma generate</code> is what actually produces the client your code imports." } },
+
+    { n:2, slug:"topic-schema", name:"Schema File", icon:"📄", what:"The schema.prisma data model", use:"Declare tables, columns and types once, in one place", learn:"datasource block, generator block, model, fields, scalar types, attributes, @id, @default, @unique", priority:"must", docName:"Prisma Schema Overview", docUrl:"https://www.prisma.io/docs/orm/prisma-schema/overview",
+      desc:"<code>schema.prisma</code> is a single declarative file with three parts: a <code>datasource</code> block naming the database provider and connection string, a <code>generator</code> block telling Prisma what to generate (almost always <code>prisma-client-js</code>), and one or more <code>model</code> blocks — each one describing a table as a list of typed fields. Field attributes like <code>@id</code>, <code>@default</code>, and <code>@unique</code> attach constraints directly to a field instead of living in separate SQL statements, and the whole file is both the shape of your database and the shape of the TypeScript types Prisma generates from it.",
+      useWhen:"This is the file you edit any time your data model changes — adding a column, renaming a table, tightening a constraint. Treat it as the single source of truth: don't hand-edit the database schema directly and let it drift out of sync with this file.",
+      steps:["Define the <code>datasource</code> block once: <code>datasource db { provider = \"postgresql\" url = env(\"DATABASE_URL\") }</code>.","Define the <code>generator</code> block: <code>generator client { provider = \"prisma-client-js\" }</code>.","Add a model for each table: <code>model User { id Int @id @default(autoincrement()) email String @unique name String? }</code>.","Pick the right scalar type for each field — <code>String</code>, <code>Int</code>, <code>Boolean</code>, <code>DateTime</code>, <code>Float</code>, <code>Json</code> — and mark optional fields with a trailing <code>?</code>.","Run <code>npx prisma format</code> to auto-format and validate the file.","Run <code>npx prisma validate</code> in CI to catch schema errors before they reach a migration."],
+      diagram:{ left:[{name:"datasource block",sub:"provider + connection URL"},{name:"generator block",sub:"prisma-client-js"}], right:[{name:"model blocks",sub:"tables as typed fields"}], top:{name:"prisma format / validate",sub:"CLI tooling"}, coreSub:"declarative data model",
+        caption:"The datasource and generator blocks configure the tooling once; every model block after that is a table, and together they're the only place your data shape is defined." } },
+
+    { n:3, slug:"topic-migrations", name:"Migrations", icon:"🔄", what:"Turning schema changes into real SQL", use:"Evolve the database schema safely, with history", learn:"prisma migrate dev, prisma migrate deploy, migration history, prisma/migrations folder, shadow database, prisma db push", priority:"must", docName:"Prisma Migrate Getting Started", docUrl:"https://www.prisma.io/docs/orm/prisma-migrate/getting-started",
+      desc:"Prisma Migrate turns a change to <code>schema.prisma</code> into an actual, versioned SQL migration file, applies it to your database, and records that it ran in a <code>_prisma_migrations</code> history table. Every migration lives as a plain <code>.sql</code> file inside <code>prisma/migrations/</code>, checked into version control alongside your code, so the entire history of how your schema evolved is reviewable in a pull request just like any other change. A disposable shadow database is used behind the scenes in development to detect schema drift before a migration is ever applied for real.",
+      useWhen:"Use <code>prisma migrate dev</code> throughout local development every time you change a model. Use <code>prisma migrate deploy</code> — which only applies existing migration files without generating new ones — in CI/CD and production, where you never want schema changes generated on the fly.",
+      steps:["Edit a model in <code>schema.prisma</code> — for example, add a <code>bio String?</code> field to <code>User</code>.","Run <code>npx prisma migrate dev --name add_user_bio</code> in development — it generates the SQL file and applies it locally.","Commit the new file under <code>prisma/migrations/&lt;timestamp&gt;_add_user_bio/migration.sql</code> along with the schema change.","In CI/CD, run <code>npx prisma migrate deploy</code> to apply only the already-generated migrations, never generating new ones on a shared environment.","For quick local prototyping only (never production), use <code>npx prisma db push</code> to sync the schema without creating migration files.","Run <code>npx prisma migrate status</code> to see which migrations have and haven't been applied to a given database."],
+      diagram:{ left:[{name:"Edit schema.prisma",sub:"change a model"}], right:[{name:"SQL migration file",sub:"prisma/migrations/…"},{name:"Database",sub:"schema applied"}], bottom:{name:"_prisma_migrations table",sub:"tracks history"}, coreSub:"schema → SQL → database", coreLabel:"prisma migrate dev",
+        caption:"Every edit to the schema becomes a real, committed SQL file before it ever touches the database, and the history table is how Prisma knows exactly which migrations a given database has already run." } },
+
+    { n:4, slug:"topic-queries", name:"Prisma Client Queries", icon:"🔍", what:"Type-safe CRUD against your database", use:"Read and write data without hand-written SQL", learn:"findUnique, findMany, create, update, delete, upsert, select, include, generated types", priority:"must", docName:"Prisma Client CRUD", docUrl:"https://www.prisma.io/docs/orm/prisma-client/queries/crud",
+      desc:"Once the client is generated, every model gets a matching property on <code>prisma</code> — <code>prisma.user</code>, <code>prisma.post</code> — with methods like <code>findUnique</code>, <code>findMany</code>, <code>create</code>, <code>update</code>, <code>delete</code>, and <code>upsert</code> that return fully-typed results matching your schema exactly. <code>select</code> narrows the returned fields to only what you need, while <code>include</code> pulls in related records in the same query instead of a separate round trip. Every argument to these methods — the fields you can filter on, the shape of the data you get back — is checked by the TypeScript compiler against your actual schema, so a typo'd field name is a build error, not a production bug.",
+      useWhen:"This is the everyday interface you reach for anywhere your application needs to read or write a row — anywhere you would have written a <code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code>, or <code>DELETE</code> by hand or through a query builder.",
+      steps:["Read a single record: <code>const user = await prisma.user.findUnique({ where: { id: 1 } });</code>.","Read many, narrowing fields with <code>select</code>: <code>await prisma.user.findMany({ select: { id: true, email: true } });</code>.","Create a record: <code>await prisma.user.create({ data: { email: 'a@b.com', name: 'Ada' } });</code>.","Update a record: <code>await prisma.user.update({ where: { id: 1 }, data: { name: 'Ada L.' } });</code>.","Create-or-update in one call: <code>await prisma.user.upsert({ where: { id: 1 }, update: {...}, create: {...} });</code>.","Pull in a related model in the same query with <code>include</code>: <code>await prisma.user.findUnique({ where: { id: 1 }, include: { posts: true } });</code>."],
+      diagram:{ left:[{name:"App code",sub:"prisma.user.findMany()"}], right:[{name:"Generated types",sub:"autocomplete + checks"},{name:"SQL query",sub:"sent to the database"}], coreSub:"type-safe CRUD", coreLabel:"Prisma Client",
+        caption:"The method you call is checked against generated types before it ever becomes a real SQL query — the compiler, not the database, is usually what catches a mistake first." } },
+
+    { n:5, slug:"topic-relations", name:"Relations", icon:"🔗", what:"Modeling how tables connect to each other", use:"Represent one-to-one, one-to-many, and many-to-many links", learn:"relation fields, foreign keys, @relation, one-to-many, one-to-one, many-to-many, implicit vs explicit join tables", priority:"important", docName:"Prisma Relations", docUrl:"https://www.prisma.io/docs/orm/prisma-schema/data-model/relations",
+      desc:"Relations are how two models in <code>schema.prisma</code> reference each other — a <code>Post</code> belongs to one <code>User</code> (one-to-many), a <code>User</code> has one <code>Profile</code> (one-to-one), or posts and tags reference each other freely (many-to-many). Under the hood, a one-to-many relation is a plain foreign-key column on the 'many' side; Prisma just gives you a typed relation field to navigate it in either direction without writing the join yourself. The <code>@relation</code> attribute is only needed when Prisma can't infer which fields form the relation on its own — for example, when a model has more than one relation to the same other model.",
+      useWhen:"Model a relation any time two entities in your domain genuinely reference each other — a user and their posts, an order and its line items, a post and its tags. Reach for an explicit <code>@relation</code> and join model specifically once a many-to-many relation needs its own extra fields, like a timestamp on when a tag was applied.",
+      steps:["Model one-to-many: give <code>Post</code> an <code>authorId Int</code> foreign key and a relation field <code>author User @relation(fields: [authorId], references: [id])</code>.","Give <code>User</code> the inverse side: <code>posts Post[]</code> — this is a virtual field, no column is added to the <code>User</code> table.","Model one-to-one by adding <code>@unique</code> to the foreign-key side, e.g. <code>Profile</code> with a unique <code>userId</code>.","Model many-to-many implicitly by giving both sides an array relation field — Prisma manages the hidden join table for you.","Use an explicit join model (with its own <code>@id</code>) instead, the moment the relationship itself needs extra data.","Query across the relation in one call: <code>prisma.user.findUnique({ where: { id: 1 }, include: { posts: true } });</code>."],
+      diagram:{ left:[{name:"Post model",sub:"the 'many' side"}], right:[{name:"User model",sub:"the 'one' side"}], bottom:{name:"authorId column",sub:"real foreign key in the DB"}, coreSub:"1:1 · 1:many · m:n", coreLabel:"Relation field",
+        caption:"The relation field you navigate in code and the foreign-key column that actually exists in the database are two views of the same link — Prisma keeps them in sync automatically." } },
+
+    { n:6, slug:"topic-filtering", name:"Filtering, Sorting &amp; Pagination", icon:"🧮", what:"Shaping exactly which rows come back, and in what order", use:"Build search, listing, and paged API endpoints", learn:"where, orderBy, skip/take, cursor-based pagination, AND/OR/NOT, contains/startsWith, relation filters", priority:"important", docName:"Prisma Filtering &amp; Sorting", docUrl:"https://www.prisma.io/docs/orm/prisma-client/queries/filtering-and-sorting",
+      desc:"<code>findMany</code> accepts a <code>where</code> object for filtering — equality, ranges, string matching like <code>contains</code>/<code>startsWith</code>, and boolean composition with <code>AND</code>/<code>OR</code>/<code>NOT</code> — plus an <code>orderBy</code> object for sorting on one or more fields. Pagination comes in two flavors: offset-based, using <code>skip</code> and <code>take</code>, which is simple but can skip or repeat rows if data changes between pages; and cursor-based, using a unique field like <code>id</code> as a bookmark, which stays stable even as new rows are inserted. Filters can also reach through relations, so you can find every <code>User</code> who has at least one <code>Post</code> matching a condition, in a single query.",
+      useWhen:"Reach for this on any endpoint that lists, searches, or paginates rows — an admin table, a search box, an infinite-scroll feed. Prefer cursor-based pagination specifically for feeds where new rows are inserted frequently and offset drift would show duplicates or skip items.",
+      steps:["Filter with <code>where</code>: <code>prisma.post.findMany({ where: { published: true, title: { contains: 'prisma' } } });</code>.","Combine conditions explicitly: <code>where: { OR: [{ title: { contains: 'a' } }, { title: { contains: 'b' } }] }</code>.","Sort results: <code>orderBy: { createdAt: 'desc' }</code> (or an array for multi-field sort).","Paginate by offset for simple admin UIs: <code>{ skip: 20, take: 10 }</code>.","Paginate by cursor for stable, high-traffic feeds: <code>{ take: 10, skip: 1, cursor: { id: lastId } }</code>.","Filter across a relation: <code>prisma.user.findMany({ where: { posts: { some: { published: true } } } });</code>."],
+      diagram:{ left:[{name:"where",sub:"filter conditions"},{name:"orderBy",sub:"sort order"}], right:[{name:"skip / take",sub:"offset pagination"},{name:"cursor",sub:"stable, id-based paging"}], coreSub:"query shaping", coreLabel:"findMany() arguments",
+        caption:"where and orderBy decide which rows come back and in what order; skip/take or a cursor decide which slice of that result set you actually get on this page." } },
+
+    { n:7, slug:"topic-transactions", name:"Transactions", icon:"🔒", what:"Making several writes succeed or fail together", use:"Keep multi-step writes consistent", learn:"$transaction, sequential transactions, interactive transactions, isolation levels, rollback", priority:"important", docName:"Prisma Transactions", docUrl:"https://www.prisma.io/docs/orm/prisma-client/queries/transactions",
+      desc:"A transaction guarantees that a group of database writes either all succeed together or all roll back together — there's no in-between state where only half of them happened. Prisma's <code>$transaction</code> API supports two styles: a sequential array of prepared queries, which Prisma sends as one atomic batch, and an interactive callback form, which lets you run application logic and conditional queries between steps while still keeping everything inside one atomic unit. If anything inside an interactive transaction throws, every write made so far inside that callback is rolled back automatically.",
+      useWhen:"Use a transaction the moment two or more writes must be consistent with each other — debiting one account while crediting another, decrementing inventory while creating an order, or creating a user record alongside its related profile row in one shot.",
+      steps:["Identify writes that must succeed or fail as one unit — e.g. a funds transfer between two accounts.","For independent queries known in advance, use the array form: <code>await prisma.$transaction([ prisma.account.update({...}), prisma.account.update({...}) ]);</code>.","For logic that needs to branch between steps, use the interactive form: <code>await prisma.$transaction(async (tx) => { ... use tx.account.update(...) ... });</code>.","Always query and write through the <code>tx</code> client instance inside an interactive transaction, never the outer <code>prisma</code> client.","Throw an error inside the callback to trigger an automatic rollback of everything done so far.","Set an isolation level explicitly (e.g. <code>Serializable</code>) for transactions sensitive to concurrent writes."],
+      diagram:{ left:[{name:"Operation A",sub:"e.g. debit account"}], right:[{name:"Operation B",sub:"e.g. credit account"}], bottom:{name:"All commit, or all roll back",sub:"atomicity guarantee"}, coreSub:"atomic multi-query writes", coreLabel:"$transaction",
+        caption:"Both operations are wrapped in one atomic boundary — if operation B fails after operation A already ran, the transaction rolls operation A back too, so the database never shows a half-finished transfer." } },
+
+    { n:8, slug:"topic-studio", name:"Prisma Studio &amp; Seeding", icon:"🖥️", what:"Visual data browser and repeatable test data", use:"Inspect data visually and populate a dev database", learn:"prisma studio, prisma db seed, seed script, package.json prisma.seed, faker-style data generation", priority:"important", docName:"Prisma Studio", docUrl:"https://www.prisma.io/docs/orm/tools/prisma-studio",
+      desc:"Prisma Studio is a visual, spreadsheet-like GUI — launched with one command and served locally, usually at <code>localhost:5555</code> — for browsing, filtering, and editing the rows in your database without writing a single query. Seeding is the companion piece: a small script, run via <code>prisma db seed</code>, that inserts a known, repeatable set of starter data so every developer (and CI run) starts from the exact same baseline instead of an empty or hand-populated database.",
+      useWhen:"Reach for Studio constantly during day-to-day development, whenever you want to eyeball what a query actually wrote or quickly hand-edit a row without a script. Reach for a seed script anywhere a fresh clone, a CI pipeline, or a new teammate needs realistic starter data without manual setup.",
+      steps:["Launch the visual browser: <code>npx prisma studio</code> — opens a local GUI at <code>http://localhost:5555</code>.","Browse, filter, and edit rows directly in the grid — useful for quick sanity checks after a migration or query.","Create <code>prisma/seed.ts</code> with a script that creates baseline rows using the same Prisma Client.","Register it in <code>package.json</code>: <code>\"prisma\": { \"seed\": \"ts-node prisma/seed.ts\" }</code>.","Run it manually with <code>npx prisma db seed</code>, or let <code>prisma migrate reset</code> run it automatically after wiping the dev database.","Keep the seed script idempotent (use <code>upsert</code> where useful) so running it twice doesn't create duplicates."],
+      diagram:{ left:[{name:"seed.ts script",sub:"npx prisma db seed"}], right:[{name:"Prisma Studio",sub:"localhost:5555 GUI"}], bottom:{name:"Database",sub:"populated and inspectable"}, coreSub:"dev-time data tools", coreLabel:"Studio + Seeding",
+        caption:"The seed script is how a database gets to a known starting state; Studio is how you look at — and tweak — whatever state it's actually in right now." } },
+  ],
+};
+
+/* ---------- Generic per-topic architecture diagram renderer ---------- */
+function stackBoxes(items, x, w, centerY, boxH, gap) {
+  const n = items.length;
+  if (!n) return [];
+  const totalH = n * boxH + (n - 1) * gap;
+  const startY = centerY - totalH / 2;
+  return items.map((it, i) => {
+    const y = startY + i * (boxH + gap);
+    return { ...it, x, y, w, h: boxH, cy: y + boxH / 2 };
+  });
+}
+
+function svcDiagramSVG(svc) {
+  const cfg = svc.diagram;
+  const W = 760, H = 420;
+  const coreW = 200, coreH = 90, coreCX = 380, coreCY = 210;
+  const coreX = coreCX - coreW / 2, coreY = coreCY - coreH / 2;
+  const leftX = 20, leftW = 170, rightX = 570, rightW = 170, boxH = 60, gap = 18;
+  const uid = svc.slug;
+
+  const lefts = stackBoxes(cfg.left || [], leftX, leftW, coreCY, boxH, gap);
+  const rights = stackBoxes(cfg.right || [], rightX, rightW, coreCY, boxH, gap);
+  const label = cfg.coreLabel || svc.name;
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${cfg.caption.replace(/"/g,"'").replace(/<[^>]*>/g,"")}">`;
+  svg += `<defs>
+    <marker id="m-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)"/></marker>
+    <marker id="ma-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)"/></marker>
+  </defs>`;
+
+  if (cfg.top) {
+    svg += `<rect class="d-node-navy" x="${coreX}" y="24" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title-light" x="${coreX+14}" y="47">${cfg.top.name}</text>
+      <text class="d-sub-light" x="${coreX+14}" y="62">${cfg.top.sub||""}</text>
+      <path class="d-arrow" d="M${coreCX} 70 L${coreCX} ${coreY-2}" marker-end="url(#m-${uid})"/>`;
+  }
+  if (cfg.bottom) {
+    svg += `<rect class="d-node" x="${coreX}" y="350" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title" x="${coreX+14}" y="373">${cfg.bottom.name}</text>
+      <text class="d-sub" x="${coreX+14}" y="388">${cfg.bottom.sub||""}</text>
+      <path class="d-arrow-accent" d="M${coreCX} ${coreY+coreH+2} L${coreCX} 348" marker-end="url(#ma-${uid})"/>`;
+  }
+
+  svg += `<rect class="d-node-accent" x="${coreX}" y="${coreY}" width="${coreW}" height="${coreH}" rx="12"/>
+    <text class="d-title" x="${coreCX}" y="${coreCY-6}" text-anchor="middle">${label}</text>
+    <text class="d-sub" x="${coreCX}" y="${coreCY+14}" text-anchor="middle">${cfg.coreSub||""}</text>`;
+
+  lefts.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${b.x+b.w} ${b.cy} L${coreX-2} ${coreCY}" marker-end="url(#m-${uid})"/>`;
+  });
+  rights.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${coreX+coreW+2} ${coreCY} L${b.x} ${b.cy}" marker-end="url(#m-${uid})"/>`;
+  });
+
+  svg += `</svg>`;
+  return svg;
+}
+
+function renderServicePanels() {
+  const host = document.getElementById("service-panels");
+  const html = [];
+  Object.keys(DATA).forEach(groupKey => {
+    DATA[groupKey].forEach(item => {
+      html.push(`
+        <section class="topic-panel" id="${item.slug}" hidden>
+          <div class="panel-kicker">${GROUP_LABEL[groupKey]}</div>
+          <div class="panel-head">
+            <div class="panel-icon">${item.icon}</div>
+            <div>
+              <div class="svc-name-row"><h2>${String(item.n).padStart(2,"0")} · ${item.name}</h2><span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span></div>
+              <p class="panel-tagline">${item.what} — ${item.use}</p>
+            </div>
+          </div>
+          <p class="svc-desc" style="margin-top:20px;">${item.desc}</p>
+
+          <div class="use-callout">
+            <b class="callout-title">Where &amp; when to use it</b>
+            ${item.useWhen}
+          </div>
+
+          <div class="diagram-box">
+            <div class="d-chrome">Diagram · ${item.name.replace(/&amp;/g,"&")}</div>
+            <div class="d-body">${svcDiagramSVG(item)}</div>
+            <p class="d-caption">${item.diagram.caption}</p>
+          </div>
+
+          <h3 class="subhead">How to implement it</h3>
+          <ol class="steps-list">${item.steps.map(s => `<li>${s}</li>`).join("")}</ol>
+
+          <div class="svc-learn">
+            <div class="flabel">What you should learn</div>
+            <div class="tag-list">${item.learn.split(",").map(t => `<span class="tag">${t.trim()}</span>`).join("")}</div>
+          </div>
+
+          <div class="svc-foot">
+            <a class="back-home" style="margin:0;" href="#overview">← All topics</a>
+            <a class="doc-link" href="${item.docUrl}" target="_blank" rel="noopener">${item.docName} →</a>
+          </div>
+        </section>
+      `);
+    });
+  });
+  host.innerHTML = html.join("");
+}
+
+function renderSidebarNav() {
+  Object.keys(DATA).forEach(groupKey => {
+    const group = document.getElementById(`nav-group-${groupKey}`);
+    const links = DATA[groupKey].map(item =>
+      `<a class="nav-link" href="#${item.slug}"><span class="nav-icon">${item.icon}</span> ${item.name}</a>`
+    ).join("");
+    group.insertAdjacentHTML("beforeend", links);
+  });
+}
+
+function renderServiceIndex() {
+  const host = document.getElementById("svc-index");
+  const html = Object.keys(DATA).map(groupKey => `
+    <div class="svc-index-group">
+      <h4>${GROUP_LABEL[groupKey]}</h4>
+      ${DATA[groupKey].map(item => `
+        <a class="svc-index-item" href="#${item.slug}">
+          <span class="svc-index-icon">${item.icon}</span>
+          <span class="svc-index-text"><div class="n">${item.name}</div><div class="t">${item.what} — ${item.use}</div></span>
+          <span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span>
+        </a>
+      `).join("")}
+    </div>
+  `).join("");
+  host.innerHTML = html;
+}
+
+/* ---------- Router: show exactly one topic panel at a time ---------- */
+function showTopic(id) {
+  document.querySelectorAll(".topic-panel").forEach(p => { p.hidden = (p.id !== id); });
+  document.querySelectorAll(".nav-link").forEach(a => {
+    a.classList.toggle("active", a.getAttribute("href") === "#" + id);
+  });
+  window.scrollTo(0, 0);
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("sidebarScrim").classList.remove("show");
+}
+
+function routeFromHash() {
+  const id = (location.hash || "#overview").slice(1);
+  showTopic(document.getElementById(id) ? id : "overview");
+}
+
+renderServicePanels();
+renderSidebarNav();
+renderServiceIndex();
+window.addEventListener("hashchange", routeFromHash);
+routeFromHash();
+
+/* ---------- Mobile sidebar toggle ---------- */
+const menuBtn = document.getElementById("menuBtn");
+const sidebarEl = document.getElementById("sidebar");
+const scrimEl = document.getElementById("sidebarScrim");
+if (menuBtn) {
+  menuBtn.addEventListener("click", () => {
+    sidebarEl.classList.toggle("open");
+    scrimEl.classList.toggle("show");
+  });
+}
+scrimEl.addEventListener("click", () => {
+  sidebarEl.classList.remove("open");
+  scrimEl.classList.remove("show");
+});
+
+/* ---------- Summary + references ---------- */
+const sequence = ["Introduction & Setup","Schema File","Migrations","Prisma Client Queries","Relations","Filtering, Sorting & Pagination","Transactions","Prisma Studio & Seeding"];
+document.getElementById("sequence-flow").innerHTML = sequence.map(s => `<span class="seq-step">${s}</span>`).join('<span class="seq-arrow">→</span>');
+
+const docLinks = [
+  ["Introduction & Setup","https://www.prisma.io/docs/getting-started"],
+  ["Schema File","https://www.prisma.io/docs/orm/prisma-schema/overview"],
+  ["Migrations","https://www.prisma.io/docs/orm/prisma-migrate/getting-started"],
+  ["Prisma Client Queries","https://www.prisma.io/docs/orm/prisma-client/queries/crud"],
+  ["Relations","https://www.prisma.io/docs/orm/prisma-schema/data-model/relations"],
+  ["Filtering, Sorting & Pagination","https://www.prisma.io/docs/orm/prisma-client/queries/filtering-and-sorting"],
+  ["Transactions","https://www.prisma.io/docs/orm/prisma-client/queries/transactions"],
+  ["Prisma Studio & Seeding","https://www.prisma.io/docs/orm/tools/prisma-studio"],
+];
+document.getElementById("doc-links").innerHTML = docLinks.map(([n,u]) => `<div><b>${n}</b><br>${u}</div>`).join("");
+</script>
+
+</body>
+</html>

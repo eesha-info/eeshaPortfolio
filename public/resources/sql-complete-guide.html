@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SQL — Complete Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS ============ */
+  :root {
+    --bg: #f1f7f8;
+    --surface: #ffffff;
+    --surface-2: #e8f1f3;
+    --surface-3: #dbe8ea;
+    --border: #cfe0e3;
+    --ink: #0b2226;
+    --ink-soft: #47646a;
+    --ink-faint: #7f9aa0;
+    --navy: #062830;
+    --navy-2: #0a3b46;
+    --amber: #00758F;
+    --amber-strong: #00566A;
+    --amber-tint: rgba(0, 117, 143, 0.12);
+    --link: #0f7f9c;
+    --danger: #b8402b;
+    --danger-bg: rgba(184, 64, 43, 0.10);
+    --warn: #9c6a0a;
+    --warn-bg: rgba(156, 106, 10, 0.12);
+    --calm: #1f7a5c;
+    --calm-bg: rgba(31, 122, 92, 0.12);
+    --focus-ring: #00758F;
+    --shadow: 0 12px 32px rgba(11, 34, 38, 0.10);
+    --shadow-lg: 0 24px 64px rgba(11, 34, 38, 0.28);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #051a1f;
+      --surface: #0d262c;
+      --surface-2: #123138;
+      --surface-3: #173c44;
+      --border: #1f4a53;
+      --ink: #eaf6f7;
+      --ink-soft: #a9c4c8;
+      --ink-faint: #6f9298;
+      --navy: #0a3540;
+      --navy-2: #114a58;
+      --amber: #4FC3D9;
+      --amber-strong: #7ED4E6;
+      --amber-tint: rgba(79, 195, 217, 0.16);
+      --link: #6fd3e8;
+      --danger: #ff8a71;
+      --danger-bg: rgba(255, 138, 113, 0.14);
+      --warn: #ffc766;
+      --warn-bg: rgba(255, 199, 102, 0.14);
+      --calm: #5cdcb0;
+      --calm-bg: rgba(92, 220, 176, 0.14);
+      --focus-ring: #4FC3D9;
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #051a1f;
+    --surface: #0d262c;
+    --surface-2: #123138;
+    --surface-3: #173c44;
+    --border: #1f4a53;
+    --ink: #eaf6f7;
+    --ink-soft: #a9c4c8;
+    --ink-faint: #6f9298;
+    --navy: #0a3540;
+    --navy-2: #114a58;
+    --amber: #4FC3D9;
+    --amber-strong: #7ED4E6;
+    --amber-tint: rgba(79, 195, 217, 0.16);
+    --link: #6fd3e8;
+    --danger: #ff8a71;
+    --danger-bg: rgba(255, 138, 113, 0.14);
+    --warn: #ffc766;
+    --warn-bg: rgba(255, 199, 102, 0.14);
+    --calm: #5cdcb0;
+    --calm-bg: rgba(92, 220, 176, 0.14);
+    --focus-ring: #4FC3D9;
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  h1, h2, h3 { font-family: "IBM Plex Mono", ui-monospace, monospace; text-wrap: balance; margin: 0; }
+  a { color: var(--link); }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  ::selection { background: var(--amber-tint); }
+
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* ============ MOBILE TOPBAR ============ */
+  .topbar {
+    display: none;
+    position: sticky; top: 0; z-index: 40;
+    align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar .brand { font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 14px; }
+  .topbar .brand span { color: var(--amber); }
+  .menu-btn {
+    width: 36px; height: 36px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--ink);
+    font-size: 16px; cursor: pointer; text-decoration: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sidebar-scrim { display: none; position: fixed; inset: 0; background: rgba(2,10,12,0.5); z-index: 45; }
+  .sidebar-scrim.show { display: block; }
+
+  /* ============ SHELL / SIDEBAR ============ */
+  .shell { display: flex; align-items: flex-start; max-width: 1360px; margin: 0 auto; }
+  .sidebar {
+    position: sticky; top: 0;
+    width: 280px; flex-shrink: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 22px 16px 60px;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+    scrollbar-width: thin;
+  }
+  .sidebar .brand {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 800;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 8px 16px;
+  }
+  .sidebar .brand span { color: var(--amber); }
+  .back-home {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 8px 18px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 600;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+  }
+  .back-home:hover { color: var(--ink); background: var(--amber-tint); border-color: var(--amber); }
+  .nav-group { margin-bottom: 4px; }
+  .nav-group-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    padding: 14px 8px 6px;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+    margin: 1px 0;
+    border-radius: 7px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 13px;
+    border-left: 2px solid transparent;
+  }
+  .nav-link:hover { background: var(--surface-2); color: var(--ink); }
+  .nav-link.active {
+    background: var(--amber-tint);
+    color: var(--ink);
+    font-weight: 600;
+    border-left: 2px solid var(--amber);
+  }
+  .nav-icon { flex-shrink: 0; width: 18px; text-align: center; font-size: 13px; }
+
+  .content { flex: 1; min-width: 0; padding: 40px 32px 90px; }
+  .topic-panel[hidden] { display: none; }
+
+  @media (max-width: 920px) {
+    .topbar { display: flex; }
+    .sidebar {
+      position: fixed; inset: 0 auto 0 0;
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+      z-index: 50;
+      width: 82vw;
+      max-width: 300px;
+      box-shadow: var(--shadow-lg);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .content { padding: 28px 18px 100px; }
+  }
+
+  /* ============ PANEL HERO (Overview only) ============ */
+  .panel-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    background: linear-gradient(150deg, #04181c 0%, #0a2e35 55%, #072228 100%);
+    color: #eef8f9;
+    padding: 40px 32px;
+    margin-bottom: 30px;
+  }
+  .panel-hero::before {
+    content: "";
+    position: absolute;
+    top: -120px; right: -90px;
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(79,195,217,0.30), rgba(79,195,217,0) 70%);
+    pointer-events: none;
+  }
+  .panel-hero .eyebrow {
+    position: relative;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #7ed4e6;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel-hero .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #7ed4e6; display: inline-block; }
+  .panel-hero h1 { position: relative; margin-top: 14px; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.2; font-weight: 700; color: #fff; }
+  .panel-hero h1 em { font-style: normal; color: #7ed4e6; }
+  .panel-hero p.lede { position: relative; margin-top: 12px; font-size: 15px; color: #c2dade; max-width: 68ch; font-family: "IBM Plex Sans", sans-serif; line-height: 1.75; }
+  .panel-hero .stat-chips { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .stat-chip {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    border: 1px solid rgba(255,255,255,0.22);
+    color: #d9eef2;
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+  .stat-chip b { color: #fff; }
+
+  section.topic-panel h1.section-title { font-size: 22px; margin-bottom: 14px; }
+  .lede-plain { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 82ch; margin: 0 0 16px; }
+  .lede-plain b { color: var(--ink); }
+
+  /* ============ DIAGRAM BOX ============ */
+  .diagram-box {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    margin: 0 0 24px;
+  }
+  .diagram-box .d-chrome {
+    background: var(--navy);
+    color: #eef8fb;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 11px 16px;
+  }
+  .diagram-box .d-body { padding: 22px 18px 6px; overflow-x: auto; }
+  .diagram-box .d-body svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+  .diagram-box .d-caption {
+    padding: 6px 20px 20px;
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 88ch;
+  }
+  .diagram-box .d-caption code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; color: var(--ink); }
+  .diagram-box .d-caption b { color: var(--ink); }
+
+  /* shared SVG node styles, reused by every diagram */
+  svg .d-node { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
+  svg .d-node-accent { fill: var(--amber-tint); stroke: var(--amber); stroke-width: 1.5; }
+  svg .d-node-navy { fill: var(--navy); stroke: var(--navy); }
+  svg .d-title { fill: var(--ink); font: 700 13.5px "IBM Plex Sans", sans-serif; }
+  svg .d-title-light { fill: #ffffff; font: 700 12.5px "IBM Plex Mono", monospace; }
+  svg .d-sub { fill: var(--ink-faint); font: 600 10px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-sub-light { fill: #bfe3ea; font: 600 9.5px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-text { fill: var(--ink-soft); font: 500 11px "IBM Plex Mono", monospace; }
+  svg .d-arrow { fill: none; stroke: var(--ink-faint); stroke-width: 2; }
+  svg .d-arrow-accent { fill: none; stroke: var(--amber); stroke-width: 2.25; }
+  svg .d-label { fill: var(--ink-soft); font: 600 11px "IBM Plex Sans", sans-serif; }
+  svg .d-label-accent { fill: var(--amber-strong); font: 700 11px "IBM Plex Sans", sans-serif; }
+  svg .d-boundary { fill: none; stroke: var(--link); stroke-width: 1.5; stroke-dasharray: 6 4; }
+  svg .d-boundary-label { fill: var(--link); font: 700 10.5px "IBM Plex Mono", monospace; letter-spacing: 0.05em; }
+
+  /* ============ TOPIC PANEL ============ */
+  .panel-kicker {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 10px;
+  }
+  .panel-head { display: flex; gap: 16px; align-items: flex-start; }
+  .panel-icon {
+    flex-shrink: 0;
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    background: var(--navy);
+    color: var(--amber-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+  }
+  .svc-name-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .svc-name-row h2 { font-size: 21px; color: var(--ink); }
+  .panel-tagline { margin: 6px 0 0; font-size: 13.5px; color: var(--ink-faint); font-family: "IBM Plex Sans", sans-serif; }
+  .svc-desc { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 84ch; }
+
+  .use-callout {
+    margin: 22px 0;
+    padding: 16px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--link);
+    background: var(--surface-2);
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 84ch;
+  }
+  .use-callout b { color: var(--ink); }
+  .callout-title {
+    display: block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--link);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  h3.subhead { font-size: 15px; margin: 28px 0 6px; color: var(--ink); }
+
+  .steps-list {
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 84ch;
+  }
+  .steps-list li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .steps-list li::before {
+    counter-increment: step;
+    content: counter(step);
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--amber-strong);
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+    font-size: 11.5px;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .steps-list li b { color: var(--ink); }
+  .steps-list li code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+
+  .svc-learn { margin-top: 26px; }
+  .flabel {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--ink-soft);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .svc-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    max-width: 84ch;
+  }
+  .doc-link {
+    font-size: 12.5px;
+    color: var(--link);
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .doc-link:hover { text-decoration: underline; }
+  .badge {
+    display: inline-block;
+    font-family: "IBM Plex Mono", monospace;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+  }
+  .badge-must { background: var(--danger-bg); color: var(--danger); }
+  .badge-important { background: var(--warn-bg); color: var(--warn); }
+  .badge-level { background: var(--calm-bg); color: var(--calm); }
+
+  /* ============ OVERVIEW TOPIC INDEX ============ */
+  .svc-index-group { margin-bottom: 22px; }
+  .svc-index-group h4 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    font-family: "IBM Plex Mono", monospace;
+    margin-bottom: 10px;
+  }
+  .svc-index-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    text-decoration: none;
+    color: var(--ink);
+    margin-bottom: 6px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .svc-index-item:hover { border-color: var(--amber); background: var(--amber-tint); }
+  .svc-index-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--navy);
+    color: var(--amber-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .svc-index-text { flex: 1; min-width: 0; }
+  .svc-index-text .n { font-weight: 700; font-size: 13.5px; }
+  .svc-index-text .t { font-size: 11.5px; color: var(--ink-faint); }
+
+  /* ============ SUMMARY CARDS ============ */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--amber);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+  }
+  .card h3 { font-size: 14px; color: var(--ink); margin-bottom: 12px; }
+  .card p.card-note { margin: 0 0 14px; font-size: 13px; color: var(--ink-soft); font-family: "IBM Plex Sans", sans-serif; line-height: 1.7; }
+  .seq-flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; }
+  .seq-step {
+    font-family: "IBM Plex Mono", monospace;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  .seq-arrow { color: var(--amber); font-weight: 700; }
+
+  .doc-links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 8px 20px;
+    font-size: 12px;
+  }
+  .doc-links-grid div { color: var(--ink-soft); overflow-wrap: break-word; }
+  .doc-links-grid b { color: var(--ink); font-family: "IBM Plex Mono", monospace; font-size: 11.5px; }
+
+  /* ============ FOOTER ============ */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 28px 48px;
+    text-align: center;
+  }
+  footer .label {
+    font-family: "IBM Plex Mono", monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 10px;
+    color: var(--amber);
+    font-weight: 700;
+  }
+  footer .name { font-size: 18px; font-weight: 700; margin-top: 6px; }
+  footer .role { font-size: 12.5px; color: var(--ink-soft); margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="Open navigation">☰</button>
+  <div class="brand">SQL<span>::</span>DOCS</div>
+  <a class="menu-btn" href="/guides" aria-label="Back to Guides">⌂</a>
+</div>
+<div class="sidebar-scrim" id="sidebarScrim"></div>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">SQL<span>::</span>DOCS</div>
+    <a class="back-home" href="/guides">← Back to Guides</a>
+
+    <div class="nav-group">
+      <a class="nav-link" href="#overview"><span class="nav-icon">🏠</span> Overview</a>
+    </div>
+
+    <div class="nav-group" id="nav-topics">
+      <div class="nav-group-label">SQL Topics</div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Reference</div>
+      <a class="nav-link" href="#summary"><span class="nav-icon">📐</span> Summary &amp; Patterns</a>
+      <a class="nav-link" href="#references"><span class="nav-icon">📄</span> Doc Links</a>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <section class="topic-panel" id="overview">
+      <div class="panel-hero">
+        <div class="eyebrow">The Relational Query Language</div>
+        <h1>SQL <em>Complete Guide</em></h1>
+        <p class="lede">SQL (Structured Query Language) is the standard query language behind every relational database — PostgreSQL, MySQL, SQL Server, and SQLite all speak the same fundamentals underneath their own extensions. Learn to select, filter, sort, join, and aggregate rows once, and that knowledge transfers almost unchanged to whichever engine you end up running in production. This doc walks through the 10 concepts a beginner actually needs, in the order you're likely to need them, with a diagram, a "where to use it" guide, and concrete implementation steps — including runnable SQL snippets — for every single one.</p>
+        <div class="stat-chips">
+          <span class="stat-chip"><b>10</b> topics</span>
+          <span class="stat-chip"><b>10</b> diagrams</span>
+          <span class="stat-chip"><b>10</b> SQL snippets</span>
+          <span class="stat-chip"><b>1</b> language, every major engine</span>
+        </div>
+      </div>
+
+      <p class="lede-plain">Use the sidebar to jump straight to any topic — each one opens its own page with a full explanation, a diagram of exactly how it fits together, and the concrete steps to actually write it. If you're starting from zero, work through the topics in order: nothing past <b>Joins</b> makes much sense without <b>SELECT &amp; WHERE</b> already comfortable.</p>
+
+      <div class="diagram-box">
+        <div class="d-chrome">Diagram · What Happens When You Run a Query</div>
+        <div class="d-body">
+          <svg viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A query is parsed by the query planner, executed by the storage engine against tables and indexes, and a result set is returned">
+            <defs>
+              <marker id="ovArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+              <marker id="ovArrowAccent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)" /></marker>
+            </defs>
+
+            <rect class="d-node" x="20" y="85" width="130" height="60" rx="10" />
+            <text class="d-title" x="38" y="111">Query</text>
+            <text class="d-sub" x="38" y="128">raw SQL text</text>
+            <path class="d-arrow" d="M150 115 L178 115" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node-accent" x="180" y="80" width="160" height="70" rx="10" />
+            <text class="d-title" x="198" y="108">Query Planner</text>
+            <text class="d-sub" x="198" y="124">chooses execution plan</text>
+            <path class="d-arrow" d="M340 115 L368 115" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node-navy" x="370" y="75" width="180" height="80" rx="10" />
+            <text class="d-title-light" x="388" y="105">Storage Engine</text>
+            <text class="d-sub-light" x="388" y="121">executes the plan</text>
+            <path class="d-arrow-accent" d="M550 115 L578 115" marker-end="url(#ovArrowAccent)" />
+
+            <rect class="d-node-accent" x="580" y="85" width="150" height="60" rx="30" />
+            <text class="d-title" x="605" y="111">Result Set</text>
+            <text class="d-sub" x="605" y="128">rows returned</text>
+
+            <path class="d-arrow" d="M460 155 L460 195" marker-end="url(#ovArrow)" />
+            <path class="d-boundary" d="M410 205 L 730 205 L 730 260 L 410 260 Z" />
+            <text class="d-boundary-label" x="418" y="225">ON-DISK / IN-MEMORY DATA</text>
+            <rect class="d-node" x="418" y="232" width="130" height="22" rx="6" /><text class="d-text" x="483" y="247" text-anchor="middle">Tables</text>
+            <rect class="d-node" x="560" y="232" width="130" height="22" rx="6" /><text class="d-text" x="625" y="247" text-anchor="middle">Indexes</text>
+          </svg>
+        </div>
+        <p class="d-caption">Every query follows the same path: the text you write is <b>parsed</b> and handed to the <b>query planner</b>, which decides the fastest way to satisfy it (a full scan, or an index lookup); the <b>storage engine</b> then actually reads the tables (and any indexes) on disk or in memory, and hands back a <b>result set</b> — the rows your application actually sees.</p>
+      </div>
+
+      <h3 class="subhead" style="margin-top:8px;">All 10 topics in this guide</h3>
+      <div id="svc-index"></div>
+    </section>
+
+    <!-- 10 topic panels are injected here by renderTopicPanels() -->
+    <div id="service-panels"></div>
+
+    <section class="topic-panel" id="summary">
+      <h1 class="section-title">Summary &amp; Patterns</h1>
+      <p class="lede-plain">Once the individual topics make sense on their own, these two references tie them together: the order to learn them in, and the single most important thing to internalize about how SQL is actually executed.</p>
+
+      <div class="card">
+        <h3>Recommended Learning Order</h3>
+        <div class="seq-flow" id="sequence-flow"></div>
+      </div>
+
+      <div class="card">
+        <h3>Anatomy of a SELECT Statement — Written Order vs. Execution Order</h3>
+        <p class="card-note">This is the single most useful thing to internalize about SQL: the order you <b>type</b> the clauses is not the order the database <b>evaluates</b> them in.</p>
+        <div class="diagram-box" style="margin-bottom:0; box-shadow:none;">
+          <div class="d-chrome">Diagram · Logical Query Processing Order</div>
+          <div class="d-body">
+            <svg viewBox="0 0 900 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A SELECT statement is evaluated in the order FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY, LIMIT, not the order it is written in">
+              <defs>
+                <marker id="anatArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+              </defs>
+
+              <text class="d-label-accent" x="20" y="30">EVALUATION ORDER →</text>
+
+              <rect class="d-node" x="20" y="90" width="110" height="70" rx="8" />
+              <text class="d-label-accent" x="55" y="82" text-anchor="middle">1</text>
+              <text class="d-title" x="75" y="120" text-anchor="middle" style="font-size:12.5px;">FROM</text>
+              <text class="d-sub" x="75" y="138" text-anchor="middle">source table(s)</text>
+              <path class="d-arrow" d="M130 125 L143 125" marker-end="url(#anatArrow)" />
+
+              <rect class="d-node" x="145" y="90" width="110" height="70" rx="8" />
+              <text class="d-label-accent" x="180" y="82" text-anchor="middle">2</text>
+              <text class="d-title" x="200" y="120" text-anchor="middle" style="font-size:12.5px;">WHERE</text>
+              <text class="d-sub" x="200" y="138" text-anchor="middle">filters rows</text>
+              <path class="d-arrow" d="M255 125 L268 125" marker-end="url(#anatArrow)" />
+
+              <rect class="d-node" x="270" y="90" width="120" height="70" rx="8" />
+              <text class="d-label-accent" x="330" y="82" text-anchor="middle">3</text>
+              <text class="d-title" x="285" y="120" style="font-size:12.5px;">GROUP BY</text>
+              <text class="d-sub" x="285" y="138">buckets rows</text>
+              <path class="d-arrow" d="M390 125 L403 125" marker-end="url(#anatArrow)" />
+
+              <rect class="d-node" x="405" y="90" width="110" height="70" rx="8" />
+              <text class="d-label-accent" x="460" y="82" text-anchor="middle">4</text>
+              <text class="d-title" x="420" y="120" style="font-size:12.5px;">HAVING</text>
+              <text class="d-sub" x="420" y="138">filters groups</text>
+              <path class="d-arrow" d="M515 125 L528 125" marker-end="url(#anatArrow)" />
+
+              <rect class="d-node-accent" x="530" y="85" width="110" height="80" rx="8" />
+              <text class="d-label-accent" x="585" y="77" text-anchor="middle">5</text>
+              <text class="d-title" x="548" y="118" style="font-size:12.5px;">SELECT</text>
+              <text class="d-sub" x="548" y="136">picks columns</text>
+              <path class="d-arrow" d="M640 125 L653 125" marker-end="url(#anatArrow)" />
+
+              <rect class="d-node" x="655" y="90" width="110" height="70" rx="8" />
+              <text class="d-label-accent" x="710" y="82" text-anchor="middle">6</text>
+              <text class="d-title" x="668" y="120" style="font-size:12.5px;">ORDER BY</text>
+              <text class="d-sub" x="668" y="138">sorts result</text>
+              <path class="d-arrow" d="M765 125 L778 125" marker-end="url(#anatArrow)" />
+
+              <rect class="d-node" x="780" y="90" width="100" height="70" rx="8" />
+              <text class="d-label-accent" x="830" y="82" text-anchor="middle">7</text>
+              <text class="d-title" x="795" y="120" style="font-size:12.5px;">LIMIT</text>
+              <text class="d-sub" x="795" y="138">caps rows</text>
+            </svg>
+          </div>
+          <p class="d-caption">You <b>write</b> <code>SELECT ... FROM ... WHERE ... GROUP BY ... HAVING ... ORDER BY ... LIMIT</code>, but the engine <b>runs</b> it starting from <code>FROM</code> and finishing near the end with the column list in <code>SELECT</code> — which is exactly why a column alias defined in <code>SELECT</code> can be used in <code>ORDER BY</code> (evaluated after) but not in <code>WHERE</code> (evaluated before <code>SELECT</code> has run at all).</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic-panel" id="references">
+      <h1 class="section-title">Official Documentation Reference URLs</h1>
+      <p class="lede-plain">Every topic covered in this guide, with a direct link to its official docs.</p>
+      <div class="card">
+        <div class="doc-links-grid" id="doc-links"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="label">Documented By</div>
+  <div class="name">MD Eesha</div>
+  <div class="role">Sr. Software Engineer</div>
+</footer>
+
+<script>
+const PRIORITY_LABEL = {
+  must: "Must",
+  important: "Important",
+};
+const PRIORITY_CLASS = {
+  must: "badge-must",
+  important: "badge-important",
+};
+
+const TOPICS = [
+  { n:1, slug:"sql-relational-model", name:"Relational Model Basics", icon:"🗃️", what:"Tables, rows &amp; relationships", use:"The foundation every SQL query builds on", learn:"Tables, rows, columns, primary keys, foreign keys, schemas, normalization, data types", priority:"must", docName:"W3Schools SQL Introduction", docUrl:"https://www.w3schools.com/sql/sql_intro.asp",
+    desc:"A relational database organizes data into tables, where each table is a grid of rows (records) and columns (attributes). Every row typically has a primary key — a column (or set of columns) that uniquely identifies it — and tables relate to each other through foreign keys, columns that reference a primary key in another table. This structure is what lets you store customers and orders separately, yet still ask which orders belong to a customer without duplicating customer details on every order row. SQL (Structured Query Language) is the language you use to define these tables and to read, insert, update, and delete the rows inside them. Every other topic in this guide is really just a more advanced way of asking questions of this same row-and-column structure.",
+    useWhen:"Reach for a relational model whenever your data has clear entities with relationships between them — customers who place orders, students who enroll in courses, employees who belong to departments. If your data is naturally tabular and the relationships between records matter as much as the records themselves, a relational database (and SQL) is almost always the right starting point over a document or key-value store.",
+    steps:["Identify the real-world entities you need to store (e.g. <code>customers</code>, <code>orders</code>) and give each one its own table.","Pick a primary key for every table — usually an auto-incrementing integer id: <code>CREATE TABLE customers (id INT PRIMARY KEY, name VARCHAR(100));</code>","Add a foreign key column on the child table to link it back to its parent: <code>CREATE TABLE orders (id INT PRIMARY KEY, customer_id INT REFERENCES customers(id));</code>","Choose appropriate data types for each column (INT, VARCHAR, DATE, BOOLEAN, DECIMAL) instead of storing everything as text.","Normalize the schema so each fact is stored once — avoid repeating a customer's address on every one of their orders.","Sketch the tables and their relationships on paper (an ER diagram) before writing a single <code>CREATE TABLE</code> statement."],
+    diagram:{ left:[{name:"customers",sub:"id, name, email"}], right:[{name:"orders",sub:"id, customer_id, total"}], bottom:{name:"Foreign Key",sub:"orders.customer_id → customers.id"}, coreSub:"rows, columns & relationships", coreLabel:"Relational Model",
+      caption:"Two tables on their own just store facts; the foreign key is what turns them into a relationship you can query across." } },
+
+  { n:2, slug:"sql-select-where", name:"SELECT &amp; WHERE", icon:"🔎", what:"Reading &amp; filtering rows", use:"The single most-used statement in SQL", learn:"SELECT, WHERE, comparison operators, AND/OR/NOT, LIKE, IN, BETWEEN, IS NULL, aliases", priority:"must", docName:"W3Schools SQL SELECT", docUrl:"https://www.w3schools.com/sql/sql_select.asp",
+    desc:"SELECT is how you read data out of a table, and WHERE is how you narrow that read down to only the rows you actually care about. A bare <code>SELECT * FROM table</code> returns every column of every row; naming specific columns and adding a WHERE clause turns that into a precise question like &quot;give me the email of every customer whose signup date is after January 1st.&quot; WHERE supports comparison operators (<code>=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;&gt;</code>), boolean combinators (AND, OR, NOT), pattern matching (LIKE), set membership (IN), ranges (BETWEEN), and NULL checks (IS NULL / IS NOT NULL). Because the filter runs before the result set is built, a well-written WHERE clause is also the first and cheapest place to make a query fast.",
+    useWhen:"Use SELECT with WHERE any time you need to look at data rather than change it — debugging a bug report, building a report, or fetching exactly the rows an application screen needs. It's the query you'll write more often than every other statement in this guide combined.",
+    steps:["Start broad to see the shape of the data: <code>SELECT * FROM orders LIMIT 5;</code>","Narrow to only the columns you actually need instead of selecting every column.","Add a WHERE clause to filter to the rows that matter: <code>SELECT id, total FROM orders WHERE status = 'shipped';</code>","Combine conditions with AND/OR when a single comparison isn't specific enough: <code>WHERE total > 100 AND status != 'cancelled'</code>","Use <code>IN (...)</code> instead of a chain of OR comparisons on the same column, and <code>BETWEEN</code> for ranges.","Remember NULL is never equal to anything, even itself — use <code>IS NULL</code> / <code>IS NOT NULL</code>, never <code>= NULL</code>."],
+    diagram:{ left:[{name:"Table",sub:"every row & column"}], right:[{name:"Result Set",sub:"only matching rows"}], top:{name:"WHERE clause",sub:"row-filtering condition"}, coreSub:"reads & filters rows", coreLabel:"SELECT",
+      caption:"SELECT decides which columns come back; WHERE decides which rows even make it that far." } },
+
+  { n:3, slug:"sql-sorting-limiting", name:"Sorting &amp; Limiting", icon:"↕️", what:"Ordering &amp; paging results", use:"Control the order and size of a result set", learn:"ORDER BY, ASC/DESC, multi-column sort, LIMIT, OFFSET, pagination, TOP/FETCH variants", priority:"important", docName:"W3Schools SQL ORDER BY", docUrl:"https://www.w3schools.com/sql/sql_orderby.asp",
+    desc:"A relational table has no inherent order — without instructions, the database can return rows in whatever order is convenient for it internally. ORDER BY imposes an explicit sort, ascending (ASC, the default) or descending (DESC), on one or more columns; sorting by more than one column breaks ties in the first column using the second. LIMIT caps how many rows come back at all, and OFFSET skips a number of rows before starting to return them — together they're the standard way to page through a large result set a screenful at a time. Different databases spell some of this differently (SQL Server uses TOP), but the LIMIT/OFFSET pattern shown here is the form used by PostgreSQL, MySQL, and SQLite.",
+    useWhen:"Add ORDER BY whenever the sequence of results matters to a human reading them — newest orders first, highest-paying customers first. Add LIMIT/OFFSET whenever you're building pagination for an API or UI, or just want to sanity-check a query against a handful of rows instead of the whole table.",
+    steps:["Sort a result set with the column and direction you want: <code>SELECT * FROM orders ORDER BY created_at DESC;</code>","Break ties with a second sort column: <code>ORDER BY total DESC, created_at ASC</code>","Cap the result size once you only need the top N rows: <code>... ORDER BY total DESC LIMIT 10;</code>","Page through results by combining LIMIT with OFFSET: <code>LIMIT 20 OFFSET 40</code> returns rows 41–60.","For large tables, prefer keyset pagination (<code>WHERE id > last_seen_id</code>) over OFFSET once OFFSET gets into the thousands — OFFSET still has to scan and discard every skipped row.","Check your specific database's syntax if porting a query — SQL Server uses <code>TOP</code> instead of <code>LIMIT</code>."],
+    diagram:{ left:[{name:"Unordered Rows",sub:"from SELECT / WHERE"}], right:[{name:"Paged Output",sub:"one page of N rows"}], top:{name:"ORDER BY",sub:"sort column(s) + direction"}, bottom:{name:"LIMIT / OFFSET",sub:"page size & skip"}, coreSub:"orders & pages the result", coreLabel:"ORDER BY + LIMIT",
+      caption:"ORDER BY decides the sequence first; LIMIT and OFFSET then slice out just the page you asked for." } },
+
+  { n:4, slug:"sql-joins", name:"Joins", icon:"🔗", what:"Combining rows across tables", use:"Answering questions that span more than one table", learn:"INNER JOIN, LEFT JOIN, RIGHT JOIN, FULL OUTER JOIN, ON clause, self joins, multi-table joins", priority:"must", docName:"W3Schools SQL JOIN", docUrl:"https://www.w3schools.com/sql/sql_join.asp",
+    desc:"A join combines rows from two (or more) tables based on a related column between them, most commonly a foreign key pointing at a primary key. An INNER JOIN returns only rows that have a match in both tables; a LEFT JOIN returns every row from the left table plus matching rows from the right (with NULLs where there's no match); RIGHT JOIN is the mirror image; and a FULL OUTER JOIN keeps unmatched rows from both sides. The ON clause is what actually specifies which columns must be equal for two rows to be considered a match. A self join is simply a table joined to itself, useful for hierarchical data like an employee table with a manager_id pointing back to another row in the same table.",
+    useWhen:"Use an INNER JOIN when you only care about records that exist on both sides — orders that actually have a customer. Reach for a LEFT JOIN when you need every row from one table regardless of whether a match exists elsewhere — every customer, including the ones who've never placed an order.",
+    steps:["Identify the two tables and the columns that relate them (usually a foreign key to a primary key).","Start with an INNER JOIN to see only rows that match on both sides: <code>SELECT o.id, c.name FROM orders o JOIN customers c ON o.customer_id = c.id;</code>","Switch to a LEFT JOIN if you need rows from the left table even when there's no match: <code>FROM customers c LEFT JOIN orders o ON o.customer_id = c.id</code>","Check for unmatched rows by filtering on NULL from the joined side: <code>WHERE o.id IS NULL</code> finds customers with zero orders.","Chain multiple JOINs when the answer spans three or more tables (e.g. orders → order_items → products).","Always qualify column names with a table alias once more than one table is in the query, to avoid ambiguous-column errors."],
+    diagram:{ left:[{name:"customers",sub:"left table"}], right:[{name:"orders",sub:"right table"}], bottom:{name:"ON c.id = o.customer_id",sub:"matching condition"}, coreSub:"combines matching rows", coreLabel:"JOIN",
+      caption:"The ON condition is the only thing deciding which rows from each side get paired together in the result." } },
+
+  { n:5, slug:"sql-aggregates-groupby", name:"Aggregate Functions &amp; GROUP BY", icon:"Σ", what:"Summarizing rows into totals", use:"Turning many rows into one number per group", learn:"COUNT, SUM, AVG, MIN, MAX, GROUP BY, HAVING, multiple grouping columns", priority:"must", docName:"W3Schools SQL GROUP BY", docUrl:"https://www.w3schools.com/sql/sql_groupby.asp",
+    desc:"Aggregate functions collapse many rows into a single summary value: COUNT counts rows, SUM totals a numeric column, AVG averages it, and MIN/MAX find the smallest and largest value. Used alone, an aggregate summarizes the entire table into one row — GROUP BY is what lets you get one summary row per distinct value of a column instead, like total revenue per customer or order count per day. HAVING is WHERE's counterpart for filtering after grouping — it filters on the aggregated value itself (e.g. only customers with more than 5 orders), something a plain WHERE can't do because WHERE runs before grouping happens. Every non-aggregated column in the SELECT list must appear in the GROUP BY clause, or the database won't know which of the group's many values to show.",
+    useWhen:"Use aggregates with GROUP BY the moment a question is really about totals or counts per category rather than individual rows — &quot;revenue by month,&quot; &quot;orders per customer,&quot; &quot;average rating per product.&quot; If you find yourself pulling every row into application code just to sum a column yourself, that sum almost always belongs in the database.",
+    steps:["Start with the plain aggregate over the whole table to sanity-check the number: <code>SELECT COUNT(*) FROM orders;</code>","Add GROUP BY to get one row per category instead of one row overall: <code>SELECT customer_id, COUNT(*) FROM orders GROUP BY customer_id;</code>","Combine multiple aggregates in one query: <code>SELECT customer_id, COUNT(*) AS orders, SUM(total) AS revenue FROM orders GROUP BY customer_id;</code>","Filter the underlying rows before grouping with WHERE, and filter the grouped results after with HAVING: <code>HAVING COUNT(*) > 5</code>","Group by more than one column when the summary needs a finer grain, e.g. per customer per month.","Remember: every column in SELECT that isn't wrapped in an aggregate function must be listed in GROUP BY."],
+    diagram:{ left:[{name:"Raw Rows",sub:"one row per order"}], right:[{name:"Grouped Rows",sub:"one row per customer"}], top:{name:"Aggregate Fn",sub:"COUNT / SUM / AVG"}, bottom:{name:"HAVING",sub:"filters the groups"}, coreSub:"summarizes rows per group", coreLabel:"GROUP BY",
+      caption:"GROUP BY decides how rows are bucketed; HAVING is the only clause that can filter on the aggregate result of that bucket." } },
+
+  { n:6, slug:"sql-subqueries", name:"Subqueries", icon:"🪆", what:"A query nested inside another query", use:"Using one query's result as another query's input", learn:"Scalar subqueries, subqueries in WHERE/IN, correlated subqueries, EXISTS, CTEs (WITH)", priority:"important", docName:"W3Schools SQL Subqueries", docUrl:"https://www.w3schools.com/sql/sql_subqueries.asp",
+    desc:"A subquery is a complete SELECT statement nested inside another query, used wherever a single value, a list of values, or a whole table of rows is needed. A scalar subquery returns exactly one value and can be used anywhere a single value is expected; a subquery inside IN (...) returns a list the outer query checks membership against; and a correlated subquery references a column from the outer query, re-running once per outer row rather than once overall. EXISTS is a common companion — it checks whether a subquery returns any rows at all without caring about the actual values. Common Table Expressions (CTEs), written with WITH, give a subquery a name and let you reference it as if it were a temporary table, which keeps deeply nested subqueries readable.",
+    useWhen:"Reach for a subquery when a question naturally breaks into two steps — &quot;find customers whose total spend is above the average spend&quot; needs the average computed first. Prefer a CTE over a deeply nested subquery the moment the query gets hard to read top-to-bottom; a named WITH block reads like a sequence of steps instead of a Russian nesting doll.",
+    steps:["Write the inner query first and run it on its own to confirm it returns what you expect.","Use a scalar subquery anywhere a single value is expected: <code>SELECT * FROM orders WHERE total > (SELECT AVG(total) FROM orders);</code>","Use IN with a subquery that returns a list: <code>SELECT * FROM customers WHERE id IN (SELECT customer_id FROM orders WHERE total > 1000);</code>","Use EXISTS when you only need to know a matching row exists, not its value: <code>WHERE EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.id)</code>","Reach for a CTE to name a subquery and keep multi-step logic readable: <code>WITH big_spenders AS (SELECT customer_id FROM orders GROUP BY customer_id HAVING SUM(total) > 5000) SELECT * FROM customers WHERE id IN (SELECT customer_id FROM big_spenders);</code>","Watch performance on correlated subqueries — since they re-run per outer row, a JOIN is often faster for the same result."],
+    diagram:{ left:[{name:"Outer Query",sub:"main SELECT"}], right:[{name:"Inner Query",sub:"nested SELECT"}], bottom:{name:"Result Passed Up",sub:"value, list, or row set"}, coreSub:"one query feeds another", coreLabel:"Subquery",
+      caption:"The inner query resolves completely before the outer query ever runs against its result — a value, a list, or an EXISTS yes/no." } },
+
+  { n:7, slug:"sql-insert-update-delete", name:"INSERT / UPDATE / DELETE", icon:"✏️", what:"Changing the data itself", use:"Writing, modifying and removing rows", learn:"INSERT INTO, VALUES, UPDATE, SET, DELETE, WHERE on writes, transactions with writes, RETURNING", priority:"must", docName:"W3Schools SQL INSERT INTO", docUrl:"https://www.w3schools.com/sql/sql_insert.asp",
+    desc:"SELECT reads data; INSERT, UPDATE, and DELETE are the statements that actually change it. INSERT INTO adds one or more new rows by specifying the target columns and their VALUES; UPDATE modifies existing rows, setting one or more columns with SET and — critically — narrowing which rows with a WHERE clause; DELETE removes whole rows, likewise scoped with WHERE. These three, together with SELECT, are collectively called DML (Data Manipulation Language). The single most dangerous mistake in SQL is running an UPDATE or DELETE without a WHERE clause, which silently applies the change to every row in the table.",
+    useWhen:"Use INSERT the moment new real-world data needs to exist in the database — a new signup, a new order. Use UPDATE and DELETE for changing or removing existing rows, and treat both as loaded weapons: always run the equivalent SELECT with the same WHERE clause first to see exactly which rows you're about to touch.",
+    steps:["Insert a new row by naming the columns and matching values: <code>INSERT INTO customers (name, email) VALUES ('Ada Lovelace', 'ada@example.com');</code>","Insert multiple rows in one statement instead of one INSERT per row where possible.","Before updating, run the equivalent SELECT with the same WHERE clause to confirm exactly which rows will be affected.","Update only the intended rows: <code>UPDATE orders SET status = 'shipped' WHERE id = 4521;</code>","Delete with the same discipline: <code>DELETE FROM orders WHERE status = 'cancelled' AND created_at < '2024-01-01';</code>","Wrap risky writes in a transaction (see Transactions) so you can roll back if the result isn't what you expected."],
+    diagram:{ left:[{name:"INSERT",sub:"adds new rows"},{name:"UPDATE",sub:"modifies existing rows"}], right:[{name:"DELETE",sub:"removes rows"}], bottom:{name:"WHERE clause",sub:"scopes UPDATE / DELETE"}, coreSub:"changes table data", coreLabel:"DML Statements",
+      caption:"INSERT is the only one of the three that doesn't need a WHERE clause — UPDATE and DELETE without one touch every single row." } },
+
+  { n:8, slug:"sql-constraints-keys", name:"Constraints &amp; Keys", icon:"🔑", what:"Rules the database enforces for you", use:"Guaranteeing data is valid before it's ever stored", learn:"PRIMARY KEY, FOREIGN KEY, UNIQUE, NOT NULL, CHECK, DEFAULT, referential integrity", priority:"important", docName:"W3Schools SQL Constraints", docUrl:"https://www.w3schools.com/sql/sql_constraints.asp",
+    desc:"Constraints are rules attached to a table's columns that the database enforces automatically, rejecting any INSERT or UPDATE that would violate them. PRIMARY KEY guarantees a column (or set of columns) is unique and never NULL, uniquely identifying every row; FOREIGN KEY enforces referential integrity, refusing to let a child row point at a parent row that doesn't exist. UNIQUE guarantees no two rows share a value in that column without it having to be the primary key; NOT NULL requires a value; CHECK enforces an arbitrary condition like <code>price >= 0</code>; and DEFAULT supplies a value automatically when one isn't provided. The payoff is that entire categories of bad data become impossible to insert in the first place, instead of something your application code has to remember to validate every time.",
+    useWhen:"Add constraints at table-creation time, not as an afterthought — a FOREIGN KEY on <code>order.customer_id</code> and a CHECK that <code>price >= 0</code> cost nothing to declare up front and prevent invalid data forever after. Retrofit them onto an existing table the moment you notice application code is the only thing enforcing a rule that really belongs in the schema.",
+    steps:["Declare a PRIMARY KEY on every table: <code>CREATE TABLE products (id INT PRIMARY KEY, ...);</code>","Add a FOREIGN KEY wherever a column should only ever point at a real parent row: <code>customer_id INT REFERENCES customers(id)</code>","Use UNIQUE for columns that must never repeat but aren't the primary key, like an email address.","Require values with NOT NULL wherever a missing value would be a bug, not a valid state.","Enforce business rules the database can check itself: <code>price DECIMAL CHECK (price >= 0)</code>","Give sensible defaults so common values don't need to be specified on every insert: <code>status VARCHAR(20) DEFAULT 'pending'</code>"],
+    diagram:{ left:[{name:"PRIMARY KEY",sub:"unique row identity"},{name:"FOREIGN KEY",sub:"must reference a real row"}], right:[{name:"UNIQUE / CHECK",sub:"validity rules"},{name:"NOT NULL / DEFAULT",sub:"required & fallback values"}], coreSub:"rules enforced on every write", coreLabel:"Constraints",
+      caption:"Every constraint is a rule the database checks on every INSERT and UPDATE — invalid rows never make it into the table at all." } },
+
+  { n:9, slug:"sql-indexes", name:"Indexes", icon:"⚡", what:"Speeding up lookups", use:"Making WHERE, JOIN and ORDER BY fast on large tables", learn:"B-Tree indexes, CREATE INDEX, composite indexes, query planner, EXPLAIN, read/write tradeoffs", priority:"important", docName:"W3Schools SQL CREATE INDEX", docUrl:"https://www.w3schools.com/sql/sql_create_index.asp",
+    desc:"Without an index, finding rows that match a WHERE clause means scanning every row in the table — fine for a hundred rows, unacceptably slow for a hundred million. An index (almost always a B-Tree) is a separate, sorted data structure the database maintains alongside the table, letting it jump straight to matching rows instead of scanning all of them, the same way a book's index lets you skip straight to a page instead of reading cover to cover. A composite index covers more than one column, and it's only used efficiently for queries that filter on its columns starting from the leftmost one. Indexes aren't free: every INSERT, UPDATE, and DELETE has to update every index on that table too, so an index is a tradeoff between faster reads and slightly slower writes plus extra storage.",
+    useWhen:"Add an index to any column you filter, join, or sort on frequently in a table with more than a few thousand rows — especially foreign key columns, which are joined on constantly but aren't indexed by default in every database. Use EXPLAIN before and after adding an index to confirm the query planner is actually using it, rather than assuming.",
+    steps:["Find the slow query first — don't index speculatively. Run <code>EXPLAIN SELECT * FROM orders WHERE customer_id = 42;</code> to see if it's doing a full table scan.","Create an index on the column being filtered: <code>CREATE INDEX idx_orders_customer_id ON orders (customer_id);</code>","Index foreign key columns specifically — they're joined on constantly and many databases don't index them automatically.","For queries filtering on multiple columns together, create a composite index in the order the columns are used: <code>CREATE INDEX idx_orders_status_date ON orders (status, created_at);</code>","Re-run EXPLAIN after adding the index to confirm the planner is actually using it, not just scanning anyway.","Don't index every column — each index slows down every INSERT/UPDATE/DELETE on that table and takes disk space."],
+    diagram:{ left:[{name:"Query Planner",sub:"decides scan vs. index"}], right:[{name:"Fast Row Lookup",sub:"jumps straight to matches"}], top:{name:"CREATE INDEX",sub:"B-Tree on chosen column(s)"}, bottom:{name:"Full Table Scan",sub:"the slow fallback without one"}, coreSub:"a sorted shortcut to rows", coreLabel:"Index",
+      caption:"Without the index at top, the planner has no faster option than the full scan at bottom — the index is what gives it a shortcut to choose instead." } },
+
+  { n:10, slug:"sql-transactions", name:"Transactions", icon:"🔒", what:"Grouping writes into one all-or-nothing unit", use:"Keeping multi-step writes safe and consistent", learn:"BEGIN, COMMIT, ROLLBACK, ACID, isolation levels, deadlocks, savepoints", priority:"must", docName:"W3Schools SQL Transactions", docUrl:"https://www.w3schools.com/sql/sql_transactions.asp",
+    desc:"A transaction groups multiple statements into a single all-or-nothing unit: either every statement inside it succeeds and is made permanent with COMMIT, or something goes wrong and ROLLBACK undoes everything back to the state before the transaction began — there's no in-between where some of the writes happened and others didn't. This matters most when a single real-world action requires more than one write, like transferring money: debit one account, credit another — a transaction guarantees both happen or neither does, even if the server crashes between them. The ACID properties describe the guarantee formally: Atomicity (all or nothing), Consistency (never leaves data in a broken state), Isolation (concurrent transactions don't see each other's half-finished work), and Durability (once committed, it survives a crash). Isolation levels tune exactly how much one transaction can see of another's in-progress work, trading strictness for concurrency.",
+    useWhen:"Wrap any sequence of writes that must succeed or fail together in a transaction — moving money between accounts, decrementing inventory while creating an order, anything where a partial result would leave your data in a state that's actually wrong. A single standalone statement is usually already its own implicit transaction, so you don't need to think about this until a real-world action needs more than one write to stay consistent.",
+    steps:["Start a transaction explicitly: <code>BEGIN;</code>","Run every statement that must succeed or fail together as one unit, e.g. <code>UPDATE accounts SET balance = balance - 100 WHERE id = 1;</code> followed by <code>UPDATE accounts SET balance = balance + 100 WHERE id = 2;</code>","Commit only once every statement inside has succeeded: <code>COMMIT;</code>","Roll back the entire transaction the moment anything goes wrong: <code>ROLLBACK;</code>","Use a <code>SAVEPOINT</code> if you need to roll back only part of a longer transaction instead of the whole thing.","Pick an isolation level deliberately for anything with real concurrency — the default is usually fine, but know what it actually guarantees before assuming it."],
+    diagram:{ left:[{name:"BEGIN",sub:"starts the transaction"}], right:[{name:"COMMIT",sub:"makes it permanent"}], top:{name:"Multiple Writes",sub:"treated as one unit"}, bottom:{name:"ROLLBACK",sub:"undoes everything on failure"}, coreSub:"all-or-nothing writes", coreLabel:"Transaction",
+      caption:"Every write inside the transaction is provisional until COMMIT — and every one of them vanishes together if ROLLBACK fires instead." } },
+];
+
+/* ---------- Generic per-topic architecture diagram renderer ---------- */
+function stackBoxes(items, x, w, centerY, boxH, gap) {
+  const n = items.length;
+  if (!n) return [];
+  const totalH = n * boxH + (n - 1) * gap;
+  const startY = centerY - totalH / 2;
+  return items.map((it, i) => {
+    const y = startY + i * (boxH + gap);
+    return { ...it, x, y, w, h: boxH, cy: y + boxH / 2 };
+  });
+}
+
+function svcDiagramSVG(svc) {
+  const cfg = svc.diagram;
+  const W = 760, H = 420;
+  const coreW = 200, coreH = 90, coreCX = 380, coreCY = 210;
+  const coreX = coreCX - coreW / 2, coreY = coreCY - coreH / 2;
+  const leftX = 20, leftW = 170, rightX = 570, rightW = 170, boxH = 60, gap = 18;
+  const uid = svc.slug;
+
+  const lefts = stackBoxes(cfg.left || [], leftX, leftW, coreCY, boxH, gap);
+  const rights = stackBoxes(cfg.right || [], rightX, rightW, coreCY, boxH, gap);
+  const label = cfg.coreLabel || svc.name;
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${cfg.caption.replace(/"/g,"'")}">`;
+  svg += `<defs>
+    <marker id="m-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)"/></marker>
+    <marker id="ma-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)"/></marker>
+  </defs>`;
+
+  if (cfg.top) {
+    svg += `<rect class="d-node-navy" x="${coreX}" y="24" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title-light" x="${coreX+14}" y="47">${cfg.top.name}</text>
+      <text class="d-sub-light" x="${coreX+14}" y="62">${cfg.top.sub||""}</text>
+      <path class="d-arrow" d="M${coreCX} 70 L${coreCX} ${coreY-2}" marker-end="url(#m-${uid})"/>`;
+  }
+  if (cfg.bottom) {
+    svg += `<rect class="d-node" x="${coreX}" y="350" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title" x="${coreX+14}" y="373">${cfg.bottom.name}</text>
+      <text class="d-sub" x="${coreX+14}" y="388">${cfg.bottom.sub||""}</text>
+      <path class="d-arrow-accent" d="M${coreCX} ${coreY+coreH+2} L${coreCX} 348" marker-end="url(#ma-${uid})"/>`;
+  }
+
+  svg += `<rect class="d-node-accent" x="${coreX}" y="${coreY}" width="${coreW}" height="${coreH}" rx="12"/>
+    <text class="d-title" x="${coreCX}" y="${coreCY-6}" text-anchor="middle">${label}</text>
+    <text class="d-sub" x="${coreCX}" y="${coreCY+14}" text-anchor="middle">${cfg.coreSub||""}</text>`;
+
+  lefts.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${b.x+b.w} ${b.cy} L${coreX-2} ${coreCY}" marker-end="url(#m-${uid})"/>`;
+  });
+  rights.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${coreX+coreW+2} ${coreCY} L${b.x} ${b.cy}" marker-end="url(#m-${uid})"/>`;
+  });
+
+  svg += `</svg>`;
+  return svg;
+}
+
+function renderTopicPanels() {
+  const host = document.getElementById("service-panels");
+  const html = TOPICS.map(item => `
+    <section class="topic-panel" id="${item.slug}" hidden>
+      <div class="panel-kicker">Topic ${String(item.n).padStart(2,"0")} of ${TOPICS.length} · SQL Complete Guide</div>
+      <div class="panel-head">
+        <div class="panel-icon">${item.icon}</div>
+        <div>
+          <div class="svc-name-row"><h2>${String(item.n).padStart(2,"0")} · ${item.name}</h2><span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span></div>
+          <p class="panel-tagline">${item.what} — ${item.use}</p>
+        </div>
+      </div>
+      <p class="svc-desc" style="margin-top:20px;">${item.desc}</p>
+
+      <div class="use-callout">
+        <b class="callout-title">Where &amp; when to use it</b>
+        ${item.useWhen}
+      </div>
+
+      <div class="diagram-box">
+        <div class="d-chrome">Diagram · ${item.name}</div>
+        <div class="d-body">${svcDiagramSVG(item)}</div>
+        <p class="d-caption">${item.diagram.caption}</p>
+      </div>
+
+      <h3 class="subhead">How to implement it</h3>
+      <ol class="steps-list">${item.steps.map(s => `<li>${s}</li>`).join("")}</ol>
+
+      <div class="svc-learn">
+        <div class="flabel">What you should learn</div>
+        <div class="tag-list">${item.learn.split(",").map(t => `<span class="tag">${t.trim()}</span>`).join("")}</div>
+      </div>
+
+      <div class="svc-foot">
+        <a class="back-home" style="margin:0;" href="#overview">← All topics</a>
+        <a class="doc-link" href="${item.docUrl}" target="_blank" rel="noopener">${item.docName} →</a>
+      </div>
+    </section>
+  `);
+  host.innerHTML = html.join("");
+}
+
+function renderSidebarNav() {
+  const group = document.getElementById("nav-topics");
+  const links = TOPICS.map(item =>
+    `<a class="nav-link" href="#${item.slug}"><span class="nav-icon">${item.icon}</span> ${item.name}</a>`
+  ).join("");
+  group.insertAdjacentHTML("beforeend", links);
+}
+
+function renderTopicIndex() {
+  const host = document.getElementById("svc-index");
+  host.innerHTML = `
+    <div class="svc-index-group">
+      <h4>All 10 Topics</h4>
+      ${TOPICS.map(item => `
+        <a class="svc-index-item" href="#${item.slug}">
+          <span class="svc-index-icon">${item.icon}</span>
+          <span class="svc-index-text"><div class="n">${item.name}</div><div class="t">${item.what} — ${item.use}</div></span>
+          <span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span>
+        </a>
+      `).join("")}
+    </div>
+  `;
+}
+
+/* ---------- Router: show exactly one topic panel at a time ---------- */
+function showTopic(id) {
+  document.querySelectorAll(".topic-panel").forEach(p => { p.hidden = (p.id !== id); });
+  document.querySelectorAll(".nav-link").forEach(a => {
+    a.classList.toggle("active", a.getAttribute("href") === "#" + id);
+  });
+  window.scrollTo(0, 0);
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("sidebarScrim").classList.remove("show");
+}
+
+function routeFromHash() {
+  const id = (location.hash || "#overview").slice(1);
+  showTopic(document.getElementById(id) ? id : "overview");
+}
+
+renderTopicPanels();
+renderSidebarNav();
+renderTopicIndex();
+window.addEventListener("hashchange", routeFromHash);
+routeFromHash();
+
+/* ---------- Mobile sidebar toggle ---------- */
+const menuBtn = document.getElementById("menuBtn");
+const sidebarEl = document.getElementById("sidebar");
+const scrimEl = document.getElementById("sidebarScrim");
+if (menuBtn) {
+  menuBtn.addEventListener("click", () => {
+    sidebarEl.classList.toggle("open");
+    scrimEl.classList.toggle("show");
+  });
+}
+scrimEl.addEventListener("click", () => {
+  sidebarEl.classList.remove("open");
+  scrimEl.classList.remove("show");
+});
+
+/* ---------- Summary + references ---------- */
+const sequence = TOPICS.map(t => t.name.replace(/&amp;/g, "&"));
+document.getElementById("sequence-flow").innerHTML = sequence.map(s => `<span class="seq-step">${s}</span>`).join('<span class="seq-arrow">→</span>');
+
+const docLinks = TOPICS.map(t => [t.name.replace(/&amp;/g, "&"), t.docUrl]);
+document.getElementById("doc-links").innerHTML = docLinks.map(([n,u]) => `<div><b>${n}</b><br>${u}</div>`).join("");
+</script>
+
+</body>
+</html>

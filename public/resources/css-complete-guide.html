@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CSS — Complete Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS ============ */
+  :root {
+    --bg: #f1f6fb;
+    --surface: #ffffff;
+    --surface-2: #eaf1f8;
+    --surface-3: #dbe8f3;
+    --border: #d3e2f0;
+    --ink: #0d1b2e;
+    --ink-soft: #4b5872;
+    --ink-faint: #8492a8;
+    --navy: #0b2a3d;
+    --navy-2: #123a52;
+    --amber: #1572b6;
+    --amber-strong: #0f5a8f;
+    --amber-tint: rgba(21, 114, 182, 0.12);
+    --link: #1d5fa8;
+    --danger: #b8402b;
+    --danger-bg: rgba(184, 64, 43, 0.10);
+    --warn: #9c6a0a;
+    --warn-bg: rgba(156, 106, 10, 0.12);
+    --calm: #1f7a5c;
+    --calm-bg: rgba(31, 122, 92, 0.12);
+    --focus-ring: #1572b6;
+    --shadow: 0 12px 32px rgba(13, 27, 46, 0.10);
+    --shadow-lg: 0 24px 64px rgba(13, 27, 46, 0.28);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0a1220;
+      --surface: #111d30;
+      --surface-2: #17253c;
+      --surface-3: #1f3049;
+      --border: #26395a;
+      --ink: #ecf1f8;
+      --ink-soft: #a7b6cd;
+      --ink-faint: #71829e;
+      --navy: #163a52;
+      --navy-2: #1e4a72;
+      --amber: #52c4f0;
+      --amber-strong: #7ed4f5;
+      --amber-tint: rgba(82, 196, 240, 0.14);
+      --link: #7fb3f5;
+      --danger: #ff8a71;
+      --danger-bg: rgba(255, 138, 113, 0.14);
+      --warn: #ffc766;
+      --warn-bg: rgba(255, 199, 102, 0.14);
+      --calm: #5cdcb0;
+      --calm-bg: rgba(92, 220, 176, 0.14);
+      --focus-ring: #52c4f0;
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0a1220;
+    --surface: #111d30;
+    --surface-2: #17253c;
+    --surface-3: #1f3049;
+    --border: #26395a;
+    --ink: #ecf1f8;
+    --ink-soft: #a7b6cd;
+    --ink-faint: #71829e;
+    --navy: #163a52;
+    --navy-2: #1e4a72;
+    --amber: #52c4f0;
+    --amber-strong: #7ed4f5;
+    --amber-tint: rgba(82, 196, 240, 0.14);
+    --link: #7fb3f5;
+    --danger: #ff8a71;
+    --danger-bg: rgba(255, 138, 113, 0.14);
+    --warn: #ffc766;
+    --warn-bg: rgba(255, 199, 102, 0.14);
+    --calm: #5cdcb0;
+    --calm-bg: rgba(92, 220, 176, 0.14);
+    --focus-ring: #52c4f0;
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  h1, h2, h3 { font-family: "IBM Plex Mono", ui-monospace, monospace; text-wrap: balance; margin: 0; }
+  a { color: var(--link); }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  ::selection { background: var(--amber-tint); }
+
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* ============ MOBILE TOPBAR ============ */
+  .topbar {
+    display: none;
+    position: sticky; top: 0; z-index: 40;
+    align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar .brand { font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 14px; }
+  .topbar .brand span { color: var(--amber); }
+  .menu-btn {
+    width: 36px; height: 36px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--ink);
+    font-size: 16px; cursor: pointer; text-decoration: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sidebar-scrim { display: none; position: fixed; inset: 0; background: rgba(5,11,20,0.5); z-index: 45; }
+  .sidebar-scrim.show { display: block; }
+
+  /* ============ SHELL / SIDEBAR ============ */
+  .shell { display: flex; align-items: flex-start; max-width: 1360px; margin: 0 auto; }
+  .sidebar {
+    position: sticky; top: 0;
+    width: 280px; flex-shrink: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 22px 16px 60px;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+    scrollbar-width: thin;
+  }
+  .sidebar .brand {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 800;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 8px 16px;
+  }
+  .sidebar .brand span { color: var(--amber); }
+  .back-home {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 8px 18px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 600;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+  }
+  .back-home:hover { color: var(--ink); background: var(--amber-tint); border-color: var(--amber); }
+  .nav-group { margin-bottom: 4px; }
+  .nav-group-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    padding: 14px 8px 6px;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+    margin: 1px 0;
+    border-radius: 7px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 13px;
+    border-left: 2px solid transparent;
+  }
+  .nav-link:hover { background: var(--surface-2); color: var(--ink); }
+  .nav-link.active {
+    background: var(--amber-tint);
+    color: var(--ink);
+    font-weight: 600;
+    border-left: 2px solid var(--amber);
+  }
+  .nav-icon { flex-shrink: 0; width: 18px; text-align: center; font-size: 13px; }
+
+  .content { flex: 1; min-width: 0; padding: 40px 32px 90px; }
+  .topic-panel[hidden] { display: none; }
+
+  @media (max-width: 920px) {
+    .topbar { display: flex; }
+    .sidebar {
+      position: fixed; inset: 0 auto 0 0;
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+      z-index: 50;
+      width: 82vw;
+      max-width: 300px;
+      box-shadow: var(--shadow-lg);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .content { padding: 28px 18px 100px; }
+  }
+
+  /* ============ PANEL HERO (Overview only) ============ */
+  .panel-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    background: linear-gradient(150deg, #0a1a30 0%, #10294a 55%, #0d2140 100%);
+    color: #eef2f8;
+    padding: 40px 32px;
+    margin-bottom: 30px;
+  }
+  .panel-hero::before {
+    content: "";
+    position: absolute;
+    top: -120px; right: -90px;
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(21,114,182,0.34), rgba(21,114,182,0) 70%);
+    pointer-events: none;
+  }
+  .panel-hero .eyebrow {
+    position: relative;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #6cc4f0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel-hero .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #6cc4f0; display: inline-block; }
+  .panel-hero h1 { position: relative; margin-top: 14px; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.2; font-weight: 700; color: #fff; }
+  .panel-hero h1 em { font-style: normal; color: #6cc4f0; }
+  .panel-hero p.lede { position: relative; margin-top: 12px; font-size: 15px; color: #c3d0e3; max-width: 68ch; font-family: "IBM Plex Sans", sans-serif; line-height: 1.75; }
+  .panel-hero .stat-chips { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .stat-chip {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    border: 1px solid rgba(255,255,255,0.22);
+    color: #dbe6f5;
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+  .stat-chip b { color: #fff; }
+
+  section.topic-panel h1.section-title { font-size: 22px; margin-bottom: 14px; }
+  .lede-plain { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 82ch; margin: 0 0 16px; }
+  .lede-plain b { color: var(--ink); }
+
+  /* ============ DIAGRAM BOX ============ */
+  .diagram-box {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    margin: 0 0 24px;
+  }
+  .diagram-box .d-chrome {
+    background: var(--navy);
+    color: #eef3fb;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 11px 16px;
+  }
+  .diagram-box .d-body { padding: 22px 18px 6px; overflow-x: auto; }
+  .diagram-box .d-body svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+  .diagram-box .d-caption {
+    padding: 6px 20px 20px;
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 88ch;
+  }
+  .diagram-box .d-caption code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; color: var(--ink); }
+  .diagram-box .d-caption b { color: var(--ink); }
+
+  /* shared SVG node styles, reused by every diagram */
+  svg .d-node { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
+  svg .d-node-accent { fill: var(--amber-tint); stroke: var(--amber); stroke-width: 1.5; }
+  svg .d-node-navy { fill: var(--navy); stroke: var(--navy); }
+  svg .d-title { fill: var(--ink); font: 700 13.5px "IBM Plex Sans", sans-serif; }
+  svg .d-title-light { fill: #ffffff; font: 700 12.5px "IBM Plex Mono", monospace; }
+  svg .d-sub { fill: var(--ink-faint); font: 600 10px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-sub-light { fill: #b9c8e0; font: 600 9.5px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-text { fill: var(--ink-soft); font: 500 11px "IBM Plex Mono", monospace; }
+  svg .d-arrow { fill: none; stroke: var(--ink-faint); stroke-width: 2; }
+  svg .d-arrow-accent { fill: none; stroke: var(--amber); stroke-width: 2.25; }
+  svg .d-label { fill: var(--ink-soft); font: 600 11px "IBM Plex Sans", sans-serif; }
+  svg .d-label-accent { fill: var(--amber-strong); font: 700 11px "IBM Plex Sans", sans-serif; }
+  svg .d-boundary { fill: none; stroke: var(--link); stroke-width: 1.5; stroke-dasharray: 6 4; }
+  svg .d-boundary-label { fill: var(--link); font: 700 10.5px "IBM Plex Mono", monospace; letter-spacing: 0.05em; }
+
+  /* ============ TOPIC PANEL ============ */
+  .panel-kicker {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 10px;
+  }
+  .panel-head { display: flex; gap: 16px; align-items: flex-start; }
+  .panel-icon {
+    flex-shrink: 0;
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    background: var(--navy);
+    color: var(--amber-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+  }
+  .svc-name-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .svc-name-row h2 { font-size: 21px; color: var(--ink); }
+  .panel-tagline { margin: 6px 0 0; font-size: 13.5px; color: var(--ink-faint); font-family: "IBM Plex Sans", sans-serif; }
+  .svc-desc { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 84ch; }
+
+  .use-callout {
+    margin: 22px 0;
+    padding: 16px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--link);
+    background: var(--surface-2);
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 84ch;
+  }
+  .use-callout b { color: var(--ink); }
+  .callout-title {
+    display: block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--link);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  h3.subhead { font-size: 15px; margin: 28px 0 6px; color: var(--ink); }
+
+  .steps-list {
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 84ch;
+  }
+  .steps-list li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .steps-list li::before {
+    counter-increment: step;
+    content: counter(step);
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--amber-strong);
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+    font-size: 11.5px;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .steps-list li b { color: var(--ink); }
+  .steps-list li code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+
+  .svc-learn { margin-top: 26px; }
+  .flabel {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--ink-soft);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .svc-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    max-width: 84ch;
+  }
+  .doc-link {
+    font-size: 12.5px;
+    color: var(--link);
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .doc-link:hover { text-decoration: underline; }
+  .badge {
+    display: inline-block;
+    font-family: "IBM Plex Mono", monospace;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+  }
+  .badge-must { background: var(--danger-bg); color: var(--danger); }
+  .badge-important { background: var(--warn-bg); color: var(--warn); }
+  .badge-level { background: var(--calm-bg); color: var(--calm); }
+
+  /* ============ OVERVIEW TOPIC INDEX ============ */
+  .svc-index-group { margin-bottom: 22px; }
+  .svc-index-group h4 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    font-family: "IBM Plex Mono", monospace;
+    margin-bottom: 10px;
+  }
+  .svc-index-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    text-decoration: none;
+    color: var(--ink);
+    margin-bottom: 6px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .svc-index-item:hover { border-color: var(--amber); background: var(--amber-tint); }
+  .svc-index-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--navy);
+    color: var(--amber-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .svc-index-text { flex: 1; min-width: 0; }
+  .svc-index-text .n { font-weight: 700; font-size: 13.5px; }
+  .svc-index-text .t { font-size: 11.5px; color: var(--ink-faint); }
+
+  /* ============ SUMMARY CARDS ============ */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--amber);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+  }
+  .card h3 { font-size: 14px; color: var(--ink); margin-bottom: 12px; }
+  .card p.card-note { margin: 0 0 14px; font-size: 13px; color: var(--ink-soft); font-family: "IBM Plex Sans", sans-serif; line-height: 1.7; }
+  .seq-flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; }
+  .seq-step {
+    font-family: "IBM Plex Mono", monospace;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  .seq-arrow { color: var(--amber); font-weight: 700; }
+
+  .priority-levels { display: flex; flex-direction: column; gap: 12px; }
+  .plevel { display: flex; gap: 12px; align-items: flex-start; }
+  .plevel .lvl-tag {
+    font-family: "IBM Plex Mono", monospace;
+    flex-shrink: 0;
+    width: 72px;
+    padding: 5px 0;
+    text-align: center;
+    border-radius: 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .lvl-1 { background: var(--danger); }
+  .lvl-2 { background: var(--warn); color: #221600; }
+  .lvl-3 { background: var(--ink-faint); }
+  .plevel .lvl-items { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+
+  .doc-links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 8px 20px;
+    font-size: 12px;
+  }
+  .doc-links-grid div { color: var(--ink-soft); overflow-wrap: break-word; }
+  .doc-links-grid b { color: var(--ink); font-family: "IBM Plex Mono", monospace; font-size: 11.5px; }
+
+  /* ============ FOOTER ============ */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 28px 48px;
+    text-align: center;
+  }
+  footer .label {
+    font-family: "IBM Plex Mono", monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 10px;
+    color: var(--amber);
+    font-weight: 700;
+  }
+  footer .name { font-size: 18px; font-weight: 700; margin-top: 6px; }
+  footer .role { font-size: 12.5px; color: var(--ink-soft); margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="Open navigation">☰</button>
+  <div class="brand">CSS<span>::</span>DOCS</div>
+  <a class="menu-btn" href="/guides" aria-label="Back to Guides">⌂</a>
+</div>
+<div class="sidebar-scrim" id="sidebarScrim"></div>
+
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">CSS<span>::</span>DOCS</div>
+    <a class="back-home" href="/guides">← Back to Guides</a>
+
+    <div class="nav-group">
+      <a class="nav-link" href="#overview"><span class="nav-icon">🏠</span> Overview</a>
+    </div>
+
+    <div class="nav-group" id="nav-phase-1">
+      <div class="nav-group-label">CSS Topics</div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Reference</div>
+      <a class="nav-link" href="#summary"><span class="nav-icon">📐</span> Summary &amp; Order</a>
+      <a class="nav-link" href="#references"><span class="nav-icon">📄</span> Doc Links</a>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <section class="topic-panel" id="overview">
+      <div class="panel-hero">
+        <div class="eyebrow">Web Fundamentals</div>
+        <h1>CSS <em>Complete Guide</em></h1>
+        <p class="lede">CSS (Cascading Style Sheets) is the language that controls how HTML actually looks — layout, color, spacing, typography, and motion — turning plain markup into a real interface. HTML says what a page contains; CSS says how it's arranged and presented, and in modern front-end work the two are inseparable. This doc walks through the 10 CSS concepts that matter most for building real interfaces, in the order you're likely to need them, each with a diagram, a "where to use it" guide, and concrete implementation steps.</p>
+        <div class="stat-chips">
+          <span class="stat-chip"><b>10</b> topics</span>
+          <span class="stat-chip"><b>10</b> diagrams</span>
+          <span class="stat-chip"><b>2</b> priority levels</span>
+        </div>
+      </div>
+
+      <p class="lede-plain">Use the sidebar to jump straight to any topic — each one opens its own page with a full explanation, a diagram of how the pieces fit together, and the concrete steps to actually use it. If you're starting from zero, work through the topics roughly in order: selectors and the box model are the foundation everything else — layout, positioning, typography, motion — is built on top of.</p>
+
+      <div class="diagram-box">
+        <div class="d-chrome">Diagram · How HTML + CSS Become Pixels</div>
+        <div class="d-body">
+          <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="HTML parses into a DOM tree and CSS parses into a CSSOM; the two merge into a render tree, which is laid out, painted, and composited into pixels on screen">
+            <defs>
+              <marker id="ovArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+              <marker id="ovArrowAccent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)" /></marker>
+            </defs>
+
+            <rect class="d-node" x="20" y="40" width="100" height="60" rx="10" />
+            <text class="d-title" x="38" y="66">HTML</text>
+            <text class="d-sub" x="38" y="82">markup</text>
+            <path class="d-arrow" d="M120 70 L148 70" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node" x="150" y="40" width="110" height="60" rx="10" />
+            <text class="d-title" x="168" y="66">DOM Tree</text>
+            <text class="d-sub" x="168" y="82">structure</text>
+
+            <rect class="d-node" x="20" y="170" width="100" height="60" rx="10" />
+            <text class="d-title" x="38" y="196">CSS</text>
+            <text class="d-sub" x="38" y="212">rules</text>
+            <path class="d-arrow" d="M120 200 L148 200" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node" x="150" y="170" width="110" height="60" rx="10" />
+            <text class="d-title" x="168" y="196">CSSOM</text>
+            <text class="d-sub" x="168" y="212">style rules</text>
+
+            <path class="d-arrow-accent" d="M260 80 L 320 130" marker-end="url(#ovArrowAccent)" />
+            <path class="d-arrow-accent" d="M260 190 L 320 150" marker-end="url(#ovArrowAccent)" />
+
+            <rect class="d-node-accent" x="322" y="100" width="150" height="80" rx="10" />
+            <text class="d-title" x="342" y="134">Render Tree</text>
+            <text class="d-sub" x="342" y="152">visible nodes + styles</text>
+            <path class="d-arrow" d="M472 140 L 500 140" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node" x="502" y="100" width="120" height="80" rx="10" />
+            <text class="d-title" x="520" y="134">Layout</text>
+            <text class="d-sub" x="520" y="152">box positions</text>
+            <path class="d-arrow" d="M622 140 L 650 140" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node" x="652" y="100" width="110" height="80" rx="10" />
+            <text class="d-title" x="670" y="134">Paint</text>
+            <text class="d-sub" x="670" y="152">pixels + color</text>
+            <path class="d-arrow" d="M762 140 L 790 140" marker-end="url(#ovArrow)" />
+
+            <rect class="d-node" x="792" y="110" width="90" height="60" rx="30" />
+            <text class="d-title" x="806" y="145" style="font-size:12px;">Screen</text>
+          </svg>
+        </div>
+        <p class="d-caption">The browser parses HTML into a <b>DOM tree</b> and CSS into a <b>CSSOM</b> independently, then merges the two into a <b>render tree</b> — only the nodes that will actually be visible, each carrying its resolved styles. From there it's <b>layout</b> (where every box sits and how big it is), <b>paint</b> (filling in pixels, color, text, borders), and finally compositing those layers onto the screen you're looking at.</p>
+      </div>
+
+      <h3 class="subhead" style="margin-top:8px;">All 10 topics in this guide</h3>
+      <div id="svc-index"></div>
+    </section>
+
+    <!-- 10 topic panels are injected here by renderServicePanels() -->
+    <div id="service-panels"></div>
+
+    <section class="topic-panel" id="summary">
+      <h1 class="section-title">Summary &amp; Learning Order</h1>
+      <p class="lede-plain">Once each topic makes sense on its own, these references tie them together: the order to learn them in, how urgently each one matters, and the one decision — flexbox or grid — that trips up almost everyone early on.</p>
+
+      <div class="card">
+        <h3>Recommended Learning Order</h3>
+        <div class="seq-flow" id="sequence-flow"></div>
+      </div>
+
+      <div class="card">
+        <h3>Recommended Priority</h3>
+        <div class="priority-levels">
+          <div class="plevel"><div class="lvl-tag lvl-1">MUST</div><div class="lvl-items">Selectors &amp; Specificity, The Box Model, Colors &amp; Units, Flexbox, Grid, Positioning.</div></div>
+          <div class="plevel"><div class="lvl-tag lvl-2">IMPORTANT</div><div class="lvl-items">Custom Properties (Variables), Typography, Transitions &amp; Animations, Pseudo-classes &amp; Pseudo-elements.</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Flexbox vs. Grid — Which One Do You Reach For?</h3>
+        <p class="card-note">The most common early layout mistake is picking one of these arbitrarily instead of by dimension. The question is always: does this need to align along one line, or across a whole grid?</p>
+        <div class="diagram-box" style="margin-bottom:0; box-shadow:none;">
+          <div class="d-chrome">Diagram · One-Dimensional vs. Two-Dimensional Layout</div>
+          <div class="d-body">
+            <svg viewBox="0 0 780 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flexbox handles one-dimensional layout like navbars and toolbars; Grid handles two-dimensional layout like dashboards and page shells">
+              <defs>
+                <marker id="fgArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+              </defs>
+
+              <line class="d-boundary" x1="390" y1="20" x2="390" y2="280" />
+              <text class="d-boundary-label" x="195" y="36" text-anchor="middle">ONE-DIMENSIONAL</text>
+              <text class="d-boundary-label" x="585" y="36" text-anchor="middle">TWO-DIMENSIONAL</text>
+
+              <rect class="d-node-accent" x="120" y="90" width="150" height="70" rx="10" />
+              <text class="d-title" x="140" y="120">Flexbox</text>
+              <text class="d-sub" x="140" y="138">row OR column</text>
+              <path class="d-arrow" d="M195 160 L 195 208" marker-end="url(#fgArrow)" />
+
+              <rect class="d-node" x="90" y="210" width="210" height="60" rx="10" />
+              <text class="d-title" x="110" y="235" style="font-size:12.5px;">Navbars, toolbars,</text>
+              <text class="d-title" x="110" y="252" style="font-size:12.5px;">card rows, centering</text>
+
+              <rect class="d-node-accent" x="510" y="90" width="150" height="70" rx="10" />
+              <text class="d-title" x="530" y="120">Grid</text>
+              <text class="d-sub" x="530" y="138">rows AND columns</text>
+              <path class="d-arrow" d="M585 160 L 585 208" marker-end="url(#fgArrow)" />
+
+              <rect class="d-node" x="480" y="210" width="210" height="60" rx="10" />
+              <text class="d-title" x="500" y="235" style="font-size:12.5px;">Dashboards, galleries,</text>
+              <text class="d-title" x="500" y="252" style="font-size:12.5px;">page shells, forms</text>
+            </svg>
+          </div>
+          <p class="d-caption">If the elements only ever need to line up along a single row or column, reach for <b>flexbox</b> — it's simpler and handles unequal content sizes gracefully. The moment content needs to align across both rows and columns at once, that's <b>grid</b>'s job. In practice most real pages use both: grid for the overall page shell, flexbox for the smaller one-dimensional pieces inside each grid cell.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic-panel" id="references">
+      <h1 class="section-title">Official Documentation Reference URLs</h1>
+      <p class="lede-plain">Every topic covered in this guide, with a direct link to its official MDN documentation.</p>
+      <div class="card">
+        <div class="doc-links-grid" id="doc-links"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="label">Documented By</div>
+  <div class="name">MD Eesha</div>
+  <div class="role">Sr. Software Engineer</div>
+</footer>
+
+<script>
+const PRIORITY_LABEL = {
+  must: "Must",
+  important: "Important",
+};
+const PRIORITY_CLASS = {
+  must: "badge-must",
+  important: "badge-important",
+};
+const PHASE_LABEL = {
+  1: "Core Concept",
+};
+
+const DATA = {
+  1: [
+    { n:1, slug:"css-selectors", name:"Selectors & Specificity", icon:"🎯", what:"Rules for targeting HTML elements", use:"Apply styles to exactly the elements you mean", learn:"Type, class, ID, attribute, combinator and pseudo selectors, specificity, the cascade", priority:"must", docName:"MDN: CSS selectors", docUrl:"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_selectors",
+      desc:"A selector is the part of a CSS rule that decides which elements the rule applies to — everything from a simple tag name to a chain of classes, attributes, and relationships between elements. Browsers resolve conflicting rules on the same element using specificity: a scoring system where ID selectors outrank classes, classes outrank tag names, and inline styles outrank all three. When two rules have equal specificity, the one that appears later in the stylesheet wins — this is the 'cascade' half of Cascading Style Sheets. Understanding specificity is what separates writing CSS that behaves predictably from chasing <code>!important</code> overrides across a growing stylesheet.",
+      useWhen:"Reach for simple type and class selectors for most everyday styling — they're predictable and easy to override later. Use attribute selectors (<code>[type=\"email\"]</code>) and combinators (<code>&gt;</code>, <code>+</code>, <code>~</code>) when you need to target elements based on structure or state without adding extra classes, and save ID selectors and <code>!important</code> for the rare cases where nothing else will do, since both are hard to override later.",
+      steps:["Start every component with a single class selector as its styling hook.","Use combinators (descendant, child <code>&gt;</code>, sibling <code>+</code>/<code>~</code>) to target elements relative to a parent instead of adding more classes.","Calculate specificity as (inline, IDs, classes/attributes/pseudo-classes, elements) and compare left to right when two rules conflict.","Avoid ID selectors for styling — reserve <code>id</code> attributes for JS hooks and anchor links.","Avoid <code>!important</code> except as a last-resort override; it breaks the normal cascade for everyone after you.","Use browser DevTools' 'Computed' panel to see exactly which rule won and why."],
+      diagram:{ left:[{name:"Tag selector",sub:"div, p, a"},{name:"Class selector",sub:".card"}], right:[{name:"ID selector",sub:"#header"},{name:"Attribute selector",sub:"[type=text]"}], top:{name:"The Cascade",sub:"source order + specificity"}, coreSub:"which rule wins", coreLabel:"Specificity",
+        caption:"Every rule that could apply to an element is compared by specificity first, then by source order — that comparison, run for every property on every element, is the entire cascade." } },
+    { n:2, slug:"css-box-model", name:"The Box Model", icon:"📦", what:"Content, padding, border and margin", use:"Control the size and spacing of every element", learn:"content box, padding, border, margin, box-sizing, margin collapsing", priority:"must", docName:"MDN: CSS box model", docUrl:"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_box_model",
+      desc:"Every element on a page renders as a rectangular box made of four layers: the content itself, padding around that content, a border around the padding, and margin outside the border separating it from other elements. By default (<code>content-box</code>), width and height only measure the content area, so padding and border quietly add extra size on top of what you set — a common source of unexpected overflow. Setting <code>box-sizing: border-box</code> flips that so width/height include padding and border, which is why most modern resets apply it globally. Margins between block elements can also 'collapse' — two vertical margins touching each other merge into the larger one instead of adding together.",
+      useWhen:"Apply <code>box-sizing: border-box</code> globally at the top of every project so element sizing behaves the way you'd expect. Reach for <code>margin</code> when spacing elements apart from their neighbors, and <code>padding</code> when adding breathing room inside an element's own border.",
+      steps:["Add <code>* { box-sizing: border-box; }</code> near the top of your stylesheet.","Use <code>padding</code> for space inside an element's border, <code>margin</code> for space outside it.","Remember margins on adjacent block elements can collapse into a single larger margin.","Use DevTools' box model diagram to see the actual computed content/padding/border/margin for any element.","Prefer margin on one side only (e.g. <code>margin-bottom</code>) to avoid double-margin collisions between siblings.","Use <code>outline</code> instead of <code>border</code> when you need a focus indicator that shouldn't affect layout."],
+      diagram:{ left:[{name:"Margin",sub:"outside spacing"}], right:[{name:"Border",sub:"edge line"},{name:"Padding",sub:"inner spacing"}], coreSub:"the actual content", coreLabel:"Content Box",
+        caption:"Margin, border, and padding all wrap around the content in that order from the outside in — box-sizing decides whether width/height measure just the content, or the whole stack." } },
+    { n:3, slug:"css-colors-units", name:"Colors & Units", icon:"🎨", what:"Values: colors and lengths", use:"Express size, color and spacing that scale correctly", learn:"hex/rgb/hsl color, absolute vs relative units, px/em/rem, %, vw/vh, calc()", priority:"must", docName:"MDN: CSS values and units", docUrl:"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Values_and_Units",
+      desc:"CSS values come in two broad families: colors (hex codes, <code>rgb()</code>/<code>rgba()</code>, <code>hsl()</code>/<code>hsla()</code>, and newer functions like <code>oklch()</code>) and units of measurement, split between absolute units like <code>px</code> and relative units like <code>em</code>, <code>rem</code>, <code>%</code>, and viewport units (<code>vw</code>, <code>vh</code>). A relative unit's actual size depends on something else — <code>em</code> is relative to the parent's font-size, <code>rem</code> is relative to the root <code>html</code> element's font-size, and <code>%</code> is relative to the parent's corresponding dimension. <code>calc()</code> lets you mix units in a single expression, like <code>width: calc(100% - 40px)</code>, which is essential for layouts that need to be both fluid and precisely offset. Choosing the right unit is what makes a layout scale gracefully across screen sizes and respect a user's font-size preferences.",
+      useWhen:"Use <code>rem</code> for font-size and spacing so everything scales together if a user changes their browser's base font size. Use <code>%</code> or <code>fr</code> for fluid widths inside a flex/grid container, viewport units sparingly for things that should genuinely track the screen (like a full-height hero), and <code>calc()</code> whenever you need to combine a fluid and a fixed value in one expression.",
+      steps:["Leave the base font-size on <code>html</code> at the browser default (usually 16px) unless you have a specific reason not to.","Use <code>rem</code> for font sizes and most spacing so it scales with the user's preferences.","Use <code>em</code> for spacing that should scale with a specific element's own font-size (e.g. padding on a button).","Reach for <code>calc()</code> to mix relative and absolute values, e.g. <code>calc(100vh - 64px)</code>.","Use <code>hsl()</code>/<code>hsla()</code> over hex when you want to programmatically adjust lightness or saturation for hover/active states.","Avoid raw <code>px</code> for body text font-size — it respects the user's browser zoom/accessibility settings less gracefully than <code>rem</code>."],
+      diagram:{ left:[{name:"Absolute units",sub:"px, cm, in"}], right:[{name:"Relative units",sub:"em, rem, %, vw/vh"}], bottom:{name:"calc()",sub:"mixes units in one expression"}, coreSub:"CSS values", coreLabel:"Units & Colors",
+        caption:"Absolute units always mean the same physical size; relative units are computed against something else — the parent, the root, or the viewport — and calc() is how you combine both in a single value." } },
+    { n:4, slug:"css-custom-properties", name:"Custom Properties (Variables)", icon:"🧬", what:"Reusable, cascading CSS values", use:"Define a value once and reuse/theme it everywhere", learn:"--variable syntax, var(), fallback values, :root scoping, runtime theming, JS interop", priority:"important", docName:"MDN: Using CSS custom properties", docUrl:"https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties",
+      desc:"Custom properties (commonly called 'CSS variables') let you define a value once, under a name starting with two dashes like <code>--accent-color</code>, and reuse it anywhere with <code>var(--accent-color)</code>. Unlike Sass variables, they are real runtime values that follow the normal CSS cascade — you can redefine the same variable at different points in the DOM (like inside a <code>.dark-theme</code> class) and everything using <code>var()</code> underneath automatically picks up the new value, no rebuild step required. <code>var()</code> also accepts a second, fallback argument (<code>var(--gap, 16px)</code>) that's used if the variable isn't defined anywhere. Because they're live in the DOM, JavaScript can read and write them too, which is exactly how a dark-mode toggle or a user-adjustable theme color usually works under the hood.",
+      useWhen:"Define your color palette, spacing scale, and font stacks as custom properties on <code>:root</code> once, then theme dark mode or brand variants by overriding those same variable names on a wrapper class or a media query — never by duplicating whole rule blocks.",
+      steps:["Declare shared values on <code>:root</code>, e.g. <code>:root { --accent: #1572b6; --radius: 8px; }</code>.","Consume them everywhere with <code>var(--accent)</code> instead of repeating literal values.","Give <code>var()</code> a fallback for optional properties: <code>var(--gap, 16px)</code>.","Override the same variable names inside a scoped selector (e.g. <code>[data-theme=\"dark\"]</code>) to retheme everything beneath it for free.","Use JavaScript's <code>style.setProperty('--accent', value)</code> for values that need to change at runtime, like a user-picked color.","Keep variable names semantic (<code>--accent</code>, <code>--surface</code>) rather than describing their current value (<code>--blue</code>)."],
+      diagram:{ left:[{name:":root",sub:"--accent: #1572b6"}], right:[{name:"var(--accent)",sub:"used anywhere"}], top:{name:"[data-theme=\"dark\"]",sub:"overrides the same name"}, coreSub:"one name, many values", coreLabel:"Custom Property",
+        caption:"The variable is declared once on :root; a scoped override further up the cascade (like a dark-theme attribute) reaches every var(--accent) beneath it without touching a single rule." } },
+    { n:5, slug:"css-flexbox", name:"Flexbox", icon:"↔️", what:"One-dimensional layout model", use:"Arrange items in a row or column with flexible sizing", learn:"display:flex, flex-direction, justify-content, align-items, flex-grow/shrink/basis, gap", priority:"must", docName:"MDN: CSS flexible box layout", docUrl:"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout",
+      desc:"Flexbox lays child elements out along a single axis — a row or a column, set by <code>flex-direction</code> — and is built specifically for distributing space and aligning items when their sizes are unknown or need to flex. <code>justify-content</code> controls alignment along the main axis (e.g. spreading items apart in a navbar), while <code>align-items</code> controls alignment on the cross axis (e.g. vertically centering icons next to text). Each child's <code>flex-grow</code>, <code>flex-shrink</code>, and <code>flex-basis</code> (usually written together as the <code>flex</code> shorthand) decide how it grows or shrinks relative to its siblings when there's extra or insufficient space. It solved, almost overnight, layout problems — vertical centering, equal-height columns, evenly spaced toolbars — that used to require float and table hacks.",
+      useWhen:"Reach for flexbox for anything that's fundamentally a single row or column: navbars, button groups, card headers, centering one thing inside another, or a sidebar-plus-content split. The moment you need to align content across both rows and columns at once, that's Grid's job instead.",
+      steps:["Set <code>display: flex</code> on the parent to make its direct children flex items.","Choose <code>flex-direction: row</code> (default) or <code>column</code> for the main axis.","Use <code>justify-content</code> to control spacing along the main axis (<code>flex-start</code>, <code>center</code>, <code>space-between</code>…).","Use <code>align-items</code> to control alignment along the cross axis.","Use <code>gap</code> instead of margins between flex items — it doesn't add extra space at the edges.","Give individual items <code>flex: 1</code> to let them grow and fill remaining space, or <code>flex: 0 0 auto</code> to keep them fixed-size."],
+      diagram:{ left:[{name:"flex-direction: row",sub:"main axis"}], right:[{name:"align-items",sub:"cross-axis alignment"}], top:{name:"justify-content",sub:"main-axis spacing"}, coreSub:"one-dimensional layout", coreLabel:"display: flex",
+        caption:"flex-direction picks the main axis; justify-content spaces items along it, and align-items aligns them on the perpendicular cross axis." } },
+    { n:6, slug:"css-grid", name:"Grid", icon:"▦", what:"Two-dimensional layout model", use:"Lay elements out across explicit rows and columns", learn:"display:grid, grid-template-columns/rows, fr unit, gap, grid-area, auto-fit/auto-fill, minmax()", priority:"must", docName:"MDN: CSS grid layout", docUrl:"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout",
+      desc:"Grid lays elements out across both rows and columns at once, defined explicitly with <code>grid-template-columns</code> and <code>grid-template-rows</code>, rather than flowing along a single axis like flexbox. The <code>fr</code> unit distributes leftover space proportionally (<code>grid-template-columns: 1fr 2fr</code> gives the second column twice the first's width), and <code>minmax()</code> combines a floor and a ceiling for a track's size — the classic <code>minmax(200px, 1fr)</code> card grid that adds columns as the viewport widens. Named <code>grid-area</code> regions let you place a header, sidebar, and footer visually in the CSS itself, which reads almost like a diagram of the page. Combined with <code>repeat(auto-fit, minmax(...))</code>, a single line of CSS can produce a fully responsive card grid with zero media queries.",
+      useWhen:"Choose Grid for anything that's a genuine two-dimensional layout — page shells with header/sidebar/footer, photo galleries, dashboards, or any card grid that needs to reflow its column count responsively. If you're only ever arranging items along one line, flexbox is simpler and usually the better fit.",
+      steps:["Set <code>display: grid</code> on the container and define <code>grid-template-columns</code>/<code>rows</code>.","Use the <code>fr</code> unit to split remaining space proportionally between tracks.","Use <code>repeat(auto-fit, minmax(200px, 1fr))</code> for a responsive card grid with no media queries.","Name regions with <code>grid-template-areas</code> and place children with <code>grid-area</code> for readable page layouts.","Use <code>gap</code> for spacing between grid cells instead of margins.","Reach for <code>grid-column</code>/<code>grid-row</code> spans to let specific items occupy more than one track."],
+      diagram:{ left:[{name:"grid-template-columns",sub:"1fr 2fr 1fr"}], right:[{name:"grid-template-areas",sub:"named regions"}], top:{name:"minmax() + auto-fit",sub:"responsive tracks"}, coreSub:"two-dimensional layout", coreLabel:"display: grid",
+        caption:"Explicit column/row tracks define the grid; auto-fit and minmax() let those tracks add or drop columns responsively without a single media query." } },
+    { n:7, slug:"css-positioning", name:"Positioning", icon:"📍", what:"Taking an element out of normal flow", use:"Overlay, stick, or precisely place elements", learn:"static, relative, absolute, fixed, sticky, top/right/bottom/left, z-index, stacking context", priority:"must", docName:"MDN: position", docUrl:"https://developer.mozilla.org/en-US/docs/Web/CSS/position",
+      desc:"By default every element is <code>static</code> — positioned exactly where normal document flow puts it, with <code>top</code>/<code>left</code>/etc. having no effect. Setting <code>position: relative</code> keeps an element in flow but lets you nudge it with offsets and, importantly, turns it into the reference point for any absolutely positioned descendant. <code>position: absolute</code> removes an element from flow entirely and places it relative to its nearest positioned ancestor (or the page, if there isn't one) — the standard way to build tooltips, dropdowns, and badges. <code>fixed</code> positions relative to the viewport itself so the element stays put even as the page scrolls, while <code>sticky</code> is a hybrid that behaves like relative until a scroll threshold, then locks in place like fixed. When positioned elements overlap, <code>z-index</code> (and the stacking context each one creates) decides which one renders on top.",
+      useWhen:"Use <code>relative</code> + <code>absolute</code> together for tooltips, dropdown menus, and badges pinned to a corner of a card. Use <code>fixed</code> for a floating action button or an always-visible chat widget, <code>sticky</code> for a table header or section nav that should stay visible while its own container scrolls past, and reach for <code>z-index</code> only once you actually have overlapping elements — not preemptively.",
+      steps:["Leave elements <code>static</code> (the default) unless something specifically needs to break out of flow.","Set <code>position: relative</code> on a container to make it the positioning reference for absolute children.","Use <code>position: absolute</code> with <code>top</code>/<code>right</code>/<code>bottom</code>/<code>left</code> for overlays, badges, and dropdowns.","Use <code>position: fixed</code> for elements that must stay in the same viewport spot regardless of scroll.","Use <code>position: sticky</code> with a <code>top</code> offset for headers/nav that should stick once scrolled to.","Only introduce <code>z-index</code> when two positioned elements actually overlap, and keep values low and intentional (10, 20, 100) rather than escalating arbitrarily."],
+      diagram:{ left:[{name:"relative",sub:"reference point"}], right:[{name:"absolute",sub:"positioned against it"}], top:{name:"fixed",sub:"pinned to viewport"}, bottom:{name:"z-index",sub:"stacking order"}, coreSub:"out of normal flow", coreLabel:"position",
+        caption:"A relative ancestor becomes the anchor an absolute child positions itself against; fixed ignores that anchor entirely, and z-index only matters once two positioned elements overlap." } },
+    { n:8, slug:"css-typography", name:"Typography", icon:"🔤", what:"Styling and controlling text", use:"Make text legible, on-brand, and readable at scale", learn:"font-family stacks, font-weight/style, line-height, letter-spacing, @font-face, web fonts, font-display", priority:"important", docName:"MDN: Fundamental text and font styling", docUrl:"https://developer.mozilla.org/en-US/docs/Learn/CSS/Styling_text",
+      desc:"Typography in CSS covers everything from which typeface renders (<code>font-family</code>, ideally a stack ending in a generic fallback like <code>sans-serif</code>) to how that text is spaced and shaped: <code>font-weight</code> and <code>font-style</code> for emphasis, <code>line-height</code> for vertical rhythm within a paragraph, <code>letter-spacing</code> for tracking between characters, and <code>text-align</code>/<code>text-transform</code> for alignment and casing. <code>line-height</code> in particular is one of the highest-leverage typography decisions in CSS — a unitless value like <code>1.5</code> scales with the element's own font-size and is almost always the right call over a fixed pixel height. <code>@font-face</code> (or a service like Google Fonts) is how a custom typeface actually gets loaded into the page rather than falling back to whatever's installed on the user's device.",
+      useWhen:"Set a base font-family stack, font-size, and line-height on <code>body</code> once and let most elements inherit it; reach for <code>@font-face</code> or a Google Fonts <code>&lt;link&gt;</code> only when the brand genuinely needs a specific typeface, since every extra font is real page-weight and load-time cost.",
+      steps:["Define a font stack ending in a generic family: <code>font-family: \"Inter\", system-ui, sans-serif;</code>.","Set a comfortable base <code>line-height</code> (1.5–1.7 for body copy) as a unitless value.","Load custom fonts via <code>@font-face</code> or a <code>&lt;link&gt;</code> and set <code>font-display: swap</code> to avoid invisible text while loading.","Limit a design to 2–3 font-weights actually used, rather than importing every weight available.","Use <code>letter-spacing</code> sparingly — mostly for small uppercase labels, not body paragraphs.","Constrain paragraph width (e.g. <code>max-width: 65ch</code>) so lines don't run too long to read comfortably."],
+      diagram:{ left:[{name:"font-family stack",sub:"custom → fallback"}], right:[{name:"line-height",sub:"vertical rhythm"}], top:{name:"@font-face",sub:"loads the real typeface"}, coreSub:"text on screen", coreLabel:"Typography",
+        caption:"@font-face is what actually loads a custom face before it can be used; the font stack is the fallback chain the browser walks if it can't — line-height then sets the rhythm around whichever face renders." } },
+    { n:9, slug:"css-animations", name:"Transitions & Animations", icon:"🎬", what:"Motion between and within states", use:"Add smooth, GPU-friendly motion without JavaScript", learn:"transition, timing functions, @keyframes, animation shorthand, transform, prefers-reduced-motion", priority:"important", docName:"MDN: CSS animations", docUrl:"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations",
+      desc:"<code>transition</code> animates a property smoothly between its old and new value whenever that value changes — a hover state, a class toggle — and needs only a property list, duration, and timing function. <code>@keyframes</code> goes further, defining an explicit sequence of styles at named percentages (0%, 50%, 100%) that the <code>animation</code> shorthand then plays on a loop, in reverse, or with a delay, independent of any state change triggering it. Both are dramatically cheaper to run than JavaScript-driven animation when the animated property is <code>transform</code> or <code>opacity</code>, because the browser can hand those off to the GPU compositor without re-running layout or paint on every frame. Accessibility matters here too: some users experience real discomfort from motion, so respecting the <code>prefers-reduced-motion</code> media query to shorten or disable animations isn't optional polish.",
+      useWhen:"Use <code>transition</code> for simple two-state changes — a button darkening on hover, a menu sliding open. Reach for <code>@keyframes</code> when you need a multi-step sequence (a loading spinner, an attention-grabbing pulse) or something that should play automatically rather than in response to a state change, and always animate <code>transform</code>/<code>opacity</code> rather than layout-affecting properties like <code>width</code> or <code>top</code> when performance matters.",
+      steps:["Add <code>transition: &lt;properties&gt; &lt;duration&gt; &lt;timing-function&gt;;</code> to the resting state of an element, not the hover state.","Prefer animating <code>transform</code> and <code>opacity</code> over <code>width</code>/<code>height</code>/<code>top</code>/<code>left</code> for GPU-accelerated, jank-free motion.","Define multi-step sequences with <code>@keyframes</code> and named percentage stops.","Apply them with the <code>animation</code> shorthand, controlling duration, iteration-count, and direction.","Wrap non-essential motion in <code>@media (prefers-reduced-motion: reduce)</code> to shorten or disable it for users who've opted out.","Use DevTools' Performance/Rendering panel to confirm an animation isn't triggering layout thrashing."],
+      diagram:{ left:[{name:"transition",sub:"state A → state B"}], right:[{name:"@keyframes",sub:"multi-step sequence"}], bottom:{name:"prefers-reduced-motion",sub:"respects user setting"}, coreSub:"motion over time", coreLabel:"Animation",
+        caption:"transition covers a simple two-state change; @keyframes scripts an explicit multi-step sequence — either way, prefers-reduced-motion is the check that decides whether it should play at all." } },
+    { n:10, slug:"css-pseudo", name:"Pseudo-classes & Pseudo-elements", icon:"✨", what:"Styling states and generated content", use:"Style interaction states and inject content without extra markup", learn:":hover/:focus/:active, :nth-child(), :is()/:where()/:has(), ::before/::after, ::placeholder", priority:"important", docName:"MDN: Pseudo-classes", docUrl:"https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes",
+      desc:"Pseudo-classes (single colon: <code>:hover</code>, <code>:focus</code>, <code>:nth-child(2)</code>, <code>:checked</code>) select elements based on a state or position that isn't visible in the HTML itself — like whether the mouse is currently over a link, or an element's position among its siblings. <code>:has()</code> is a newer, more powerful pseudo-class that lets a selector match a parent based on what it contains, effectively giving CSS a 'parent selector' for the first time. Pseudo-elements (double colon: <code>::before</code>, <code>::after</code>, <code>::placeholder</code>) target a sub-part of an element that doesn't exist as its own DOM node — <code>::before</code> and <code>::after</code> in particular can inject generated content, which is how countless icons, tooltips, and decorative shapes are added without any extra HTML. Together they let a stylesheet react to interaction and inject small bits of content, instead of every state needing a class toggled by JavaScript.",
+      useWhen:"Use <code>:hover</code>/<code>:focus</code>/<code>:active</code> for interactive feedback on links, buttons, and form fields, <code>:nth-child()</code>/<code>:first-child</code> for styling based on position without extra classes, <code>:has()</code> when a parent's styling genuinely depends on what's inside it, and <code>::before</code>/<code>::after</code> for small decorative content (icons, quote marks, tooltip arrows) that doesn't belong in your markup.",
+      steps:["Style <code>:hover</code> and <code>:focus-visible</code> together on interactive elements — never <code>:hover</code> alone, or keyboard users lose the affordance.","Use <code>:nth-child()</code>/<code>:first-child</code>/<code>:last-child</code> to style based on position instead of adding a class in a loop.","Reach for <code>:has()</code> to style a parent conditionally based on its children, e.g. a form field's container when it <code>:has(:invalid)</code>.","Use <code>::before</code>/<code>::after</code> with <code>content: \"\"</code> for decorative shapes, and <code>content: attr(...)</code> to pull in data from the markup.","Style native form pseudo-elements like <code>::placeholder</code> for consistent styling across browsers.","Combine <code>:is()</code>/<code>:where()</code> to shorten repetitive selector lists without inflating specificity."],
+      diagram:{ left:[{name:":hover / :focus",sub:"interaction state"}], right:[{name:"::before / ::after",sub:"generated content"}], top:{name:":has()",sub:"parent selector"}, coreSub:"states & generated content", coreLabel:"Pseudo",
+        caption:":has() is the one pseudo-class that looks down into children rather than at the element itself — everything else here either reacts to interaction or injects content that was never in the HTML." } },
+  ],
+};
+
+/* ---------- Generic per-topic architecture diagram renderer ---------- */
+function stackBoxes(items, x, w, centerY, boxH, gap) {
+  const n = items.length;
+  if (!n) return [];
+  const totalH = n * boxH + (n - 1) * gap;
+  const startY = centerY - totalH / 2;
+  return items.map((it, i) => {
+    const y = startY + i * (boxH + gap);
+    return { ...it, x, y, w, h: boxH, cy: y + boxH / 2 };
+  });
+}
+
+function svcDiagramSVG(svc) {
+  const cfg = svc.diagram;
+  const W = 760, H = 420;
+  const coreW = 200, coreH = 90, coreCX = 380, coreCY = 210;
+  const coreX = coreCX - coreW / 2, coreY = coreCY - coreH / 2;
+  const leftX = 20, leftW = 170, rightX = 570, rightW = 170, boxH = 60, gap = 18;
+  const uid = svc.slug;
+
+  const lefts = stackBoxes(cfg.left || [], leftX, leftW, coreCY, boxH, gap);
+  const rights = stackBoxes(cfg.right || [], rightX, rightW, coreCY, boxH, gap);
+  const label = cfg.coreLabel || svc.name;
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${cfg.caption.replace(/"/g,"'")}">`;
+  svg += `<defs>
+    <marker id="m-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)"/></marker>
+    <marker id="ma-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)"/></marker>
+  </defs>`;
+
+  if (cfg.top) {
+    svg += `<rect class="d-node-navy" x="${coreX}" y="24" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title-light" x="${coreX+14}" y="47">${cfg.top.name}</text>
+      <text class="d-sub-light" x="${coreX+14}" y="62">${cfg.top.sub||""}</text>
+      <path class="d-arrow" d="M${coreCX} 70 L${coreCX} ${coreY-2}" marker-end="url(#m-${uid})"/>`;
+  }
+  if (cfg.bottom) {
+    svg += `<rect class="d-node" x="${coreX}" y="350" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title" x="${coreX+14}" y="373">${cfg.bottom.name}</text>
+      <text class="d-sub" x="${coreX+14}" y="388">${cfg.bottom.sub||""}</text>
+      <path class="d-arrow-accent" d="M${coreCX} ${coreY+coreH+2} L${coreCX} 348" marker-end="url(#ma-${uid})"/>`;
+  }
+
+  svg += `<rect class="d-node-accent" x="${coreX}" y="${coreY}" width="${coreW}" height="${coreH}" rx="12"/>
+    <text class="d-title" x="${coreCX}" y="${coreCY-6}" text-anchor="middle">${label}</text>
+    <text class="d-sub" x="${coreCX}" y="${coreCY+14}" text-anchor="middle">${cfg.coreSub||""}</text>`;
+
+  lefts.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${b.x+b.w} ${b.cy} L${coreX-2} ${coreCY}" marker-end="url(#m-${uid})"/>`;
+  });
+  rights.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${coreX+coreW+2} ${coreCY} L${b.x} ${b.cy}" marker-end="url(#m-${uid})"/>`;
+  });
+
+  svg += `</svg>`;
+  return svg;
+}
+
+function renderServicePanels() {
+  const host = document.getElementById("service-panels");
+  const html = [];
+  Object.keys(DATA).forEach(phaseKey => {
+    DATA[phaseKey].forEach(item => {
+      html.push(`
+        <section class="topic-panel" id="${item.slug}" hidden>
+          <div class="panel-kicker">${PHASE_LABEL[phaseKey]}</div>
+          <div class="panel-head">
+            <div class="panel-icon">${item.icon}</div>
+            <div>
+              <div class="svc-name-row"><h2>${String(item.n).padStart(2,"0")} · ${item.name}</h2><span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span></div>
+              <p class="panel-tagline">${item.what} — ${item.use}</p>
+            </div>
+          </div>
+          <p class="svc-desc" style="margin-top:20px;">${item.desc}</p>
+
+          <div class="use-callout">
+            <b class="callout-title">Where &amp; when to use it</b>
+            ${item.useWhen}
+          </div>
+
+          <div class="diagram-box">
+            <div class="d-chrome">Diagram · ${item.name}</div>
+            <div class="d-body">${svcDiagramSVG(item)}</div>
+            <p class="d-caption">${item.diagram.caption}</p>
+          </div>
+
+          <h3 class="subhead">How to use it</h3>
+          <ol class="steps-list">${item.steps.map(s => `<li>${s}</li>`).join("")}</ol>
+
+          <div class="svc-learn">
+            <div class="flabel">What you should learn</div>
+            <div class="tag-list">${item.learn.split(",").map(t => `<span class="tag">${t.trim()}</span>`).join("")}</div>
+          </div>
+
+          <div class="svc-foot">
+            <a class="back-home" style="margin:0;" href="#overview">← All topics</a>
+            <a class="doc-link" href="${item.docUrl}" target="_blank" rel="noopener">${item.docName} →</a>
+          </div>
+        </section>
+      `);
+    });
+  });
+  host.innerHTML = html.join("");
+}
+
+function renderSidebarNav() {
+  Object.keys(DATA).forEach(phaseKey => {
+    const group = document.getElementById(`nav-phase-${phaseKey}`);
+    const links = DATA[phaseKey].map(item =>
+      `<a class="nav-link" href="#${item.slug}"><span class="nav-icon">${item.icon}</span> ${item.name}</a>`
+    ).join("");
+    group.insertAdjacentHTML("beforeend", links);
+  });
+}
+
+function renderServiceIndex() {
+  const host = document.getElementById("svc-index");
+  const html = Object.keys(DATA).map(phaseKey => `
+    <div class="svc-index-group">
+      <h4>${PHASE_LABEL[phaseKey]}</h4>
+      ${DATA[phaseKey].map(item => `
+        <a class="svc-index-item" href="#${item.slug}">
+          <span class="svc-index-icon">${item.icon}</span>
+          <span class="svc-index-text"><div class="n">${item.name}</div><div class="t">${item.what} — ${item.use}</div></span>
+          <span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span>
+        </a>
+      `).join("")}
+    </div>
+  `).join("");
+  host.innerHTML = html;
+}
+
+/* ---------- Router: show exactly one topic panel at a time ---------- */
+function showTopic(id) {
+  document.querySelectorAll(".topic-panel").forEach(p => { p.hidden = (p.id !== id); });
+  document.querySelectorAll(".nav-link").forEach(a => {
+    a.classList.toggle("active", a.getAttribute("href") === "#" + id);
+  });
+  window.scrollTo(0, 0);
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("sidebarScrim").classList.remove("show");
+}
+
+function routeFromHash() {
+  const id = (location.hash || "#overview").slice(1);
+  showTopic(document.getElementById(id) ? id : "overview");
+}
+
+renderServicePanels();
+renderSidebarNav();
+renderServiceIndex();
+window.addEventListener("hashchange", routeFromHash);
+routeFromHash();
+
+/* ---------- Mobile sidebar toggle ---------- */
+const menuBtn = document.getElementById("menuBtn");
+const sidebarEl = document.getElementById("sidebar");
+const scrimEl = document.getElementById("sidebarScrim");
+if (menuBtn) {
+  menuBtn.addEventListener("click", () => {
+    sidebarEl.classList.toggle("open");
+    scrimEl.classList.toggle("show");
+  });
+}
+scrimEl.addEventListener("click", () => {
+  sidebarEl.classList.remove("open");
+  scrimEl.classList.remove("show");
+});
+
+/* ---------- Summary + references (unchanged data) ---------- */
+const sequence = ["Selectors & Specificity","The Box Model","Colors & Units","Custom Properties","Flexbox","Grid","Positioning","Typography","Transitions & Animations","Pseudo-classes & Pseudo-elements"];
+document.getElementById("sequence-flow").innerHTML = sequence.map(s => `<span class="seq-step">${s}</span>`).join('<span class="seq-arrow">→</span>');
+
+const docLinks = [
+  ["Selectors & Specificity","https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_selectors"],
+  ["The Box Model","https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_box_model"],
+  ["Colors & Units","https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Values_and_Units"],
+  ["Custom Properties","https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties"],
+  ["Flexbox","https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout"],
+  ["Grid","https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout"],
+  ["Positioning","https://developer.mozilla.org/en-US/docs/Web/CSS/position"],
+  ["Typography","https://developer.mozilla.org/en-US/docs/Learn/CSS/Styling_text"],
+  ["Transitions & Animations","https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations"],
+  ["Pseudo-classes & Pseudo-elements","https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes"],
+];
+document.getElementById("doc-links").innerHTML = docLinks.map(([n,u]) => `<div><b>${n}</b><br>${u}</div>`).join("");
+</script>
+
+</body>
+</html>
