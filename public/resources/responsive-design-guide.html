@@ -303,6 +303,110 @@
   .diagram-box .d-caption code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; color: var(--ink); }
   .diagram-box .d-caption b { color: var(--ink); }
 
+  /* ============ LIVE PLAYGROUND ============ */
+  .playground-box {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    margin: 20px 0 24px;
+  }
+  .pg-chrome {
+    background: var(--navy);
+    color: #fbf1ea;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 11px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .pg-reset {
+    background: transparent;
+    border: 1px solid rgba(251, 241, 234, 0.35);
+    color: #fbf1ea;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .pg-reset:hover { background: rgba(251, 241, 234, 0.12); border-color: rgba(251, 241, 234, 0.6); }
+  .pg-panes {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+  }
+  .pg-pane { background: var(--surface); display: flex; flex-direction: column; min-width: 0; }
+  .pg-pane-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 8px 12px 6px;
+  }
+  .pg-editor {
+    flex: 1;
+    resize: vertical;
+    border: none;
+    outline: none;
+    background: var(--surface-2);
+    color: var(--ink);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    padding: 4px 12px 14px;
+    min-height: 380px;
+    tab-size: 2;
+  }
+  .pg-pane-preview { background: #fff; }
+  .pg-frame {
+    flex: 1;
+    width: 100%;
+    min-height: 380px;
+    border: none;
+    background: #fff;
+  }
+  @media (max-width: 780px) {
+    .pg-panes { grid-template-columns: 1fr; }
+    .pg-editor, .pg-frame { min-height: 280px; }
+  }
+
+  .pg-width-btns { display: flex; gap: 6px; padding: 8px 12px 0; }
+  .pg-width-btn {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--ink-faint);
+    cursor: pointer;
+  }
+  .pg-width-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .pg-pane-preview { display: flex; flex-direction: column; }
+  .pg-pane-preview .pg-frame-wrap {
+    flex: 1; background: #e5e7eb; padding: 12px; display: flex; justify-content: center;
+    align-items: flex-start; overflow-x: auto;
+  }
+  .pg-pane-preview .pg-frame {
+    flex: none;
+    min-height: 380px;
+    transition: width 0.25s ease;
+    margin: 0 auto;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+  }
+
   /* shared SVG node styles, reused by every diagram */
   svg .d-node { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
   svg .d-node-accent { fill: var(--amber-tint); stroke: var(--amber); stroke-width: 1.5; }
@@ -748,19 +852,119 @@ const DATA = {
       useWhen:"Apply mobile-first thinking from the very first line of CSS on any new project, and especially on content-heavy or e-commerce sites where a large share of traffic arrives on a phone. Retrofitting it onto an existing desktop-first stylesheet is painful — this is a decision worth making before you write the first rule, not after.",
       steps:["Set <code>&lt;meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"&gt;</code> in the document head — without it, mobile browsers render at a fake desktop width.","Write the base stylesheet (no media query) targeting a ~360–400px wide viewport first.","Decide what content is essential at that width and what can be hidden, reordered, or deferred.","Add a <code>min-width: 768px</code> query only once the small-screen version is solid, layering on tablet-specific rules.","Add a <code>min-width: 992px</code> query for desktop-specific rules — multi-column layouts, hover states, wider nav.","Resist ever writing a <code>max-width</code> override to undo something — if you need that, the base styles were wrong."],
       diagram:{ left:[{name:"320–767px viewport",sub:"phones, base styles"}], top:{name:"Progressive Enhancement",sub:"add rules, never undo them"}, right:[{name:"min-width: 768px",sub:"tablet layer added"},{name:"min-width: 992px",sub:"desktop layer added"}], coreLabel:"Base Stylesheet", coreSub:"written for the smallest screen first",
-        caption:"The base stylesheet on the left has no media query at all — it's what a phone gets by default. Every breakpoint on the right only adds to it as the viewport grows; nothing downstream ever has to fight or override what came before." } },
+        caption:"The base stylesheet on the left has no media query at all — it's what a phone gets by default. Every breakpoint on the right only adds to it as the viewport grows; nothing downstream ever has to fight or override what came before." },
+      playground:{
+        html:`<div class="card">
+  <div class="card-icon">📱</div>
+  <div class="card-body">
+    <h3>Mobile-first card</h3>
+    <p>At mobile width this card is a full-width, stacked block. Click Tablet or Full above the preview — a min-width media query in the CSS turns it into a horizontal row with more breathing room, without touching this HTML at all.</p>
+  </div>
+</div>`,
+        css:`body { font-family: system-ui, sans-serif; margin: 0; padding: 16px; background: #f3f0fa; }
+
+/* Base styles: written for the smallest screen first, no media query needed */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.card-icon { font-size: 28px; }
+.card h3 { margin: 0 0 6px; font-size: 16px; }
+.card p { margin: 0; font-size: 13.5px; color: #4b5563; line-height: 1.6; }
+
+/* Progressive enhancement: this rule only ADDS, it never undoes the base */
+@media (min-width: 700px) {
+  .card {
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    padding: 24px 28px;
+  }
+  .card-icon { font-size: 40px; }
+}`
+      } },
     { n:2, slug:"topic-media-queries", name:"Media Queries & Breakpoints", icon:"📐", what:"Conditional CSS", use:"Apply different CSS rules based on viewport width (or other features)", learn:"@media syntax, min-width vs max-width, logical operators (and/or), custom breakpoints, matchMedia() in JS, container queries", priority:"must", docName:"MDN — Using Media Queries", docUrl:"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries/Using_media_queries",
       desc:"A media query is a conditional block of CSS that only applies when a stated condition about the viewport is true — most commonly a minimum or maximum width, but also orientation, resolution, or even the user's motion/color-scheme preferences. Because CSS is cascade-based, a rule inside a later media query that matches the current viewport will override an earlier, more general rule targeting the same selector, which is exactly how mobile-first layering works. Breakpoints are simply the specific width values you choose to write queries at — there's no universal correct set, though most teams converge on the same handful of widths (roughly 576, 768, 992, 1200, 1400px) because those are also what Bootstrap ships with. JavaScript's <code>matchMedia()</code> lets you read the same conditions at runtime, for logic that CSS alone can't express.",
       useWhen:"Reach for a raw media query whenever a layout needs to change at a width Bootstrap's built-in breakpoints don't cover, or when you're not using a framework at all. If you're already inside Bootstrap, prefer its breakpoint-aware utility classes first — write a custom media query only for the layout logic those utilities can't express.",
       steps:["Pick breakpoints based on where your actual content breaks, not arbitrary device widths.","Write mobile-first queries using <code>min-width</code>, ordered smallest to largest in the stylesheet.","Use logical operators (<code>and</code>) to combine conditions, e.g. width range and orientation.","Keep a small, fixed set of breakpoint variables (Sass variables or CSS custom properties) instead of repeating raw numbers everywhere.","Test the exact pixel width at which each query fires, not just \"looks fine on my monitor.\"","Consider a container query for a component that needs to respond to its parent's width, not the viewport's."],
       diagram:{ left:[{name:"Viewport width",sub:"the condition being tested"}], top:{name:"CSS Cascade",sub:"the later matching rule wins"}, right:[{name:"min-width: 576px",sub:"sm breakpoint"},{name:"min-width: 992px",sub:"lg breakpoint"}], bottom:{name:"Custom Breakpoint",sub:"any project-specific value"}, coreLabel:"@media Rule", coreSub:"a conditional block of CSS",
-        caption:"The viewport width is checked against the condition in the @media rule; if it matches, the block of CSS inside it joins the cascade and — because it comes later — wins over earlier, more general rules." } },
+        caption:"The viewport width is checked against the condition in the @media rule; if it matches, the block of CSS inside it joins the cascade and — because it comes later — wins over earlier, more general rules." },
+      playground:{
+        html:`<div class="boxes">
+  <div class="box box-a">A</div>
+  <div class="box box-b">B</div>
+  <div class="box box-c">C</div>
+</div>
+<p class="hint">Below 600px these are stacked in a column. Click Tablet or Full above — a single @media (min-width: 600px) block switches them to a row.</p>`,
+        css:`body { font-family: system-ui, sans-serif; margin: 0; padding: 16px; }
+
+/* Base: stacked in a column, no query needed — this is what mobile gets */
+.boxes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.box {
+  padding: 20px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 700;
+  text-align: center;
+  font-size: 18px;
+}
+.box-a { background: #7952B3; }
+.box-b { background: #5F3D99; }
+.box-c { background: #241537; }
+.hint { margin-top: 12px; font-size: 12.5px; color: #6b7280; }
+
+/* One clearly-commented breakpoint: row instead of column above 600px */
+@media (min-width: 600px) {
+  .boxes { flex-direction: row; }
+  .box { flex: 1; }
+}`
+      } },
     { n:3, slug:"topic-fluid-type-images", name:"Fluid Typography & Images", icon:"🌊", what:"Content that scales smoothly", use:"Keep text readable and images correctly sized at any viewport width", learn:"relative units (%, em, rem, vw), clamp(), max-width: 100%, aspect-ratio, srcset, sizes, <picture>, object-fit", priority:"important", docName:"MDN — CSS Responsive Design", docUrl:"https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_responsive_design",
       desc:"Fluid typography and images are what keep content looking correct between the breakpoints, not just at them — a media query changes the layout in discrete steps, but text and images need to scale continuously as the browser is resized. Relative units (<code>%</code>, <code>rem</code>, <code>vw</code>) size things relative to their parent, the root font size, or the viewport, instead of a fixed pixel value that stays the same regardless of screen size. The CSS <code>clamp(min, preferred, max)</code> function lets a single font-size rule scale smoothly with the viewport while never going below or above sane bounds. For images, <code>max-width: 100%; height: auto;</code> stops an image from ever overflowing its container, while <code>srcset</code>/<code>sizes</code> and the <code>&lt;picture&gt;</code> element let the browser download an appropriately sized image file instead of a giant one shrunk down by CSS.",
       useWhen:"Apply fluid units to any text or image that needs to look right across a continuous range of sizes, not just at your chosen breakpoints — headlines, hero images, and body copy are the most common places this matters, since fixed pixel values on those look visibly wrong on a screen even slightly outside what you tested.",
       steps:["Set the root font size in the <code>&lt;html&gt;</code> element and size everything else in <code>rem</code> so a single change scales the whole page.","Use <code>clamp(1rem, 2vw + 0.5rem, 1.75rem)</code>-style rules for headings that need to scale continuously with viewport width.","Add <code>img { max-width: 100%; height: auto; }</code> globally so no image can ever overflow its container.","Use <code>aspect-ratio</code> to reserve image space before it loads, preventing layout shift.","Serve multiple image sizes with <code>srcset</code> and <code>sizes</code> so phones don't download desktop-sized files.","Use <code>&lt;picture&gt;</code> with <code>&lt;source&gt;</code> elements when you need art-directed crops per breakpoint, not just smaller files."],
       diagram:{ left:[{name:"max-width: 100%",sub:"images never overflow"}], right:[{name:"clamp(1rem,2vw,1.5rem)",sub:"font scales with viewport"},{name:"srcset / <picture>",sub:"serves the right file size"}], coreLabel:"Fluid Units", coreSub:"%, rem, vw, clamp()",
-        caption:"Fluid units are what makes the page look right between breakpoints, not just at them — text and images scale continuously instead of jumping in fixed steps." } },
+        caption:"Fluid units are what makes the page look right between breakpoints, not just at them — text and images scale continuously instead of jumping in fixed steps." },
+      playground:{
+        html:`<div class="wrap">
+  <h1 class="fluid-heading">Fluid headline</h1>
+  <p class="hint">This heading's font-size uses clamp() — resize the preview (Mobile/Tablet/Full) and watch it scale continuously instead of jumping in steps.</p>
+  <img
+    class="fluid-img"
+    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='220'%3E%3Crect width='100%25' height='100%25' fill='%237952B3'/%3E%3Ctext x='50%25' y='50%25' fill='white' font-size='22' text-anchor='middle' dy='.3em'%3EFluid Image%3C/text%3E%3C/svg%3E"
+    alt="A placeholder graphic that scales with its container"
+  >
+</div>`,
+        css:`body { font-family: system-ui, sans-serif; margin: 0; padding: 16px; }
+
+.wrap { max-width: 480px; margin: 0 auto; }
+
+/* clamp(min, preferred, max) — scales smoothly with the viewport */
+.fluid-heading {
+  font-size: clamp(1.25rem, 5vw, 2.25rem);
+  margin: 0 0 8px;
+  line-height: 1.2;
+  color: #241537;
+}
+.hint { font-size: 12.5px; color: #6b7280; margin: 0 0 14px; }
+
+/* max-width: 100% + height: auto — image scales fluidly, never overflows */
+.fluid-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}`
+      } },
   ],
   2: [
     { n:4, slug:"topic-bootstrap-grid", name:"Bootstrap Grid System", icon:"▦", what:"12-column flexbox grid", use:"Lay out columns that reflow automatically per breakpoint", learn:"container, row, col-*, breakpoint infixes (sm/md/lg/xl/xxl), gutters, offset, order, nesting", priority:"must", docName:"Bootstrap Docs — Grid", docUrl:"https://getbootstrap.com/docs/5.3/layout/grid/",
@@ -768,25 +972,108 @@ const DATA = {
       useWhen:"Reach for the grid any time you need multiple pieces of content to sit side-by-side on wide screens and stack on narrow ones — this is Bootstrap's single most-used feature, and it replaces almost all custom flexbox/grid code you'd otherwise hand-write for page-level layout.",
       steps:["Wrap your layout in a <code>.container</code> (fixed max-width) or <code>.container-fluid</code> (always 100% width).","Add a <code>.row</code> inside the container to hold one horizontal set of columns.","Give each child a <code>.col-12</code> (full width, the mobile-first default) plus a larger breakpoint override like <code>.col-md-6</code>.","Confirm the column widths in a row sum to 12 (or less) at every breakpoint you've styled.","Use <code>.offset-md-2</code> to shift a column right, or <code>.order-md-2</code> to reorder columns, without changing the HTML.","Nest a new <code>.row</code> inside a <code>.col</code> only when a single column genuinely needs its own sub-grid."],
       diagram:{ left:[{name:".container",sub:"wraps the row"}], right:[{name:".col-md-6",sub:"half width ≥ 768px"},{name:".col-lg-4",sub:"third width ≥ 992px"},{name:".col-12",sub:"full width by default"}], coreLabel:".row", coreSub:"flexbox container, 12 columns",
-        caption:"Every column class is really two things at once: a fraction of 12 columns, and the breakpoint at which that fraction kicks in. Below that breakpoint, it falls back to whatever smaller rule (or the full-width default) applies instead." } },
+        caption:"Every column class is really two things at once: a fraction of 12 columns, and the breakpoint at which that fraction kicks in. Below that breakpoint, it falls back to whatever smaller rule (or the full-width default) applies instead." },
+      playground:{
+        html:`<div class="container">
+  <div class="row">
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="demo-box box-1">col-12 col-md-6 col-lg-4</div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="demo-box box-2">col-12 col-md-6 col-lg-4</div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="demo-box box-3">col-12 col-md-6 col-lg-4</div>
+    </div>
+  </div>
+</div>`,
+        css:`body { font-family: system-ui, sans-serif; padding: 16px; margin: 0; }
+.demo-box {
+  padding: 18px 12px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 12.5px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.box-1 { background: #7952B3; }
+.box-2 { background: #5F3D99; }
+.box-3 { background: #241537; }
+/* At Mobile: each col-12 takes the full row, stacked.
+   At Tablet (≥768px): col-md-6 puts two per row.
+   At Full (≥992px): col-lg-4 puts all three side by side. */`
+      } },
     { n:5, slug:"topic-bootstrap-containers", name:"Bootstrap Containers & Breakpoints", icon:"📏", what:"Bootstrap's 5-tier breakpoint scale", use:"Control the max-width of page content at each screen size", learn:"container vs container-fluid vs container-{bp}, the sm/md/lg/xl/xxl scale, min-width breakpoint values, gutter width, responsive containers", priority:"must", docName:"Bootstrap Docs — Breakpoints", docUrl:"https://getbootstrap.com/docs/5.3/layout/breakpoints/",
       desc:"Bootstrap defines five breakpoints — <code>sm</code> (576px), <code>md</code> (768px), <code>lg</code> (992px), <code>xl</code> (1200px), and <code>xxl</code> (1400px) — and every responsive utility and grid column class in the framework is built around this exact scale, all using <code>min-width</code> so the system is mobile-first by default. A plain <code>.container</code> gets a fixed max-width that steps up at each breakpoint; <code>.container-fluid</code> is always 100% width at every breakpoint; and a <code>.container-{breakpoint}</code> (like <code>.container-lg</code>) behaves like <code>.container-fluid</code> below that breakpoint and then locks to a fixed max-width above it — a hybrid useful when you want full-bleed content on mobile but a constrained, centered column on desktop.",
       useWhen:"Reach for a plain <code>.container</code> on most content pages where you want consistent margins and a centered, readable max-width. Use <code>.container-fluid</code> for dashboards or apps that should always use the full screen, and a <code>.container-{bp}</code> hybrid when you specifically want full-bleed on small screens but a capped width on large ones.",
       steps:["Learn the five breakpoint values by heart: 576 / 768 / 992 / 1200 / 1400px — everything else in Bootstrap is built on them.","Choose <code>.container</code> for most marketing/content pages.","Choose <code>.container-fluid</code> for app shells or dashboards that should always fill the viewport.","Use a <code>.container-md</code>/<code>.container-lg</code> hybrid only when you deliberately want fluid-then-fixed behavior.","Check Bootstrap's default max-width at each tier against your design instead of assuming it matches your mockup.","Override the gutter width via CSS variables (<code>--bs-gutter-x</code>) rather than fighting the grid with custom margins."],
       diagram:{ left:[{name:".container",sub:"fixed max-width per breakpoint"}], right:[{name:".container-fluid",sub:"always 100% width"},{name:".container-lg",sub:"fluid until lg, then fixed"}], coreLabel:"Breakpoint Scale", coreSub:"sm 576 · md 768 · lg 992 · xl 1200 · xxl 1400",
-        caption:"Every container variant answers the same question — how wide should page content be — differently at each of Bootstrap's five fixed breakpoints." } },
+        caption:"Every container variant answers the same question — how wide should page content be — differently at each of Bootstrap's five fixed breakpoints." },
+      playground:{
+        html:`<div class="container demo-wrap">
+  <div class="demo-label">.container — fixed max-width per breakpoint</div>
+</div>
+<div class="container-fluid demo-wrap fluid">
+  <div class="demo-label">.container-fluid — always 100% width</div>
+</div>`,
+        css:`body { font-family: system-ui, sans-serif; margin: 0; padding: 16px; background: #f3f0fa; }
+.demo-wrap {
+  background: #fff;
+  border: 2px dashed #7952B3;
+  border-radius: 6px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+.demo-wrap.fluid { border-color: #241537; }
+.demo-label { font-size: 12.5px; font-weight: 700; color: #241537; text-align: center; }
+/* Try Mobile vs Tablet vs Full above:
+   .container gets a capped max-width once past a breakpoint,
+   .container-fluid always fills the viewport at every width. */`
+      } },
     { n:6, slug:"topic-bootstrap-utilities", name:"Bootstrap Utility Classes", icon:"🧰", what:"Single-purpose, responsive utility classes", use:"Show/hide, space, size, and align elements per breakpoint without custom CSS", learn:"display utilities (d-none, d-md-block), spacing scale (p-*, m-*), responsive infixes, text alignment, flex utilities, the Utility API for custom utilities", priority:"important", docName:"Bootstrap Docs — Utility API", docUrl:"https://getbootstrap.com/docs/5.3/utilities/api/",
       desc:"Bootstrap's utility classes are small, single-purpose classes — one class, one CSS property — for spacing, display, text alignment, flexbox behavior, and more, so common styling doesn't require writing custom CSS at all. Nearly every utility accepts the same breakpoint infixes as the grid, so <code>d-none d-md-block</code> hides an element by default and shows it from <code>md</code> upward, and <code>p-2 p-lg-4</code> gives it less padding on mobile and more on desktop. The spacing scale (<code>0</code> through <code>5</code>, plus <code>auto</code>) is consistent across margin and padding utilities, and the underlying Utility API even lets you register entirely new custom utilities (with their own responsive variants generated automatically) via Sass configuration.",
       useWhen:"Reach for a utility class before writing custom CSS for anything simple and one-off — hiding a sidebar below a breakpoint, adding responsive padding, centering text on mobile but left-aligning on desktop. Fall back to real CSS/Sass once you need more than two or three utilities stacked on the same element, or the same combination repeats across many components.",
       steps:["Learn the spacing scale (<code>p-0</code>…<code>p-5</code>, <code>m-0</code>…<code>m-5</code>, plus <code>auto</code>) before reaching for custom margin/padding CSS.","Use display utilities like <code>d-none d-md-flex</code> to show/hide elements at specific breakpoints.","Use responsive text-alignment utilities (<code>text-center text-lg-start</code>) instead of custom media queries for simple alignment changes.","Combine flex utilities (<code>d-flex</code>, <code>justify-content-between</code>, <code>flex-md-row</code>) for common one-off layouts that don't need a full grid.","Extend the Utility API in Sass when the same custom property/value pair keeps getting hand-written across components.","Avoid stacking more than a handful of utilities on one element — extract a real class once it gets unreadable."],
       diagram:{ left:[{name:"d-none d-md-block",sub:"responsive display"}], right:[{name:"p-3 p-lg-4",sub:"responsive spacing"},{name:"text-center text-lg-start",sub:"responsive alignment"}], coreLabel:"Utility API", coreSub:"single-purpose classes, per breakpoint",
-        caption:"Every utility class does exactly one thing, and nearly all of them accept the same breakpoint infixes as the grid — so the same class naming convention you learn once applies everywhere." } },
+        caption:"Every utility class does exactly one thing, and nearly all of them accept the same breakpoint infixes as the grid — so the same class naming convention you learn once applies everywhere." },
+      playground:{
+        html:`<div class="d-flex justify-content-between p-3 m-2 bg-light rounded">
+  <span>Left item</span>
+  <span>Right item</span>
+</div>
+<div class="p-3 m-2 bg-light rounded text-center">
+  Centered text using text-center
+</div>`,
+        css:`body { font-family: system-ui, sans-serif; margin: 0; padding: 12px; }
+/* No custom CSS needed — this topic is entirely Bootstrap utility classes:
+   d-flex, justify-content-between, p-3, m-2, text-center, bg-light, rounded */`
+      } },
     { n:7, slug:"topic-bootstrap-components", name:"Bootstrap Components", icon:"🧩", what:"Pre-built, responsive-aware UI components", use:"Ship a navbar, cards, or a modal that already behaves correctly per breakpoint", learn:"navbar + navbar-expand-{bp}, cards, modals, offcanvas, responsive images/tables, JS-driven collapse behavior", priority:"important", docName:"Bootstrap Docs — Navbar", docUrl:"https://getbootstrap.com/docs/5.3/components/navbar/",
       desc:"Bootstrap ships a library of pre-built components — navbars, cards, modals, offcanvas panels — that already have responsive behavior baked in, so you don't have to design that behavior from scratch. The navbar is the clearest example: <code>.navbar-expand-lg</code> shows the full horizontal nav once the viewport reaches <code>lg</code>, and collapses it behind a hamburger toggle button below that, with the show/hide animation handled by Bootstrap's own JavaScript. Cards reflow naturally inside grid columns, tables can be wrapped in <code>.table-responsive</code> to become horizontally scrollable instead of breaking the layout on narrow screens, and modals/offcanvas panels are positioned and sized sensibly at every breakpoint without extra configuration.",
       useWhen:"Reach for a Bootstrap component whenever the UI pattern you need — navigation, a card grid, a modal dialog — is common enough that Bootstrap already ships it; building the same responsive behavior (especially the navbar collapse) from scratch is a well-known time sink that rarely improves on the built-in version.",
       steps:["Start with the navbar's default markup and pick a <code>.navbar-expand-{bp}</code> matching where you want the collapse to happen.","Confirm Bootstrap's JS bundle is loaded — the collapse/toggle behavior depends on it, not just the CSS.","Wrap wide tables in <code>.table-responsive</code> so they scroll horizontally on narrow screens instead of breaking the page.","Lay cards out inside grid columns so they reflow with the rest of the page instead of a fixed card width.","Use offcanvas instead of a modal for navigation-style panels that should slide in from an edge.","Test every interactive component's collapsed/expanded state at each breakpoint, not just the widest and narrowest."],
       diagram:{ left:[{name:"Hamburger toggle",sub:"shown below the breakpoint"}], right:[{name:"Full nav row",sub:"shown at/above the breakpoint"},{name:"Cards / Modals",sub:"reflow with the grid"}], coreLabel:"navbar-expand-lg", coreSub:"collapses below the chosen breakpoint",
-        caption:"The same navbar markup renders as a full horizontal row above the chosen breakpoint and collapses behind a hamburger toggle below it — no custom JS required to get that behavior." } },
+        caption:"The same navbar markup renders as a full horizontal row above the chosen breakpoint and collapses behind a hamburger toggle below it — no custom JS required to get that behavior." },
+      playground:{
+        html:`<nav class="navbar navbar-expand-lg navbar-light bg-light rounded mb-3">
+  <div class="container-fluid">
+    <span class="navbar-brand">Brand</span>
+    <span class="navbar-text">static markup — no JS bundle in this sandbox</span>
+  </div>
+</nav>
+
+<div class="card" style="max-width: 300px;">
+  <div class="card-body">
+    <h5 class="card-title">Card title</h5>
+    <p class="card-text">A Bootstrap card paired with a button below.</p>
+    <button class="btn btn-primary">Primary action</button>
+  </div>
+</div>`,
+        css:`body { font-family: system-ui, sans-serif; margin: 0; padding: 12px; }
+/* Bootstrap's CSS is already loaded by the preview — only classes needed here.
+   Dropdowns/modals need Bootstrap's JS bundle, which is skipped in this sandbox. */`
+      } },
   ],
   3: [
     { n:8, slug:"topic-testing-responsiveness", name:"Testing Responsiveness", icon:"🔬", what:"Verifying layouts actually work at every size", use:"Catch broken breakpoints, overflow, and touch-target issues before users do", learn:"browser DevTools device toolbar, real-device testing, Lighthouse mobile audits, axe/accessibility checks, touch target sizing, orientation testing", priority:"advanced", docName:"MDN — Responsive Design (Learn)", docUrl:"https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Responsive_Design",
@@ -794,7 +1081,57 @@ const DATA = {
       useWhen:"Test responsiveness continuously through development, not as a final step — check the DevTools device toolbar after any layout change, run Lighthouse before every release, and validate on at least one real phone and one real tablet before calling a redesign done.",
       steps:["Open the browser DevTools device toolbar and drag the viewport width through your breakpoints, watching for anything that overflows or overlaps.","Check touch target sizing — buttons and links should be at least ~44×44px on touch devices, with enough spacing to avoid mis-taps.","Run a Lighthouse mobile audit and fix every flagged responsiveness/performance issue, not just the score.","Test on at least one real phone and one real tablet — device presets in DevTools miss real-world quirks like browser chrome height.","Check both orientations (portrait and landscape) on mobile — a layout that only works in one is not actually responsive.","Run an accessibility check (axe, or Lighthouse's own a11y audit) after any layout change, since responsive reflows can silently break tab order or contrast."],
       diagram:{ left:[{name:"DevTools Device Toolbar",sub:"fast simulated checks"}], right:[{name:"Real devices",sub:"actual touch input, DPI"},{name:"Lighthouse / axe",sub:"performance & a11y audits"}], coreLabel:"Responsive QA", coreSub:"verify every breakpoint, not just the widest",
-        caption:"DevTools is the fast first pass; real devices and automated audits are what actually catch the issues a simulated viewport resize can't." } },
+        caption:"DevTools is the fast first pass; real devices and automated audits are what actually catch the issues a simulated viewport resize can't." },
+      playground:{
+        html:`<h4>Buggy row</h4>
+<!-- try shrinking to Mobile — this row doesn't wrap -->
+<div class="row-buggy">
+  <div class="chip">Profile</div>
+  <div class="chip">Settings</div>
+  <div class="chip">Notifications</div>
+  <div class="chip">Billing</div>
+</div>
+
+<h4>Fixed row</h4>
+<div class="row-fixed">
+  <div class="chip">Profile</div>
+  <div class="chip">Settings</div>
+  <div class="chip">Notifications</div>
+  <div class="chip">Billing</div>
+</div>`,
+        css:`body { font-family: system-ui, sans-serif; margin: 0; padding: 16px; }
+h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; color: #6b7280; margin: 16px 0 6px; }
+h4:first-child { margin-top: 0; }
+.chip {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: #7952B3;
+  color: #fff;
+  font-size: 13px;
+  margin: 0 6px 6px 0;
+}
+
+/* BUG: nowrap forces every chip onto one line — try Mobile width above,
+   the row overflows its container instead of wrapping to a new line. */
+.row-buggy {
+  display: flex;
+  white-space: nowrap;
+  overflow: visible;
+  gap: 8px;
+  border: 1px dashed #b8402b;
+  padding: 8px;
+}
+
+/* FIX: flex-wrap lets chips drop to a second line once they no longer fit. */
+.row-fixed {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  border: 1px dashed #1f7a5c;
+  padding: 8px;
+}`
+      } },
   ],
 };
 
@@ -898,6 +1235,8 @@ function renderServicePanels() {
             <div class="tag-list">${item.learn.split(",").map(t => `<span class="tag">${t.trim()}</span>`).join("")}</div>
           </div>
 
+          ${item.playground ? renderPlaygroundHTML(item) : ""}
+
           <div class="svc-foot">
             <a class="back-home" style="margin:0;" href="#overview">← All topics</a>
             <a class="doc-link" href="${item.docUrl}" target="_blank" rel="noopener">${item.docName} →</a>
@@ -907,6 +1246,79 @@ function renderServicePanels() {
     });
   });
   host.innerHTML = html.join("");
+  initPlaygrounds();
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function renderPlaygroundHTML(item) {
+  return `
+    <h3 class="subhead">Try it live</h3>
+    <div class="playground-box" data-slug="${item.slug}">
+      <div class="pg-chrome">
+        <span>Live example · ${item.name}</span>
+        <button class="pg-reset" type="button" data-action="reset">Reset</button>
+      </div>
+      <div class="pg-panes">
+        <div class="pg-pane">
+          <div class="pg-pane-label">HTML</div>
+          <textarea class="pg-editor" data-editor="html" spellcheck="false">${escapeHtml(item.playground.html)}</textarea>
+        </div>
+        <div class="pg-pane">
+          <div class="pg-pane-label">CSS</div>
+          <textarea class="pg-editor" data-editor="css" spellcheck="false">${escapeHtml(item.playground.css)}</textarea>
+        </div>
+        <div class="pg-pane pg-pane-preview">
+          <div class="pg-pane-label">Preview</div>
+          <div class="pg-width-btns">
+            <button type="button" class="pg-width-btn active" data-width="375">📱 Mobile</button>
+            <button type="button" class="pg-width-btn" data-width="768">📱 Tablet</button>
+            <button type="button" class="pg-width-btn" data-width="1200">🖥️ Full</button>
+          </div>
+          <div class="pg-frame-wrap">
+            <iframe class="pg-frame" style="width:375px;" sandbox="allow-popups allow-popups-to-escape-sandbox" title="Live preview of ${item.name}"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function initPlaygrounds() {
+  document.querySelectorAll(".playground-box").forEach(box => {
+    const htmlEditor = box.querySelector('[data-editor="html"]');
+    const cssEditor = box.querySelector('[data-editor="css"]');
+    const frame = box.querySelector(".pg-frame");
+    const resetBtn = box.querySelector('[data-action="reset"]');
+    const widthBtns = box.querySelectorAll(".pg-width-btn");
+    const defaults = { html: htmlEditor.value, css: cssEditor.value };
+    let debounceTimer = null;
+
+    function update() {
+      frame.srcdoc = `<!DOCTYPE html><html><head><meta charset="UTF-8"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"><style>${cssEditor.value}</style></head><body>${htmlEditor.value}</body></html>`;
+    }
+    function scheduleUpdate() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(update, 200);
+    }
+
+    htmlEditor.addEventListener("input", scheduleUpdate);
+    cssEditor.addEventListener("input", scheduleUpdate);
+    resetBtn.addEventListener("click", () => {
+      htmlEditor.value = defaults.html;
+      cssEditor.value = defaults.css;
+      update();
+    });
+    widthBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        frame.style.width = btn.dataset.width + "px";
+        widthBtns.forEach(b => b.classList.toggle("active", b === btn));
+      });
+    });
+    update();
+  });
 }
 
 function renderSidebarNav() {
