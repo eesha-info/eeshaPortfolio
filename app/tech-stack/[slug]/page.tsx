@@ -142,26 +142,18 @@ export default async function TechDetailPage({
                 ))}
               </div>
 
-              <div className="flex flex-wrap justify-center gap-4">
-                <a
-                  href={tech.docsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-primary"
-                >
-                  Read Official Documentation ↗
-                </a>
-                {tech.notesUrl && (
+              {tech.notesUrl && (
+                <div className="flex justify-center">
                   <a
                     href={`${basePath}${tech.notesUrl}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-outline"
+                    className="btn-primary"
                   >
-                    📖 My Learning Roadmap ↗
+                    📖 View Learning Roadmap ↗
                   </a>
-                )}
-              </div>
+                </div>
+              )}
             </>
           )}
         </div>

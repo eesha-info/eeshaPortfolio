@@ -114,76 +114,135 @@
     border-radius: 4px;
   }
 
-  /* ============ NAV ============ */
-  .topnav {
-    position: sticky;
-    top: 0;
-    z-index: 30;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 12px 28px;
-    background: color-mix(in srgb, var(--surface) 88%, transparent);
-    backdrop-filter: blur(10px);
+  /* ============ MOBILE TOPBAR ============ */
+  .topbar {
+    display: none;
+    position: sticky; top: 0; z-index: 40;
+    align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--border);
   }
-  .topnav .brand {
+  .topbar .brand { font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 14px; }
+  .topbar .brand span { color: var(--amber); }
+  .menu-btn {
+    width: 36px; height: 36px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--ink);
+    font-size: 16px; cursor: pointer; text-decoration: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sidebar-scrim { display: none; position: fixed; inset: 0; background: rgba(5,11,20,0.5); z-index: 45; }
+  .sidebar-scrim.show { display: block; }
+
+  /* ============ SHELL / SIDEBAR ============ */
+  .shell { display: flex; align-items: flex-start; max-width: 1360px; margin: 0 auto; }
+  .sidebar {
+    position: sticky; top: 0;
+    width: 280px; flex-shrink: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 22px 16px 60px;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+    scrollbar-width: thin;
+  }
+  .sidebar .brand {
     font-family: "IBM Plex Mono", monospace;
-    font-weight: 700;
-    font-size: 13px;
-    letter-spacing: 0.02em;
-    color: var(--ink);
-    white-space: nowrap;
-  }
-  .topnav .brand span { color: var(--amber); }
-  .topnav .links {
+    font-weight: 800;
+    font-size: 15px;
     display: flex;
-    gap: 4px;
-    overflow-x: auto;
-    scrollbar-width: none;
+    align-items: center;
+    gap: 8px;
+    padding: 0 8px 16px;
   }
-  .topnav .links::-webkit-scrollbar { display: none; }
-  .topnav .links a {
+  .sidebar .brand span { color: var(--amber); }
+  .back-home {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 8px 18px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
     color: var(--ink-soft);
     text-decoration: none;
     font-size: 12.5px;
     font-weight: 600;
-    padding: 7px 11px;
-    border-radius: 7px;
-    white-space: nowrap;
-    letter-spacing: 0.01em;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
   }
-  .topnav .links a:hover { color: var(--ink); background: var(--surface-2); }
+  .back-home:hover { color: var(--ink); background: var(--amber-tint); border-color: var(--amber); }
+  .nav-group { margin-bottom: 4px; }
+  .nav-group-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    padding: 14px 8px 6px;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+    margin: 1px 0;
+    border-radius: 7px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 13px;
+    border-left: 2px solid transparent;
+  }
+  .nav-link:hover { background: var(--surface-2); color: var(--ink); }
+  .nav-link.active {
+    background: var(--amber-tint);
+    color: var(--ink);
+    font-weight: 600;
+    border-left: 2px solid var(--amber);
+  }
+  .nav-icon { flex-shrink: 0; width: 18px; text-align: center; font-size: 13px; }
 
-  /* ============ MASTHEAD ============ */
-  .masthead {
+  .content { flex: 1; min-width: 0; padding: 40px 32px 90px; }
+  .topic-panel[hidden] { display: none; }
+
+  @media (max-width: 920px) {
+    .topbar { display: flex; }
+    .sidebar {
+      position: fixed; inset: 0 auto 0 0;
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+      z-index: 50;
+      width: 82vw;
+      max-width: 300px;
+      box-shadow: var(--shadow-lg);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .content { padding: 28px 18px 100px; }
+  }
+
+  /* ============ PANEL HERO (Overview only) ============ */
+  .panel-hero {
     position: relative;
     overflow: hidden;
+    border-radius: 16px;
     background: linear-gradient(150deg, #0a1a30 0%, #10294a 55%, #0d2140 100%);
     color: #eef2f8;
-    padding: 56px 28px 44px;
+    padding: 40px 32px;
+    margin-bottom: 30px;
   }
-  .masthead::before {
+  .panel-hero::before {
     content: "";
     position: absolute;
-    top: -140px; right: -100px;
-    width: 420px; height: 420px;
+    top: -120px; right: -90px;
+    width: 360px; height: 360px;
     border-radius: 50%;
     background: radial-gradient(circle at 35% 35%, rgba(217,121,10,0.30), rgba(217,121,10,0) 70%);
     pointer-events: none;
   }
-  .masthead-inner {
+  .panel-hero .eyebrow {
     position: relative;
-    max-width: 1180px;
-    margin: 0 auto;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 32px;
-  }
-  .masthead-main { max-width: 620px; }
-  .eyebrow {
     font-family: "IBM Plex Mono", monospace;
     font-size: 11.5px;
     letter-spacing: 0.18em;
@@ -194,33 +253,11 @@
     align-items: center;
     gap: 8px;
   }
-  .eyebrow::before {
-    content: "";
-    width: 7px; height: 7px; border-radius: 50%;
-    background: #ffb95e;
-    display: inline-block;
-  }
-  .masthead h1 {
-    margin-top: 16px;
-    font-size: clamp(28px, 4vw, 40px);
-    line-height: 1.15;
-    font-weight: 700;
-    color: #fff;
-  }
-  .masthead h1 em { font-style: normal; color: #ffb95e; }
-  .masthead p.lede {
-    margin-top: 14px;
-    font-size: 15.5px;
-    color: #c3d0e3;
-    max-width: 52ch;
-    font-family: "IBM Plex Sans", sans-serif;
-  }
-  .stat-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 22px;
-  }
+  .panel-hero .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #ffb95e; display: inline-block; }
+  .panel-hero h1 { position: relative; margin-top: 14px; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.2; font-weight: 700; color: #fff; }
+  .panel-hero h1 em { font-style: normal; color: #ffb95e; }
+  .panel-hero p.lede { position: relative; margin-top: 12px; font-size: 15px; color: #c3d0e3; max-width: 68ch; font-family: "IBM Plex Sans", sans-serif; line-height: 1.75; }
+  .panel-hero .stat-chips { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
   .stat-chip {
     font-family: "IBM Plex Mono", monospace;
     font-size: 11.5px;
@@ -230,149 +267,183 @@
     border-radius: 999px;
   }
   .stat-chip b { color: #fff; }
-  .credit-card {
-    align-self: flex-end;
-    text-align: right;
-    font-family: "IBM Plex Sans", sans-serif;
-  }
-  .credit-card .label {
-    font-family: "IBM Plex Mono", monospace;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    font-size: 10px;
-    color: #ffb95e;
-    font-weight: 700;
-  }
-  .credit-card .name {
-    font-size: 19px;
-    font-weight: 700;
-    color: #fff;
-    margin-top: 6px;
-  }
-  .credit-card .role {
-    font-size: 12.5px;
-    color: #aebedb;
-    margin-top: 2px;
-  }
-  .tip-note {
-    margin-top: 26px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    color: #c3d0e3;
-    border: 1px dashed rgba(255,255,255,0.28);
-    padding: 8px 12px;
-    border-radius: 8px;
-  }
-  .tip-note .info-dot {
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    background: rgba(255,185,94,0.22);
-    color: #ffb95e;
-    display: inline-flex; align-items: center; justify-content: center;
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 10px; font-weight: 700;
-    flex-shrink: 0;
-  }
 
-  /* ============ MAIN LAYOUT ============ */
-  main { max-width: 1180px; margin: 0 auto; padding: 40px 28px 80px; }
-  section.phase { margin-bottom: 40px; scroll-margin-top: 68px; }
-  .phase-head {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    margin-bottom: 16px;
+  section.topic-panel h1.section-title { font-size: 22px; margin-bottom: 14px; }
+  .lede-plain { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 82ch; margin: 0 0 16px; }
+  .lede-plain b { color: var(--ink); }
+
+  /* ============ DIAGRAM BOX ============ */
+  .diagram-box {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    margin: 0 0 24px;
   }
-  .phase-index {
+  .diagram-box .d-chrome {
+    background: var(--navy);
+    color: #eef3fb;
     font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
     font-weight: 700;
-    font-size: 14px;
-    width: 34px; height: 34px;
-    border-radius: 9px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 11px 16px;
+  }
+  .diagram-box .d-body { padding: 22px 18px 6px; overflow-x: auto; }
+  .diagram-box .d-body svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+  .diagram-box .d-caption {
+    padding: 6px 20px 20px;
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 88ch;
+  }
+  .diagram-box .d-caption code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; color: var(--ink); }
+  .diagram-box .d-caption b { color: var(--ink); }
+
+  /* shared SVG node styles, reused by every diagram */
+  svg .d-node { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
+  svg .d-node-accent { fill: var(--amber-tint); stroke: var(--amber); stroke-width: 1.5; }
+  svg .d-node-navy { fill: var(--navy); stroke: var(--navy); }
+  svg .d-title { fill: var(--ink); font: 700 13.5px "IBM Plex Sans", sans-serif; }
+  svg .d-title-light { fill: #ffffff; font: 700 12.5px "IBM Plex Mono", monospace; }
+  svg .d-sub { fill: var(--ink-faint); font: 600 10px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-sub-light { fill: #b9c8e0; font: 600 9.5px "IBM Plex Mono", monospace; letter-spacing: 0.04em; }
+  svg .d-text { fill: var(--ink-soft); font: 500 11px "IBM Plex Mono", monospace; }
+  svg .d-arrow { fill: none; stroke: var(--ink-faint); stroke-width: 2; }
+  svg .d-arrow-accent { fill: none; stroke: var(--amber); stroke-width: 2.25; }
+  svg .d-label { fill: var(--ink-soft); font: 600 11px "IBM Plex Sans", sans-serif; }
+  svg .d-label-accent { fill: var(--amber-strong); font: 700 11px "IBM Plex Sans", sans-serif; }
+  svg .d-boundary { fill: none; stroke: var(--link); stroke-width: 1.5; stroke-dasharray: 6 4; }
+  svg .d-boundary-label { fill: var(--link); font: 700 10.5px "IBM Plex Mono", monospace; letter-spacing: 0.05em; }
+
+  /* ============ SERVICE PANEL ============ */
+  .panel-kicker {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 10px;
+  }
+  .panel-head { display: flex; gap: 16px; align-items: flex-start; }
+  .panel-icon {
+    flex-shrink: 0;
+    width: 56px; height: 56px;
+    border-radius: 12px;
     background: var(--navy);
     color: var(--amber-strong);
     display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
+    font-size: 24px;
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
   }
-  .phase-head h2 { font-size: 19px; color: var(--ink); }
-  .phase-head p { margin: 4px 0 0; font-size: 13px; color: var(--ink-soft); font-family: "IBM Plex Sans", sans-serif; }
+  .svc-name-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .svc-name-row h2 { font-size: 21px; color: var(--ink); }
+  .panel-tagline { margin: 6px 0 0; font-size: 13.5px; color: var(--ink-faint); font-family: "IBM Plex Sans", sans-serif; }
+  .svc-desc { font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); max-width: 84ch; }
 
-  .table-wrap {
-    overflow-x: auto;
+  .use-callout {
+    margin: 22px 0;
+    padding: 16px 18px;
+    border-radius: 10px;
     border: 1px solid var(--border);
-    border-radius: 12px;
-    background: var(--surface);
-    box-shadow: var(--shadow);
+    border-left: 4px solid var(--link);
+    background: var(--surface-2);
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 84ch;
   }
-  table {
-    width: 100%;
-    min-width: 900px;
-    border-collapse: collapse;
-    font-size: 13px;
-    table-layout: fixed;
-  }
-  thead th {
-    background: var(--navy);
-    color: #eef3fb;
-    text-align: left;
-    padding: 10px 12px;
+  .use-callout b { color: var(--ink); }
+  .callout-title {
+    display: block;
     font-family: "IBM Plex Mono", monospace;
     font-size: 10.5px;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--link);
+    font-weight: 700;
+    margin-bottom: 6px;
   }
-  col.c-num { width: 5%; }
-  col.c-service { width: 17%; }
-  col.c-what { width: 15%; }
-  col.c-use { width: 16%; }
-  col.c-learn { width: 27%; }
-  col.c-priority { width: 12%; }
-  col.c-doc { width: 8%; }
 
-  tbody td {
-    padding: 11px 12px;
-    border-bottom: 1px solid var(--border);
-    vertical-align: top;
-    overflow-wrap: break-word;
-    word-break: break-word;
-    color: var(--ink);
+  h3.subhead { font-size: 15px; margin: 28px 0 6px; color: var(--ink); }
+
+  .steps-list {
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 84ch;
   }
-  tbody tr:last-child td { border-bottom: none; }
-  tbody tr:nth-child(even) { background: var(--surface-2); }
-  tbody tr:hover { background: var(--amber-tint); }
-  td.num-col { font-family: "IBM Plex Mono", monospace; color: var(--ink-faint); font-weight: 600; }
-  td.use-col, td.learn-col, td.what-col { color: var(--ink-soft); font-size: 12.5px; }
-
-  .service-cell { display: flex; align-items: center; gap: 8px; }
-  .service-cell .name { font-weight: 700; color: var(--ink); }
-
-  .info-btn {
+  .steps-list li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .steps-list li::before {
+    counter-increment: step;
+    content: counter(step);
     flex-shrink: 0;
-    width: 20px; height: 20px;
+    width: 24px; height: 24px;
     border-radius: 50%;
-    border: 1.5px solid var(--amber);
-    background: transparent;
-    color: var(--amber);
+    background: var(--navy);
+    color: var(--amber-strong);
     font-family: "IBM Plex Mono", monospace;
     font-weight: 700;
-    font-size: 11px;
-    line-height: 1;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    transition: background 0.12s ease, color 0.12s ease, transform 0.12s ease;
+    font-size: 11.5px;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
   }
-  .info-btn:hover, .info-btn:focus-visible {
-    background: var(--amber);
-    color: var(--surface);
-    transform: scale(1.08);
-  }
+  .steps-list li b { color: var(--ink); }
+  .steps-list li code { font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
 
+  .svc-learn { margin-top: 26px; }
+  .flabel {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-faint);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--ink-soft);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .svc-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    max-width: 84ch;
+  }
+  .doc-link {
+    font-size: 12.5px;
+    color: var(--link);
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .doc-link:hover { text-decoration: underline; }
   .badge {
     display: inline-block;
     font-family: "IBM Plex Mono", monospace;
@@ -388,14 +459,42 @@
   .badge-important { background: var(--warn-bg); color: var(--warn); }
   .badge-level { background: var(--calm-bg); color: var(--calm); }
 
-  .doc-link {
+  /* ============ OVERVIEW SERVICE INDEX ============ */
+  .svc-index-group { margin-bottom: 22px; }
+  .svc-index-group h4 {
     font-size: 12px;
-    color: var(--link);
-    text-decoration: none;
-    font-weight: 600;
-    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    font-family: "IBM Plex Mono", monospace;
+    margin-bottom: 10px;
   }
-  .doc-link:hover { text-decoration: underline; }
+  .svc-index-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    text-decoration: none;
+    color: var(--ink);
+    margin-bottom: 6px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .svc-index-item:hover { border-color: var(--amber); background: var(--amber-tint); }
+  .svc-index-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--navy);
+    color: var(--amber-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .svc-index-text { flex: 1; min-width: 0; }
+  .svc-index-text .n { font-weight: 700; font-size: 13.5px; }
+  .svc-index-text .t { font-size: 11.5px; color: var(--ink-faint); }
 
   /* ============ SUMMARY CARDS ============ */
   .card {
@@ -407,11 +506,8 @@
     margin-bottom: 18px;
     box-shadow: var(--shadow);
   }
-  .card h3 {
-    font-size: 14px;
-    color: var(--ink);
-    margin-bottom: 12px;
-  }
+  .card h3 { font-size: 14px; color: var(--ink); margin-bottom: 12px; }
+  .card p.card-note { margin: 0 0 14px; font-size: 13px; color: var(--ink-soft); font-family: "IBM Plex Sans", sans-serif; line-height: 1.7; }
   .seq-flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12.5px; }
   .seq-step {
     font-family: "IBM Plex Mono", monospace;
@@ -443,32 +539,6 @@
   .lvl-3 { background: var(--ink-faint); }
   .plevel .lvl-items { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
 
-  .arch-flow {
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 12.5px;
-    background: var(--surface-2);
-    border: 1px dashed var(--border);
-    border-radius: 8px;
-    padding: 14px 16px;
-    color: var(--ink);
-    font-weight: 600;
-    line-height: 1.9;
-    overflow-x: auto;
-  }
-  .arch-flow .arrow { color: var(--amber); }
-  .support-list { margin-top: 10px; font-size: 13px; color: var(--ink-soft); line-height: 1.7; }
-
-  .pattern-flow {
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--ink);
-    text-align: center;
-    padding: 12px 0 4px;
-  }
-  .pattern-flow .arrow { color: var(--amber); margin: 0 8px; }
-  .pattern-note { font-size: 12.5px; color: var(--ink-soft); text-align: center; margin-top: 4px; }
-
   .doc-links-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -494,270 +564,213 @@
   }
   footer .name { font-size: 18px; font-weight: 700; margin-top: 6px; }
   footer .role { font-size: 12.5px; color: var(--ink-soft); margin-top: 2px; }
-
-  /* ============ MODAL ============ */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    background: rgba(5, 11, 20, 0.6);
-  }
-  .modal-overlay[hidden] { display: none; }
-  .modal-panel {
-    border: none;
-    border-radius: 14px;
-    padding: 0;
-    width: min(560px, 100%);
-    max-height: min(640px, calc(100vh - 40px));
-    background: var(--surface);
-    color: var(--ink);
-    box-shadow: var(--shadow-lg);
-    display: flex;
-    flex-direction: column;
-  }
-  .modal-head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 22px 24px 16px;
-    border-bottom: 1px solid var(--border);
-  }
-  .modal-head .tag {
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 10.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--amber);
-    font-weight: 700;
-  }
-  .modal-head h3 {
-    font-size: 21px;
-    margin-top: 6px;
-    color: var(--ink);
-  }
-  .modal-close {
-    flex-shrink: 0;
-    width: 30px; height: 30px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--surface-2);
-    color: var(--ink-soft);
-    font-size: 16px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .modal-close:hover { background: var(--surface-3); color: var(--ink); }
-  .modal-body { padding: 18px 24px 6px; overflow-y: auto; }
-  .modal-body p.desc { font-size: 14px; line-height: 1.7; color: var(--ink); }
-  .modal-body .field { margin-top: 14px; }
-  .modal-body .field .flabel {
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--ink-faint);
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-  .modal-body .field .fval { font-size: 13px; color: var(--ink-soft); }
-  .modal-foot {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 16px 24px 22px;
-  }
-  .modal-foot a.doc-btn {
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 12px;
-    font-weight: 700;
-    color: #ffffff;
-    background: var(--navy);
-    padding: 9px 16px;
-    border-radius: 8px;
-    text-decoration: none;
-  }
 </style>
 </head>
 <body>
 
-<nav class="topnav">
+<div class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="Open navigation">☰</button>
   <div class="brand">AWS<span>::</span>ROADMAP</div>
-  <div class="links">
-    <a href="#phase-1">Phase 1</a>
-    <a href="#phase-2">Phase 2</a>
-    <a href="#phase-3">Phase 3</a>
-    <a href="#phase-4">Phase 4</a>
-    <a href="#summary">Summary</a>
-    <a href="#references">References</a>
-  </div>
-</nav>
+  <a class="menu-btn" href="../tech-stack" aria-label="Back to Main Page">⌂</a>
+</div>
+<div class="sidebar-scrim" id="sidebarScrim"></div>
 
-<header class="masthead">
-  <div class="masthead-inner">
-    <div class="masthead-main">
-      <div class="eyebrow">Backend &amp; Cloud Engineering</div>
-      <h1>AWS Backend &amp;<br>DevOps <em>Learning Roadmap</em></h1>
-      <p class="lede">A practical, sequenced path through AWS and DevOps tooling for backend engineers working toward SDE-3 / Lead Engineer level.</p>
-      <div class="stat-chips">
-        <span class="stat-chip"><b>4</b> phases</span>
-        <span class="stat-chip"><b>25</b> services</span>
-        <span class="stat-chip"><b>3</b> priority levels</span>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">AWS<span>::</span>ROADMAP</div>
+    <a class="back-home" href="../tech-stack">← Back to Main Page</a>
+
+    <div class="nav-group">
+      <a class="nav-link" href="#overview"><span class="nav-icon">🏠</span> Overview</a>
+    </div>
+
+    <div class="nav-group" id="nav-phase-1">
+      <div class="nav-group-label">Phase 1 · Fundamentals</div>
+    </div>
+    <div class="nav-group" id="nav-phase-2">
+      <div class="nav-group-label">Phase 2 · Production Backend</div>
+    </div>
+    <div class="nav-group" id="nav-phase-3">
+      <div class="nav-group-label">Phase 3 · Advanced Backend</div>
+    </div>
+    <div class="nav-group" id="nav-phase-4">
+      <div class="nav-group-label">Phase 4 · DevOps</div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Reference</div>
+      <a class="nav-link" href="#summary"><span class="nav-icon">📐</span> Summary &amp; Patterns</a>
+      <a class="nav-link" href="#references"><span class="nav-icon">📄</span> Doc Links</a>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <section class="topic-panel" id="overview">
+      <div class="panel-hero">
+        <div class="eyebrow">Backend &amp; Cloud Engineering</div>
+        <h1>AWS Backend &amp; DevOps <em>Learning Roadmap</em></h1>
+        <p class="lede">Amazon Web Services (AWS) is a collection of on-demand cloud computing services — compute, storage, databases, networking, and automation — that you rent instead of buying and racking physical servers. Instead of provisioning a machine, plugging in a cable, and installing an OS, you request an EC2 instance and it exists seconds later, billed by the second. This doc walks through the 25 AWS and DevOps services a backend engineer actually needs, in the order you're likely to need them, with a diagram, a "where to use it" guide, and step-by-step implementation instructions for every single one.</p>
+        <div class="stat-chips">
+          <span class="stat-chip"><b>4</b> phases</span>
+          <span class="stat-chip"><b>25</b> services</span>
+          <span class="stat-chip"><b>25</b> diagrams</span>
+          <span class="stat-chip"><b>3</b> priority levels</span>
+        </div>
       </div>
-      <div class="tip-note"><span class="info-dot">i</span> Click the info circle beside any service name for a plain-English explanation.</div>
-    </div>
-    <div class="credit-card">
-      <div class="label">Documented By</div>
-      <div class="name">MD Eesha</div>
-      <div class="role">Sr. Software Engineer</div>
-    </div>
-  </div>
-</header>
 
-<main>
+      <p class="lede-plain">Use the sidebar to jump straight to any service — each one opens its own page with a full explanation, a diagram of exactly how it connects to the services around it, and the concrete steps to actually stand it up. If you're starting from zero, work through <b>Phase 1</b> first: nothing else on this roadmap makes sense without IAM, a VPC, EC2, and a database already in place.</p>
 
-  <section class="phase" id="phase-1">
-    <div class="phase-head">
-      <div class="phase-index">1</div>
-      <div>
-        <h2>Phase 1 — AWS Fundamentals / Must Know</h2>
-        <p>The foundational services every backend engineer must understand before going further.</p>
+      <div class="diagram-box">
+        <div class="d-chrome">Diagram · Target Production Architecture — Where Every Service Fits</div>
+        <div class="d-body">
+          <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Internet through Route 53, CloudFront, ALB, and ECS Fargate into RDS, Redis, and SQS, supported underneath by S3, ECR, Secrets Manager, CloudWatch, IAM, VPC, Terraform, and GitHub Actions">
+            <defs>
+              <marker id="archArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+            </defs>
+
+            <rect class="d-node" x="20" y="40" width="100" height="60" rx="30" />
+            <text class="d-title" x="70" y="74" text-anchor="middle">Internet</text>
+            <path class="d-arrow" d="M120 70 L148 70" marker-end="url(#archArrow)" />
+
+            <rect class="d-node" x="150" y="40" width="110" height="60" rx="10" />
+            <text class="d-title" x="170" y="66">Route 53</text>
+            <text class="d-sub" x="170" y="82">DNS</text>
+            <path class="d-arrow" d="M260 70 L288 70" marker-end="url(#archArrow)" />
+
+            <rect class="d-node-accent" x="290" y="40" width="120" height="60" rx="10" />
+            <text class="d-title" x="308" y="66">CloudFront</text>
+            <text class="d-sub" x="308" y="82">EDGE CACHE</text>
+            <path class="d-arrow" d="M410 70 L438 70" marker-end="url(#archArrow)" />
+
+            <rect class="d-node" x="440" y="40" width="100" height="60" rx="10" />
+            <text class="d-title" x="458" y="74">ALB</text>
+            <path class="d-arrow" d="M540 70 L568 70" marker-end="url(#archArrow)" />
+
+            <rect class="d-node-accent" x="570" y="40" width="170" height="60" rx="10" />
+            <text class="d-title" x="590" y="66">ECS / Fargate</text>
+            <text class="d-sub" x="590" y="82">Go API</text>
+            <path class="d-arrow" d="M740 55 L 778 30" marker-end="url(#archArrow)" />
+            <path class="d-arrow" d="M740 70 L 778 70" marker-end="url(#archArrow)" />
+            <path class="d-arrow" d="M740 85 L 778 128" marker-end="url(#archArrow)" />
+
+            <rect class="d-node" x="780" y="10" width="110" height="45" rx="8" />
+            <text class="d-title" x="794" y="37">RDS</text>
+            <rect class="d-node" x="780" y="65" width="110" height="45" rx="8" />
+            <text class="d-title" x="794" y="92">Redis</text>
+            <rect class="d-node" x="780" y="120" width="110" height="45" rx="8" />
+            <text class="d-title" x="794" y="147">SQS</text>
+
+            <path class="d-boundary" d="M655 100 L 655 205" />
+            <text class="d-boundary-label" x="335" y="205">SUPPORTING SERVICES — MAKE THE ROW ABOVE POSSIBLE</text>
+
+            <g>
+              <rect class="d-node" x="22" y="222" width="100" height="36" rx="8" /><text class="d-text" x="72" y="244" text-anchor="middle">S3</text>
+              <rect class="d-node" x="130" y="222" width="100" height="36" rx="8" /><text class="d-text" x="180" y="244" text-anchor="middle">ECR</text>
+              <rect class="d-node" x="238" y="222" width="128" height="36" rx="8" /><text class="d-text" x="302" y="244" text-anchor="middle">Secrets Mgr</text>
+              <rect class="d-node" x="374" y="222" width="128" height="36" rx="8" /><text class="d-text" x="438" y="244" text-anchor="middle">CloudWatch</text>
+              <rect class="d-node" x="510" y="222" width="90" height="36" rx="8" /><text class="d-text" x="555" y="244" text-anchor="middle">IAM</text>
+              <rect class="d-node" x="608" y="222" width="90" height="36" rx="8" /><text class="d-text" x="653" y="244" text-anchor="middle">VPC</text>
+              <rect class="d-node" x="706" y="222" width="116" height="36" rx="8" /><text class="d-text" x="764" y="244" text-anchor="middle">Terraform</text>
+              <rect class="d-node" x="630" y="266" width="150" height="34" rx="8" /><text class="d-text" x="705" y="287" text-anchor="middle">GitHub Actions</text>
+            </g>
+          </svg>
+        </div>
+        <p class="d-caption">This is the shape most production backends converge on. DNS resolves to a CDN, which forwards uncached requests through a load balancer into a fleet of containerized API instances, which talk to a database, a cache, and a queue. Everything underneath is what makes that top row possible — every box below is its own page in this sidebar.</p>
       </div>
-    </div>
-    <div class="table-wrap">
-      <table id="table-1">
-        <colgroup><col class="c-num"><col class="c-service"><col class="c-what"><col class="c-use"><col class="c-learn"><col class="c-priority"><col class="c-doc"></colgroup>
-        <thead><tr><th>#</th><th>Service</th><th>What is it?</th><th>Main Use</th><th>What You Should Learn</th><th>Priority</th><th>Docs</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
 
-  <section class="phase" id="phase-2">
-    <div class="phase-head">
-      <div class="phase-index">2</div>
-      <div>
-        <h2>Phase 2 — Production Backend</h2>
-        <p>Everything needed to run containerized services reliably in production.</p>
+      <h3 class="subhead" style="margin-top:8px;">All 25 services in this roadmap</h3>
+      <div id="svc-index"></div>
+    </section>
+
+    <!-- 25 service panels are injected here by renderServicePanels() -->
+    <div id="service-panels"></div>
+
+    <section class="topic-panel" id="summary">
+      <h1 class="section-title">Summary &amp; Patterns</h1>
+      <p class="lede-plain">Once the individual services make sense on their own, these four references tie them together: the order to learn them in, how urgently each one matters, the full production shape, and the single pattern worth internalizing above all others.</p>
+
+      <div class="card">
+        <h3>Recommended Learning Sequence</h3>
+        <div class="seq-flow" id="sequence-flow"></div>
       </div>
-    </div>
-    <div class="table-wrap">
-      <table id="table-2">
-        <colgroup><col class="c-num"><col class="c-service"><col class="c-what"><col class="c-use"><col class="c-learn"><col class="c-priority"><col class="c-doc"></colgroup>
-        <thead><tr><th>#</th><th>Service</th><th>What is it?</th><th>Main Use</th><th>What You Should Learn</th><th>Priority</th><th>Docs</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
 
-  <section class="phase" id="phase-3">
-    <div class="phase-head">
-      <div class="phase-index">3</div>
-      <div>
-        <h2>Phase 3 — Advanced Backend</h2>
-        <p>Event-driven, serverless, and high-scale data patterns.</p>
+      <div class="card">
+        <h3>Recommended Priority</h3>
+        <div class="priority-levels">
+          <div class="plevel"><div class="lvl-tag lvl-1">LEVEL 1</div><div class="lvl-items">IAM, EC2, S3, RDS/PostgreSQL, VPC, CloudWatch, Docker, ECS, Fargate, ECR, ALB, Secrets Manager, SQS, Terraform, CI/CD.</div></div>
+          <div class="plevel"><div class="lvl-tag lvl-2">LEVEL 2</div><div class="lvl-items">Route 53, Auto Scaling, Redis, CloudFront, Lambda, API Gateway, SNS, DynamoDB.</div></div>
+          <div class="plevel"><div class="lvl-tag lvl-3">LEVEL 3</div><div class="lvl-items">EventBridge, Step Functions, CloudTrail, AWS WAF, KMS, AWS Organizations, Systems Manager, OpenSearch, Cognito, EKS/Kubernetes, Aurora, PrivateLink, Transit Gateway.</div></div>
+        </div>
       </div>
-    </div>
-    <div class="table-wrap">
-      <table id="table-3">
-        <colgroup><col class="c-num"><col class="c-service"><col class="c-what"><col class="c-use"><col class="c-learn"><col class="c-priority"><col class="c-doc"></colgroup>
-        <thead><tr><th>#</th><th>Service</th><th>What is it?</th><th>Main Use</th><th>What You Should Learn</th><th>Priority</th><th>Docs</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
 
-  <section class="phase" id="phase-4">
-    <div class="phase-head">
-      <div class="phase-index">4</div>
-      <div>
-        <h2>Phase 4 — DevOps / Production Engineering</h2>
-        <p>Automation, observability, and security practices for running production systems.</p>
+      <div class="card">
+        <h3>Key Backend Pattern — Decoupling Slow Work</h3>
+        <p class="card-note">The single most useful pattern on this whole roadmap: never make a client wait on work it doesn't need to wait on.</p>
+        <div class="diagram-box" style="margin-bottom:0; box-shadow:none;">
+          <div class="d-chrome">Diagram · Client → API → SQS → Worker → External Service</div>
+          <div class="d-body">
+            <svg viewBox="0 0 780 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A client calls an API which responds immediately after enqueueing a job on SQS; a worker later pulls the job and calls an external service, asynchronously">
+              <defs>
+                <marker id="patternArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" /></marker>
+                <marker id="patternArrowAccent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)" /></marker>
+              </defs>
+
+              <line class="d-boundary" x1="360" y1="20" x2="360" y2="280" />
+              <text class="d-boundary-label" x="200" y="36" text-anchor="middle">SYNCHRONOUS</text>
+              <text class="d-boundary-label" x="570" y="36" text-anchor="middle">ASYNCHRONOUS</text>
+
+              <rect class="d-node" x="20" y="110" width="110" height="60" rx="30" />
+              <text class="d-title" x="75" y="144" text-anchor="middle">Client</text>
+              <path class="d-arrow" d="M130 135 L168 135" marker-end="url(#patternArrow)" />
+
+              <rect class="d-node-accent" x="190" y="105" width="140" height="70" rx="10" />
+              <text class="d-title" x="210" y="133">Go API</text>
+              <text class="d-sub" x="210" y="149">HTTP handler</text>
+              <path class="d-arrow-accent" d="M260 103 C 220 80, 150 78, 100 106" marker-end="url(#patternArrowAccent)" />
+              <text class="d-label-accent" x="100" y="70">① 202 Accepted — responds immediately</text>
+
+              <path class="d-arrow" d="M330 140 L 388 140" marker-end="url(#patternArrow)" />
+              <text class="d-label" x="335" y="130">② enqueue job</text>
+
+              <rect class="d-node" x="390" y="105" width="120" height="70" rx="10" />
+              <text class="d-title" x="408" y="133">SQS</text>
+              <text class="d-sub" x="408" y="149">task queue</text>
+              <path class="d-arrow" d="M510 140 L 558 140" marker-end="url(#patternArrow)" />
+              <text class="d-label" x="515" y="130">③ pulls job</text>
+
+              <rect class="d-node" x="560" y="105" width="120" height="70" rx="10" />
+              <text class="d-title" x="578" y="133">Worker</text>
+              <text class="d-sub" x="578" y="149">background job</text>
+              <path class="d-arrow" d="M620 175 L 620 208" marker-end="url(#patternArrow)" />
+              <text class="d-label" x="628" y="198">④ calls out</text>
+
+              <rect class="d-node" x="550" y="210" width="150" height="60" rx="10" />
+              <text class="d-title" x="568" y="235">External Service</text>
+              <text class="d-sub" x="568" y="251">email / payment API</text>
+            </svg>
+          </div>
+          <p class="d-caption">The API's only job is to validate the request, drop a message on the queue, and respond — step <b>①</b> happens in milliseconds, before the real work even starts. The worker pulls from the queue on its own schedule (<b>②③</b>) and only then calls out to a slow external service (<b>④</b>). If that external service is down or slow, the client never notices — it already got its response.</p>
+        </div>
       </div>
-    </div>
-    <div class="table-wrap">
-      <table id="table-4">
-        <colgroup><col class="c-num"><col class="c-service"><col class="c-what"><col class="c-use"><col class="c-learn"><col class="c-priority"><col class="c-doc"></colgroup>
-        <thead><tr><th>#</th><th>Technology</th><th>What is it?</th><th>Main Use</th><th>What You Should Learn</th><th>Priority</th><th>Docs</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
+    </section>
 
-  <section id="summary">
-    <div class="card">
-      <h3>Recommended Learning Sequence</h3>
-      <div class="seq-flow" id="sequence-flow"></div>
-    </div>
-
-    <div class="card">
-      <h3>Recommended Priority</h3>
-      <div class="priority-levels">
-        <div class="plevel"><div class="lvl-tag lvl-1">LEVEL 1</div><div class="lvl-items">IAM, EC2, S3, RDS/PostgreSQL, VPC, CloudWatch, Docker, ECS, Fargate, ECR, ALB, Secrets Manager, SQS, Terraform, CI/CD.</div></div>
-        <div class="plevel"><div class="lvl-tag lvl-2">LEVEL 2</div><div class="lvl-items">Route 53, Auto Scaling, Redis, CloudFront, Lambda, API Gateway, SNS, DynamoDB.</div></div>
-        <div class="plevel"><div class="lvl-tag lvl-3">LEVEL 3</div><div class="lvl-items">EventBridge, Step Functions, CloudTrail, AWS WAF, KMS, AWS Organizations, Systems Manager, OpenSearch, Cognito, EKS/Kubernetes, Aurora, PrivateLink, Transit Gateway.</div></div>
+    <section class="topic-panel" id="references">
+      <h1 class="section-title">Official Documentation Reference URLs</h1>
+      <p class="lede-plain">Every service and tool covered in this roadmap, with a direct link to its official docs.</p>
+      <div class="card">
+        <div class="doc-links-grid" id="doc-links"></div>
       </div>
-    </div>
+    </section>
 
-    <div class="card">
-      <h3>Target Production Architecture</h3>
-      <div class="arch-flow">Internet <span class="arrow">→</span> Route 53 <span class="arrow">→</span> CloudFront <span class="arrow">→</span> ALB <span class="arrow">→</span> ECS/Fargate Go API <span class="arrow">→</span> RDS PostgreSQL / Redis / SQS</div>
-      <div class="support-list"><b>Supporting services:</b> S3 for files · ECR for Docker images · Secrets Manager for credentials · CloudWatch for logs/metrics/alerts · IAM for access control · VPC for networking · Terraform for infrastructure · GitHub Actions for CI/CD.</div>
-    </div>
-
-    <div class="card">
-      <h3>Key Backend Pattern</h3>
-      <div class="pattern-flow">Client <span class="arrow">→</span> Go API <span class="arrow">→</span> SQS <span class="arrow">→</span> Worker <span class="arrow">→</span> External Service</div>
-      <div class="pattern-note">Decouples long-running / background work from the request-response path so the API can respond quickly.</div>
-    </div>
-  </section>
-
-  <section id="references">
-    <div class="card">
-      <h3>Official Documentation Reference URLs</h3>
-      <div class="doc-links-grid" id="doc-links"></div>
-    </div>
-  </section>
-
-</main>
+  </main>
+</div>
 
 <footer>
   <div class="label">Documented By</div>
   <div class="name">MD Eesha</div>
   <div class="role">Sr. Software Engineer</div>
 </footer>
-
-<div class="modal-overlay" id="modalOverlay" hidden>
-  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal-head">
-      <div>
-        <div class="tag" id="modalTag">Phase 1</div>
-        <h3 id="modalTitle">Service</h3>
-      </div>
-      <button class="modal-close" id="modalCloseBtn" aria-label="Close">✕</button>
-    </div>
-    <div class="modal-body">
-      <p class="desc" id="modalDesc"></p>
-      <div class="field">
-        <div class="flabel">What You Should Learn</div>
-        <div class="fval" id="modalLearn"></div>
-      </div>
-      <div class="field">
-        <div class="flabel">Priority</div>
-        <div class="fval" id="modalPriority"></div>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <span id="modalNum" class="mono" style="color:var(--ink-faint); font-size:12px;"></span>
-      <a href="#" id="modalDocLink" class="doc-btn" target="_blank" rel="noopener">View Official Docs →</a>
-    </div>
-  </div>
-</div>
 
 <script>
 const PRIORITY_LABEL = {
@@ -772,137 +785,350 @@ const PRIORITY_CLASS = {
   "must-backend": "badge-level",
   "must-production": "badge-level",
 };
+const PHASE_LABEL = {
+  1: "Phase 1 · AWS Fundamentals",
+  2: "Phase 2 · Production Backend",
+  3: "Phase 3 · Advanced Backend",
+  4: "Phase 4 · DevOps / Production Engineering",
+};
 
 const DATA = {
   1: [
-    { n:1, name:"IAM", phase:"Phase 1", what:"Identity &amp; Access Management", use:"Control access to AWS resources", learn:"Users, groups, roles, policies, MFA, least privilege, AssumeRole", priority:"must", docName:"AWS IAM Documentation", docUrl:"https://docs.aws.amazon.com/iam/",
-      desc:"IAM is the control plane for who can do what in your AWS account. It lets you create users and groups, attach policies that grant or deny specific actions on specific resources, and issue roles that hand out short-lived credentials instead of long-lived keys. The guiding principle is least privilege — give every identity only the permissions it needs, nothing more. AssumeRole lets a service or trusted account temporarily take on another role's permissions, which is how cross-account access is handled safely without ever sharing a password." },
-    { n:2, name:"EC2", phase:"Phase 1", what:"Virtual server", use:"Run Go/Node.js/backend applications", learn:"AMI, instance types, SSH, EBS, security groups, user data, Elastic IP", priority:"must", docName:"Amazon EC2 Documentation", docUrl:"https://docs.aws.amazon.com/ec2/",
-      desc:"EC2 gives you a virtual machine in AWS's data centers, billed by the second or as a reserved commitment. You pick an AMI (a pre-baked OS image) and an instance type that sets CPU, RAM, and network characteristics, then attach EBS volumes for persistent storage. Security groups act as a stateful firewall around the instance, user data scripts bootstrap it on first boot, and an Elastic IP gives it a stable public address. It's the most flexible compute option on AWS — and the one you're most responsible for patching and securing yourself." },
-    { n:3, name:"S3", phase:"Phase 1", what:"Object storage", use:"Store images, documents, backups, static files", learn:"Buckets, objects, policies, versioning, lifecycle, presigned URLs, encryption", priority:"must", docName:"Amazon S3 Documentation", docUrl:"https://docs.aws.amazon.com/s3/",
-      desc:"S3 stores objects — files of any size and type — inside buckets, with virtually unlimited capacity and extremely high durability. Every object can carry a version history, a lifecycle rule that automatically moves or deletes it over time, and fine-grained access policies. Presigned URLs grant temporary, credential-free access to a private object, which is the standard pattern for letting users upload or download files directly. Server-side encryption protects data at rest by default." },
-    { n:4, name:"RDS", phase:"Phase 1", what:"Managed relational database", use:"Run PostgreSQL/MySQL as a managed service", learn:"PostgreSQL, Multi-AZ, backups, snapshots, security groups, read replicas", priority:"must", docName:"Amazon RDS Documentation", docUrl:"https://docs.aws.amazon.com/rds/",
-      desc:"RDS runs PostgreSQL, MySQL, and other relational engines as a managed service, so AWS handles patching, backups, and failover instead of you. Multi-AZ deployments keep a synchronously replicated standby in a second availability zone for automatic failover, while read replicas offload read traffic asynchronously. Automated snapshots and point-in-time recovery protect against data loss, and security groups control which resources can even reach the database." },
-    { n:5, name:"VPC", phase:"Phase 1", what:"Private AWS network", use:"Securely isolate/connect AWS resources", learn:"VPC, subnets, route tables, IGW, NAT, security groups, NACLs", priority:"must", docName:"Amazon VPC Documentation", docUrl:"https://docs.aws.amazon.com/vpc/",
-      desc:"A VPC is your own private, logically isolated slice of the AWS network. Subnets partition IP address space across availability zones, route tables decide where traffic goes, an Internet Gateway lets public subnets reach the internet, and a NAT Gateway lets private subnets reach out without being reachable from outside. Security groups filter traffic at the instance level while Network ACLs filter it at the subnet level — two independent layers of network defense." },
-    { n:6, name:"Route 53", phase:"Phase 1", what:"DNS service", use:"Connect domains to applications", learn:"Hosted zones, records, A/AAAA/CNAME, Alias, health checks, routing", priority:"important", docName:"Amazon Route 53 Documentation", docUrl:"https://docs.aws.amazon.com/route53/",
-      desc:"Route 53 is AWS's DNS service, translating domain names into IP addresses and routing traffic intelligently. Hosted zones hold your domain's records; standard record types (A, AAAA, CNAME) point to fixed addresses, while Alias records point directly at AWS resources like a CloudFront distribution or load balancer without an extra lookup. Health checks let it automatically route around unhealthy endpoints, and routing policies (weighted, latency-based, geolocation, failover) control how traffic is distributed globally." },
-    { n:7, name:"CloudWatch", phase:"Phase 1", what:"Monitoring/observability", use:"Monitor applications and AWS resources", learn:"Logs, metrics, alarms, dashboards, log groups, Log Insights", priority:"must", docName:"Amazon CloudWatch Documentation", docUrl:"https://docs.aws.amazon.com/cloudwatch/",
-      desc:"CloudWatch is AWS's monitoring and observability backbone. It collects logs into log groups, tracks numeric metrics from every AWS service, and lets you build dashboards and alarms on top of them. Log Insights adds a query language for searching and aggregating log data without exporting it elsewhere. In production, a CloudWatch alarm is usually the first thing to notice something is wrong — well before a user reports it." },
+    { n:1, slug:"svc-iam", name:"IAM", icon:"🔑", what:"Identity &amp; Access Management", use:"Control access to AWS resources", learn:"Users, groups, roles, policies, MFA, least privilege, AssumeRole", priority:"must", docName:"AWS IAM Documentation", docUrl:"https://docs.aws.amazon.com/iam/",
+      desc:"IAM is the control plane for who can do what in your AWS account. It lets you create users and groups, attach policies that grant or deny specific actions on specific resources, and issue roles that hand out short-lived credentials instead of long-lived keys. The guiding principle is least privilege — give every identity only the permissions it needs, nothing more. AssumeRole lets a service or trusted account temporarily take on another role's permissions, which is how cross-account access is handled safely without ever sharing a password.",
+      useWhen:"Use IAM for every single AWS resource — there's no scenario where you skip it. The real decision is scoping: a broad policy while prototyping alone, then narrowing to least-privilege roles the moment more than one person or service touches the account.",
+      steps:["Create an IAM user or role — never use the root account for daily work.","Attach a policy scoped to only the actions/resources it actually needs (least privilege).","Enable MFA on every human user.","For services (EC2, Lambda), attach an <b>IAM role</b> instead of embedding access keys in code.","Use <code>AssumeRole</code> for cross-account or cross-service access instead of sharing credentials.","Periodically review with IAM Access Analyzer to catch permissions broader than they need to be."],
+      diagram:{ left:[{name:"Users / Roles",sub:"identities"},{name:"Policies",sub:"JSON permissions"}], right:[{name:"EC2 / S3 / RDS…",sub:"every AWS resource"}], bottom:{name:"CloudTrail",sub:"logs every API call"}, coreSub:"who can do what",
+        caption:"Every policy you attach decides which identities can reach which resources — this is the box every arrow on this page ultimately passes through." } },
+    { n:2, slug:"svc-ec2", name:"EC2", icon:"🖥️", what:"Virtual server", use:"Run Go/Node.js/backend applications", learn:"AMI, instance types, SSH, EBS, security groups, user data, Elastic IP", priority:"must", docName:"Amazon EC2 Documentation", docUrl:"https://docs.aws.amazon.com/ec2/",
+      desc:"EC2 gives you a virtual machine in AWS's data centers, billed by the second or as a reserved commitment. You pick an AMI (a pre-baked OS image) and an instance type that sets CPU, RAM, and network characteristics, then attach EBS volumes for persistent storage. Security groups act as a stateful firewall around the instance, user data scripts bootstrap it on first boot, and an Elastic IP gives it a stable public address. It's the most flexible compute option on AWS — and the one you're most responsible for patching and securing yourself.",
+      useWhen:"Reach for EC2 when you need full control over the OS and runtime — custom system packages, GPU workloads, or software that doesn't fit neatly in a container. If you just need to run a stateless API, ECS/Fargate (Phase 2) is usually less operational overhead.",
+      steps:["Choose an AMI (Amazon Linux, Ubuntu, or a custom-baked image).","Pick an instance type sized for the CPU/RAM the workload actually needs.","Launch it inside a subnet, attached to a security group that only opens the ports you need.","Attach an EBS volume if the instance needs persistent local storage.","Assign an IAM role instead of hardcoding credentials on the box.","Connect over SSH (or SSM Session Manager) to configure and deploy your app."],
+      diagram:{ left:[{name:"AMI",sub:"OS image"},{name:"Security Group",sub:"firewall rules"}], right:[{name:"EBS Volume",sub:"persistent disk"},{name:"Elastic IP",sub:"static address"}], top:{name:"IAM Role",sub:"instance permissions"}, coreSub:"virtual server",
+        caption:"An AMI and a security group define the instance before it even boots; IAM and attached storage shape what it can do once it's running." } },
+    { n:3, slug:"svc-s3", name:"S3", icon:"🪣", what:"Object storage", use:"Store images, documents, backups, static files", learn:"Buckets, objects, policies, versioning, lifecycle, presigned URLs, encryption", priority:"must", docName:"Amazon S3 Documentation", docUrl:"https://docs.aws.amazon.com/s3/",
+      desc:"S3 stores objects — files of any size and type — inside buckets, with virtually unlimited capacity and extremely high durability. Every object can carry a version history, a lifecycle rule that automatically moves or deletes it over time, and fine-grained access policies. Presigned URLs grant temporary, credential-free access to a private object, which is the standard pattern for letting users upload or download files directly. Server-side encryption protects data at rest by default.",
+      useWhen:"Use S3 for anything that's a file rather than a row — user uploads, backups, static assets, data lake exports. Don't use it as a database; there's no query language, only key-based lookups.",
+      steps:["Create a bucket with a unique name and pick a region close to your users.","Block public access by default; only open specific paths intentionally.","Turn on versioning if accidental overwrites/deletes are a realistic risk.","Add a lifecycle rule to move old objects to cheaper storage classes or expire them.","Generate presigned URLs for direct client upload/download instead of proxying files through your API.","Enable server-side encryption (SSE-S3 or SSE-KMS)."],
+      diagram:{ left:[{name:"App / User",sub:"upload"}], right:[{name:"CloudFront",sub:"serves via CDN"},{name:"Lifecycle Rule",sub:"auto-archive/delete"}], top:{name:"Bucket Policy / IAM",sub:"access control"}, coreSub:"buckets & objects",
+        caption:"Objects flow in from your app, and either serve straight out through CloudFront or age out automatically via a lifecycle rule." } },
+    { n:4, slug:"svc-rds", name:"RDS", icon:"🗄️", what:"Managed relational database", use:"Run PostgreSQL/MySQL as a managed service", learn:"PostgreSQL, Multi-AZ, backups, snapshots, security groups, read replicas", priority:"must", docName:"Amazon RDS Documentation", docUrl:"https://docs.aws.amazon.com/rds/",
+      desc:"RDS runs PostgreSQL, MySQL, and other relational engines as a managed service, so AWS handles patching, backups, and failover instead of you. Multi-AZ deployments keep a synchronously replicated standby in a second availability zone for automatic failover, while read replicas offload read traffic asynchronously. Automated snapshots and point-in-time recovery protect against data loss, and security groups control which resources can even reach the database.",
+      useWhen:"Use RDS whenever your data is relational and you don't want to run your own database server. Skip it for workloads that need single-digit-millisecond, massive-scale key lookups — that's DynamoDB's job (Phase 3).",
+      steps:["Pick an engine (PostgreSQL/MySQL) and an instance size matched to expected load.","Deploy Multi-AZ for production so there's an automatic failover standby.","Restrict access with a security group — only your app's subnet should reach port 5432/3306.","Turn on automated backups and note the retention window.","Add a read replica once read traffic starts competing with writes.","Monitor connections and slow queries via CloudWatch."],
+      diagram:{ left:[{name:"App servers",sub:"EC2 / ECS"}], right:[{name:"Read Replica",sub:"offload reads"},{name:"Automated Snapshot",sub:"backup"}], top:{name:"Multi-AZ Standby",sub:"auto failover"}, coreSub:"managed PostgreSQL/MySQL",
+        caption:"A Multi-AZ standby stands by for automatic failover, while a read replica peels off read traffic so the primary stays free for writes." } },
+    { n:5, slug:"svc-vpc", name:"VPC", icon:"🌐", what:"Private AWS network", use:"Securely isolate/connect AWS resources", learn:"VPC, subnets, route tables, IGW, NAT, security groups, NACLs", priority:"must", docName:"Amazon VPC Documentation", docUrl:"https://docs.aws.amazon.com/vpc/",
+      desc:"A VPC is your own private, logically isolated slice of the AWS network. Subnets partition IP address space across availability zones, route tables decide where traffic goes, an Internet Gateway lets public subnets reach the internet, and a NAT Gateway lets private subnets reach out without being reachable from outside. Security groups filter traffic at the instance level while Network ACLs filter it at the subnet level — two independent layers of network defense.",
+      useWhen:"Every account gets a default VPC, but design your own for anything beyond a toy project — real workloads need public subnets for load balancers and private subnets for databases that should never be internet-reachable.",
+      steps:["Create a VPC with a CIDR block sized for how many resources you'll ever plausibly need.","Split it into public and private subnets across at least two availability zones.","Attach an Internet Gateway to the public subnets.","Add a NAT Gateway so private subnets can reach the internet without being reachable from it.","Write route tables sending public-subnet traffic to the IGW and private-subnet traffic to the NAT.","Layer security groups (instance-level) and NACLs (subnet-level) for defense in depth."],
+      diagram:{ left:[{name:"Internet Gateway",sub:"public access"}], right:[{name:"Private Subnet",sub:"EC2/RDS live here"},{name:"NAT Gateway",sub:"outbound only"}], bottom:{name:"Security Groups / NACLs",sub:"traffic filters"}, coreSub:"your private network",
+        caption:"Public subnets reach the internet through an Internet Gateway; private subnets reach out (but can't be reached) through a NAT Gateway." } },
+    { n:6, slug:"svc-route53", name:"Route 53", icon:"🧭", what:"DNS service", use:"Connect domains to applications", learn:"Hosted zones, records, A/AAAA/CNAME, Alias, health checks, routing", priority:"important", docName:"Amazon Route 53 Documentation", docUrl:"https://docs.aws.amazon.com/route53/",
+      desc:"Route 53 is AWS's DNS service, translating domain names into IP addresses and routing traffic intelligently. Hosted zones hold your domain's records; standard record types (A, AAAA, CNAME) point to fixed addresses, while Alias records point directly at AWS resources like a CloudFront distribution or load balancer without an extra lookup. Health checks let it automatically route around unhealthy endpoints, and routing policies (weighted, latency-based, geolocation, failover) control how traffic is distributed globally.",
+      useWhen:"Use Route 53 the moment you have a real domain name pointed at anything on AWS. Alias records are almost always the right choice over plain CNAMEs when the target is an AWS resource.",
+      steps:["Create a hosted zone for your domain.","Add an Alias record pointing your domain at CloudFront, an ALB, or another AWS resource.","Add a health check if you need automatic failover to a backup endpoint.","Choose a routing policy (simple, weighted, latency-based, geolocation) based on your traffic needs.","Update your domain registrar's nameservers to point at the hosted zone."],
+      diagram:{ left:[{name:"Registered Domain",sub:"yourapp.com"}], right:[{name:"CloudFront / ALB",sub:"resolves to"}], bottom:{name:"Health Checks",sub:"routes around failures"}, coreSub:"DNS",
+        caption:"A health check watches the endpoint behind the record, ready to reroute traffic the moment it stops responding." } },
+    { n:7, slug:"svc-cloudwatch", name:"CloudWatch", icon:"📊", what:"Monitoring/observability", use:"Monitor applications and AWS resources", learn:"Logs, metrics, alarms, dashboards, log groups, Log Insights", priority:"must", docName:"Amazon CloudWatch Documentation", docUrl:"https://docs.aws.amazon.com/cloudwatch/",
+      desc:"CloudWatch is AWS's monitoring and observability backbone. It collects logs into log groups, tracks numeric metrics from every AWS service, and lets you build dashboards and alarms on top of them. Log Insights adds a query language for searching and aggregating log data without exporting it elsewhere. In production, a CloudWatch alarm is usually the first thing to notice something is wrong — well before a user reports it.",
+      useWhen:"Wire up CloudWatch from day one, not after the first incident — an alarm you configured in advance is the difference between finding out from a customer and finding out from a page.",
+      steps:["Ship application logs to a log group (via the SDK, CloudWatch agent, or container logging driver).","Identify the 3–5 metrics that actually indicate a problem (error rate, latency, queue depth).","Create alarms on those metrics with thresholds tuned to avoid noise.","Build a dashboard combining the metrics your team checks most often.","Write a Log Insights query for your most common debugging question, and save it."],
+      diagram:{ left:[{name:"EC2 / ECS / Lambda",sub:"emits metrics"},{name:"App logs",sub:"log groups"}], right:[{name:"Alarm",sub:"triggers on threshold"},{name:"Dashboard",sub:"visualizes"}], coreSub:"logs, metrics, alarms",
+        caption:"Metrics and logs flow in continuously; an alarm only fires when one of them crosses a threshold you defined in advance." } },
   ],
   2: [
-    { n:8, name:"ALB", phase:"Phase 2", what:"Application Load Balancer", use:"Distribute HTTP/HTTPS traffic", learn:"Listeners, target groups, health checks, routing, HTTPS/SSL", priority:"must", docName:"Application Load Balancer Documentation", docUrl:"https://docs.aws.amazon.com/elasticloadbalancing/",
-      desc:"An ALB distributes incoming HTTP/HTTPS traffic across a fleet of backend targets. Listeners define which ports and protocols it accepts, target groups define the backend pool (EC2 instances, containers, or Lambda functions) and their health checks, and routing rules can send different paths or hosts to different target groups. It also terminates HTTPS/SSL, so your backend services don't have to manage certificates themselves." },
-    { n:9, name:"Auto Scaling", phase:"Phase 2", what:"Automatic capacity management", use:"Add/remove EC2 instances based on demand", learn:"Launch templates, scaling policies, target tracking, health checks", priority:"must", docName:"EC2 Auto Scaling Documentation", docUrl:"https://docs.aws.amazon.com/autoscaling/",
-      desc:"EC2 Auto Scaling automatically adds or removes instances to match demand, using a launch template that defines what a new instance looks like. Scaling policies — most commonly target tracking on a metric like CPU utilization — decide when to scale, and health checks ensure unhealthy instances are replaced rather than left serving traffic. It's what turns a fixed fleet of servers into an elastic one." },
-    { n:10, name:"ECS", phase:"Phase 2", what:"Container orchestration", use:"Run Docker containers on AWS", learn:"Clusters, services, task definitions, tasks, deployments, networking", priority:"must", docName:"Amazon ECS Documentation", docUrl:"https://docs.aws.amazon.com/ecs/",
-      desc:"ECS is AWS's own container orchestrator for running Docker containers at scale. A cluster is the logical grouping of compute, a task definition describes a container (image, CPU/memory, networking), and a service keeps a desired number of tasks running and replaces any that fail. It integrates natively with ALB, IAM, and CloudWatch, making it a simpler alternative to Kubernetes for teams that don't need Kubernetes's full feature set." },
-    { n:11, name:"Fargate", phase:"Phase 2", what:"Serverless container compute", use:"Run ECS containers without managing EC2", learn:"CPU/memory, networking, IAM roles, scaling, pricing", priority:"must", docName:"AWS Fargate Documentation", docUrl:"https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html",
-      desc:"Fargate is a serverless compute engine for ECS (and EKS) that removes the need to provision or manage EC2 instances yourself. You specify the CPU and memory a task needs, and Fargate runs it in its own isolated environment, billed per second of actual usage. Networking and IAM roles are still configured per task, but there are no servers to patch, size, or scale manually." },
-    { n:12, name:"ECR", phase:"Phase 2", what:"Docker image registry", use:"Store/manage Docker images", learn:"Repositories, tags, push/pull, lifecycle, scanning", priority:"must", docName:"Amazon ECR Documentation", docUrl:"https://docs.aws.amazon.com/ecr/",
-      desc:"ECR is a private, managed Docker registry for storing the container images your services run. It integrates directly with ECS, Fargate, and CI/CD pipelines for push/pull access, supports lifecycle rules to automatically expire old image tags, and can scan images for known vulnerabilities before they're deployed." },
-    { n:13, name:"Secrets Manager", phase:"Phase 2", what:"Secret storage", use:"Secure passwords, API keys and DB credentials", learn:"Secrets, rotation, IAM access, SDK integration", priority:"must", docName:"AWS Secrets Manager Documentation", docUrl:"https://docs.aws.amazon.com/secretsmanager/",
-      desc:"Secrets Manager stores sensitive values — database passwords, API keys, tokens — encrypted at rest, and hands them out to applications via SDK calls instead of hardcoding them in config files or environment variables. It can automatically rotate credentials on a schedule and integrates with IAM so access to a given secret can be as tightly scoped as any other AWS permission." },
-    { n:14, name:"ElastiCache / Redis", phase:"Phase 2", what:"Managed in-memory cache", use:"Improve API performance", learn:"Redis, cache-aside, TTL, sessions, distributed locking, Pub/Sub basics", priority:"important", docName:"Amazon ElastiCache Documentation", docUrl:"https://docs.aws.amazon.com/elasticache/",
-      desc:"ElastiCache runs Redis (or Memcached) as a managed in-memory data store, typically used to cache expensive database queries or API responses and cut response times to sub-millisecond. Common patterns include cache-aside (check cache, fall back to the database, then populate the cache), TTL-based expiration, storing session data outside the application server, and using Redis's Pub/Sub for lightweight real-time messaging or distributed locks." },
+    { n:8, slug:"svc-alb", name:"ALB", icon:"⚖️", what:"Application Load Balancer", use:"Distribute HTTP/HTTPS traffic", learn:"Listeners, target groups, health checks, routing, HTTPS/SSL", priority:"must", docName:"Application Load Balancer Documentation", docUrl:"https://docs.aws.amazon.com/elasticloadbalancing/",
+      desc:"An ALB distributes incoming HTTP/HTTPS traffic across a fleet of backend targets. Listeners define which ports and protocols it accepts, target groups define the backend pool (EC2 instances, containers, or Lambda functions) and their health checks, and routing rules can send different paths or hosts to different target groups. It also terminates HTTPS/SSL, so your backend services don't have to manage certificates themselves.",
+      useWhen:"Put an ALB in front of anything with more than one backend instance, or anywhere you need path/host-based routing or TLS termination handled for you.",
+      steps:["Create target group(s) and register EC2/ECS/Lambda targets.","Configure health checks so unhealthy targets stop receiving traffic.","Attach an ACM certificate to a HTTPS listener.","Add listener rules to route different paths/hosts to different target groups.","Point Route 53 (Alias record) at the ALB's DNS name."],
+      diagram:{ left:[{name:"Client requests",sub:"HTTPS"}], right:[{name:"Target Group",sub:"health-checked pool"}], top:{name:"ACM Certificate",sub:"TLS termination"}, coreSub:"Application Load Balancer",
+        caption:"A certificate terminates HTTPS at the load balancer, so only healthy targets in the target group ever see a request." } },
+    { n:9, slug:"svc-autoscaling", name:"Auto Scaling", icon:"📈", what:"Automatic capacity management", use:"Add/remove EC2 instances based on demand", learn:"Launch templates, scaling policies, target tracking, health checks", priority:"must", docName:"EC2 Auto Scaling Documentation", docUrl:"https://docs.aws.amazon.com/autoscaling/",
+      desc:"EC2 Auto Scaling automatically adds or removes instances to match demand, using a launch template that defines what a new instance looks like. Scaling policies — most commonly target tracking on a metric like CPU utilization — decide when to scale, and health checks ensure unhealthy instances are replaced rather than left serving traffic. It's what turns a fixed fleet of servers into an elastic one.",
+      useWhen:"Use Auto Scaling anywhere traffic is variable — most production services. Skip it only for genuinely fixed, predictable workloads where a static fleet size is simpler to reason about.",
+      steps:["Define a launch template (AMI, instance type, security group, user data).","Create an Auto Scaling group with min/max/desired capacity.","Attach a target-tracking policy on a metric like CPU utilization.","Attach the group to an ALB target group so new instances register automatically.","Test by simulating load and watching it scale out, then back in."],
+      diagram:{ left:[{name:"Launch Template",sub:"instance blueprint"}], right:[{name:"EC2 Fleet",sub:"scales in/out"}], top:{name:"CloudWatch Metric",sub:"e.g. CPU%"}, coreSub:"capacity automation",
+        caption:"A CloudWatch metric like CPU% is the trigger; the launch template is the blueprint for every instance it adds." } },
+    { n:10, slug:"svc-ecs", name:"ECS", icon:"📦", what:"Container orchestration", use:"Run Docker containers on AWS", learn:"Clusters, services, task definitions, tasks, deployments, networking", priority:"must", docName:"Amazon ECS Documentation", docUrl:"https://docs.aws.amazon.com/ecs/",
+      desc:"ECS is AWS's own container orchestrator for running Docker containers at scale. A cluster is the logical grouping of compute, a task definition describes a container (image, CPU/memory, networking), and a service keeps a desired number of tasks running and replaces any that fail. It integrates natively with ALB, IAM, and CloudWatch, making it a simpler alternative to Kubernetes for teams that don't need Kubernetes's full feature set.",
+      useWhen:"Choose ECS when you want Docker in production without the operational weight of running Kubernetes yourself — it's the default choice on AWS unless you specifically need Kubernetes portability.",
+      steps:["Create a cluster (Fargate or EC2-backed).","Write a task definition describing the container image, CPU/memory, and ports.","Create a service that keeps N tasks running and replaces failed ones.","Attach the service to an ALB target group for traffic routing.","Deploy a new task definition revision to roll out updates."],
+      diagram:{ left:[{name:"Task Definition",sub:"image + CPU/mem"}], right:[{name:"Running Tasks",sub:"containers"}], top:{name:"Cluster",sub:"compute pool"}, coreSub:"container orchestration",
+        caption:"A cluster provides the compute; the task definition says what to run on it; the service keeps the right number of copies alive." } },
+    { n:11, slug:"svc-fargate", name:"Fargate", icon:"☁️", what:"Serverless container compute", use:"Run ECS containers without managing EC2", learn:"CPU/memory, networking, IAM roles, scaling, pricing", priority:"must", docName:"AWS Fargate Documentation", docUrl:"https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html",
+      desc:"Fargate is a serverless compute engine for ECS (and EKS) that removes the need to provision or manage EC2 instances yourself. You specify the CPU and memory a task needs, and Fargate runs it in its own isolated environment, billed per second of actual usage. Networking and IAM roles are still configured per task, but there are no servers to patch, size, or scale manually.",
+      useWhen:"Default to Fargate over EC2-backed ECS unless you have a specific reason to manage the underlying instances yourself (deep cost optimization at huge scale, GPU workloads, etc.).",
+      steps:["Set the launch type to Fargate on your ECS service.","Specify CPU and memory for the task (only certain combinations are valid).","Assign a task IAM role for whatever permissions the container needs.","Place tasks in private subnets with a NAT Gateway for outbound access.","Let ECS handle placement — there's no instance to patch or size."],
+      diagram:{ left:[{name:"ECS Task Def",sub:"CPU/mem spec"}], right:[{name:"Isolated Task",sub:"no EC2 to manage"}], coreSub:"serverless containers",
+        caption:"The same task definition that would need an EC2 fleet to run instead gets an isolated, unmanaged sandbox per task." } },
+    { n:12, slug:"svc-ecr", name:"ECR", icon:"🗃️", what:"Docker image registry", use:"Store/manage Docker images", learn:"Repositories, tags, push/pull, lifecycle, scanning", priority:"must", docName:"Amazon ECR Documentation", docUrl:"https://docs.aws.amazon.com/ecr/",
+      desc:"ECR is a private, managed Docker registry for storing the container images your services run. It integrates directly with ECS, Fargate, and CI/CD pipelines for push/pull access, supports lifecycle rules to automatically expire old image tags, and can scan images for known vulnerabilities before they're deployed.",
+      useWhen:"Use ECR as the default registry for anything deploying to ECS/EKS on AWS — it's already wired into IAM permissions, so there's rarely a reason to reach for Docker Hub for private images.",
+      steps:["Create a repository per service/image.","Authenticate Docker to ECR (<code>aws ecr get-login-password</code>).","Tag and push the image after every successful CI build.","Add a lifecycle policy to expire old/untagged images automatically.","Enable scan-on-push to catch known CVEs before deployment."],
+      diagram:{ left:[{name:"docker build",sub:"local / CI"}], right:[{name:"ECS / Fargate",sub:"pulls image"}], bottom:{name:"Image Scan",sub:"vulnerability check"}, coreSub:"private image registry",
+        caption:"Every image is scanned on push and pulled straight into ECS or Fargate at deploy time — no separate registry to manage." } },
+    { n:13, slug:"svc-secretsmanager", name:"Secrets Manager", icon:"🔐", what:"Secret storage", use:"Secure passwords, API keys and DB credentials", learn:"Secrets, rotation, IAM access, SDK integration", priority:"must", docName:"AWS Secrets Manager Documentation", docUrl:"https://docs.aws.amazon.com/secretsmanager/",
+      desc:"Secrets Manager stores sensitive values — database passwords, API keys, tokens — encrypted at rest, and hands them out to applications via SDK calls instead of hardcoding them in config files or environment variables. It can automatically rotate credentials on a schedule and integrates with IAM so access to a given secret can be as tightly scoped as any other AWS permission.",
+      useWhen:"Use it for anything an application needs at runtime that must never live in code or plain environment variables — database passwords, third-party API keys, signing secrets.",
+      steps:["Store the secret (e.g., DB password) instead of hardcoding it anywhere.","Scope an IAM policy so only the roles that need it can read it.","Fetch it via the SDK at application startup, not on every request.","Enable automatic rotation for credentials that support it (e.g., RDS).","Reference the secret ARN from ECS task definitions instead of plaintext env vars."],
+      diagram:{ left:[{name:"App startup",sub:"fetches secret"}], right:[{name:"RDS / API keys",sub:"the actual secret"}], top:{name:"IAM Policy",sub:"who can read it"}, coreSub:"encrypted secret storage",
+        caption:"An IAM policy decides who can read the secret; the application never sees anything hardcoded in its own config." } },
+    { n:14, slug:"svc-redis", name:"ElastiCache / Redis", icon:"⚡", what:"Managed in-memory cache", use:"Improve API performance", learn:"Redis, cache-aside, TTL, sessions, distributed locking, Pub/Sub basics", priority:"important", docName:"Amazon ElastiCache Documentation", docUrl:"https://docs.aws.amazon.com/elasticache/",
+      desc:"ElastiCache runs Redis (or Memcached) as a managed in-memory data store, typically used to cache expensive database queries or API responses and cut response times to sub-millisecond. Common patterns include cache-aside (check cache, fall back to the database, then populate the cache), TTL-based expiration, storing session data outside the application server, and using Redis's Pub/Sub for lightweight real-time messaging or distributed locks.",
+      useWhen:"Add Redis once you can point to a specific expensive query or endpoint being hit repeatedly with the same result — don't cache prematurely, it's one more thing that can go stale.",
+      steps:["Provision a Redis cluster in the same VPC as your app.","Implement cache-aside: check Redis first, fall back to the database on a miss, then populate the cache.","Set a sensible TTL so stale data expires automatically.","Use it for session storage if you're running multiple stateless app instances.","Consider Pub/Sub only for lightweight signaling, not guaranteed delivery."],
+      diagram:{ left:[{name:"API request",sub:"cache lookup"}], right:[{name:"RDS",sub:"fallback on miss"}], coreSub:"in-memory cache", coreLabel:"Redis",
+        caption:"A cache-aside lookup checks Redis first; only on a miss does the request fall through to RDS." } },
   ],
   3: [
-    { n:15, name:"Lambda", phase:"Phase 3", what:"Serverless compute", use:"Run functions without managing servers", learn:"Functions, runtimes, events, layers, IAM roles, concurrency, cold starts", priority:"important", docName:"AWS Lambda Documentation", docUrl:"https://docs.aws.amazon.com/lambda/",
-      desc:"Lambda runs your code in response to events — HTTP requests, queue messages, file uploads — without you provisioning or managing any server. You pick a runtime, write a handler function, and AWS bills you only for the milliseconds it actually executes. Concurrency settings control how many instances of a function can run simultaneously, and cold starts (the latency of spinning up a fresh execution environment) are the main tradeoff to design around." },
-    { n:16, name:"API Gateway", phase:"Phase 3", what:"API management", use:"Expose Lambda/backend APIs", learn:"REST/HTTP APIs, auth, throttling, stages, custom domains", priority:"important", docName:"Amazon API Gateway Documentation", docUrl:"https://docs.aws.amazon.com/apigateway/",
-      desc:"API Gateway sits in front of Lambda functions or backend services and exposes them as managed REST or HTTP APIs. It handles authentication and authorization, request throttling to protect backends from overload, versioned stages for safe rollouts, and custom domain names — so you don't have to build that plumbing into every service yourself." },
-    { n:17, name:"SQS", phase:"Phase 3", what:"Message queue", use:"Async processing and service decoupling", learn:"Producer/consumer, visibility timeout, DLQ, long polling, FIFO", priority:"must-backend", docName:"Amazon SQS Documentation", docUrl:"https://docs.aws.amazon.com/sqs/",
-      desc:"SQS is a fully managed message queue that decouples the producer of work from the consumer doing it. A producer sends a message, a consumer polls and processes it, and a visibility timeout hides the message from other consumers while it's being worked on so it isn't processed twice. A dead-letter queue (DLQ) catches messages that fail repeatedly, and FIFO queues add strict ordering and exactly-once processing when that matters." },
-    { n:18, name:"SNS", phase:"Phase 3", what:"Pub/Sub messaging", use:"Send events/notifications to many consumers", learn:"Topics, publishers, subscribers, fanout, filtering", priority:"important", docName:"Amazon SNS Documentation", docUrl:"https://docs.aws.amazon.com/sns/",
-      desc:"SNS is a publish/subscribe messaging service: a producer publishes a message to a topic once, and every subscriber — email addresses, SQS queues, Lambda functions, mobile push endpoints — receives its own copy. This fanout pattern is how a single event (like 'order placed') can trigger several independent downstream processes without the publisher knowing or caring who's listening. Filtering lets subscribers receive only the messages relevant to them." },
-    { n:19, name:"DynamoDB", phase:"Phase 3", what:"NoSQL database", use:"High-scale, low-latency workloads", learn:"Partition/sort keys, GSI, LSI, query vs scan, capacity, streams", priority:"important", docName:"Amazon DynamoDB Documentation", docUrl:"https://docs.aws.amazon.com/dynamodb/",
-      desc:"DynamoDB is a fully managed NoSQL database built for consistent, single-digit-millisecond performance at any scale. Every item is retrieved by its partition key (and optionally a sort key), and Global/Local Secondary Indexes let you query by other attributes. A query is fast and targeted; a scan reads the whole table and should be avoided in hot paths. DynamoDB Streams can trigger downstream processing, like a Lambda function, whenever data changes." },
-    { n:20, name:"CloudFront", phase:"Phase 3", what:"CDN", use:"Deliver content closer to users", learn:"Distributions, origins, cache policies, behaviors, HTTPS, invalidations", priority:"must-production", docName:"Amazon CloudFront Documentation", docUrl:"https://docs.aws.amazon.com/cloudfront/",
-      desc:"CloudFront is AWS's content delivery network: it caches your content — static files, API responses, video — at edge locations around the world, so users get it from a server physically close to them instead of your origin. Distributions define your origins and behaviors (which paths get cached, for how long, under what conditions); it terminates HTTPS at the edge, and invalidations let you force-refresh cached content after a deploy." },
+    { n:15, slug:"svc-lambda", name:"Lambda", icon:"λ", what:"Serverless compute", use:"Run functions without managing servers", learn:"Functions, runtimes, events, layers, IAM roles, concurrency, cold starts", priority:"important", docName:"AWS Lambda Documentation", docUrl:"https://docs.aws.amazon.com/lambda/",
+      desc:"Lambda runs your code in response to events — HTTP requests, queue messages, file uploads — without you provisioning or managing any server. You pick a runtime, write a handler function, and AWS bills you only for the milliseconds it actually executes. Concurrency settings control how many instances of a function can run simultaneously, and cold starts (the latency of spinning up a fresh execution environment) are the main tradeoff to design around.",
+      useWhen:"Reach for Lambda for short-lived, event-triggered work — webhook handlers, image thumbnailing, scheduled jobs. Avoid it for long-running processes or workloads sensitive to cold-start latency at the tail.",
+      steps:["Write a handler function in your chosen runtime.","Attach an execution role scoped to exactly what the function touches.","Configure the trigger (API Gateway, S3 event, SQS, EventBridge schedule).","Set memory/timeout appropriately — memory also scales CPU on Lambda.","Watch concurrency limits so a burst doesn't starve other functions."],
+      diagram:{ left:[{name:"Trigger",sub:"API GW / S3 / SQS event"}], right:[{name:"Downstream call",sub:"DB, API, queue"}], top:{name:"IAM Execution Role",sub:"permissions"}, coreSub:"event-driven function",
+        caption:"An event — an HTTP call, a queue message, a file upload — is what starts the function; there's nothing running in between events." } },
+    { n:16, slug:"svc-apigateway", name:"API Gateway", icon:"🚪", what:"API management", use:"Expose Lambda/backend APIs", learn:"REST/HTTP APIs, auth, throttling, stages, custom domains", priority:"important", docName:"Amazon API Gateway Documentation", docUrl:"https://docs.aws.amazon.com/apigateway/",
+      desc:"API Gateway sits in front of Lambda functions or backend services and exposes them as managed REST or HTTP APIs. It handles authentication and authorization, request throttling to protect backends from overload, versioned stages for safe rollouts, and custom domain names — so you don't have to build that plumbing into every service yourself.",
+      useWhen:"Use it whenever Lambda (or another backend) needs a real HTTP API in front of it — custom domain, auth, throttling — without building that plumbing yourself.",
+      steps:["Define routes/methods and connect each to its backend integration.","Attach an authorizer (IAM, Cognito, or a Lambda authorizer) if the API needs auth.","Set throttling limits to protect the backend from abuse.","Deploy to a stage (e.g. prod) and version it for safe rollouts.","Map a custom domain name via Route 53 + ACM."],
+      diagram:{ left:[{name:"Client",sub:"HTTPS request"}], right:[{name:"Lambda / HTTP backend",sub:"integration"}], top:{name:"Authorizer",sub:"auth check"}, coreSub:"managed API layer",
+        caption:"An authorizer checks the request before it's ever allowed to reach the Lambda or backend behind it." } },
+    { n:17, slug:"svc-sqs", name:"SQS", icon:"📨", what:"Message queue", use:"Async processing and service decoupling", learn:"Producer/consumer, visibility timeout, DLQ, long polling, FIFO", priority:"must-backend", docName:"Amazon SQS Documentation", docUrl:"https://docs.aws.amazon.com/sqs/",
+      desc:"SQS is a fully managed message queue that decouples the producer of work from the consumer doing it. A producer sends a message, a consumer polls and processes it, and a visibility timeout hides the message from other consumers while it's being worked on so it isn't processed twice. A dead-letter queue (DLQ) catches messages that fail repeatedly, and FIFO queues add strict ordering and exactly-once processing when that matters.",
+      useWhen:"Put a queue between any request path and any slow or unreliable downstream step — anything you don't want the client waiting on synchronously.",
+      steps:["Create a standard queue (or FIFO if strict ordering matters).","Set a visibility timeout longer than your worker's typical processing time.","Have the producer send a message instead of doing the work inline.","Have a worker long-poll the queue and delete the message only after successful processing.","Attach a dead-letter queue to catch messages that fail repeatedly."],
+      diagram:{ left:[{name:"Producer",sub:"API enqueues"}], right:[{name:"Consumer",sub:"worker processes"}], bottom:{name:"Dead-Letter Queue",sub:"catches failures"}, coreSub:"message queue",
+        caption:"The producer's job ends the moment the message is enqueued; the dead-letter queue exists for the messages that never succeed." } },
+    { n:18, slug:"svc-sns", name:"SNS", icon:"📢", what:"Pub/Sub messaging", use:"Send events/notifications to many consumers", learn:"Topics, publishers, subscribers, fanout, filtering", priority:"important", docName:"Amazon SNS Documentation", docUrl:"https://docs.aws.amazon.com/sns/",
+      desc:"SNS is a publish/subscribe messaging service: a producer publishes a message to a topic once, and every subscriber — email addresses, SQS queues, Lambda functions, mobile push endpoints — receives its own copy. This fanout pattern is how a single event (like 'order placed') can trigger several independent downstream processes without the publisher knowing or caring who's listening. Filtering lets subscribers receive only the messages relevant to them.",
+      useWhen:"Use SNS when one event needs to trigger multiple independent reactions — order placed → email + inventory update + analytics — without the publisher knowing who's listening.",
+      steps:["Create a topic representing one kind of event.","Subscribe every consumer that cares (SQS queue, Lambda, email, mobile push).","Add a filter policy per subscriber if they only want a subset of messages.","Publish once from your application code.","Let each subscriber process independently, on its own schedule."],
+      diagram:{ left:[{name:"Publisher",sub:"one event"}], right:[{name:"Subscribers",sub:"email, SQS, Lambda…"}], coreSub:"pub/sub fanout",
+        caption:"One publish fans out to every subscriber independently — none of them know or care that the others exist." } },
+    { n:19, slug:"svc-dynamodb", name:"DynamoDB", icon:"🗂️", what:"NoSQL database", use:"High-scale, low-latency workloads", learn:"Partition/sort keys, GSI, LSI, query vs scan, capacity, streams", priority:"important", docName:"Amazon DynamoDB Documentation", docUrl:"https://docs.aws.amazon.com/dynamodb/",
+      desc:"DynamoDB is a fully managed NoSQL database built for consistent, single-digit-millisecond performance at any scale. Every item is retrieved by its partition key (and optionally a sort key), and Global/Local Secondary Indexes let you query by other attributes. A query is fast and targeted; a scan reads the whole table and should be avoided in hot paths. DynamoDB Streams can trigger downstream processing, like a Lambda function, whenever data changes.",
+      useWhen:"Choose DynamoDB when access is predictable and key-based — user profiles by ID, session data, high-throughput event logs. Choose RDS instead the moment you need joins or ad-hoc queries.",
+      steps:["Design the partition key (and sort key) around your actual access patterns first.","Add Global Secondary Indexes for the other ways you'll need to query.","Use on-demand capacity to start, switch to provisioned once traffic is predictable.","Always query by key — avoid table scans in any hot path.","Enable Streams if downstream systems need to react to data changes."],
+      diagram:{ left:[{name:"App",sub:"PutItem / GetItem"}], right:[{name:"DynamoDB Streams",sub:"triggers Lambda"}], coreSub:"NoSQL, key-based",
+        caption:"Every read and write goes through the partition key; Streams is the only way to react to a change after the fact." } },
+    { n:20, slug:"svc-cloudfront", name:"CloudFront", icon:"🌍", what:"CDN", use:"Deliver content closer to users", learn:"Distributions, origins, cache policies, behaviors, HTTPS, invalidations", priority:"must-production", docName:"Amazon CloudFront Documentation", docUrl:"https://docs.aws.amazon.com/cloudfront/",
+      desc:"CloudFront is AWS's content delivery network: it caches your content — static files, API responses, video — at edge locations around the world, so users get it from a server physically close to them instead of your origin. Distributions define your origins and behaviors (which paths get cached, for how long, under what conditions); it terminates HTTPS at the edge, and invalidations let you force-refresh cached content after a deploy.",
+      useWhen:"Put CloudFront in front of anything served repeatedly to many users in different locations — static assets, API responses that don't change per-user, video.",
+      steps:["Create a distribution and point it at your origin (S3 or ALB).","Define cache behaviors per path — what gets cached, and for how long.","Attach an ACM certificate for HTTPS on your custom domain.","Point Route 53 at the distribution with an Alias record.","Run an invalidation after deploys that change cached paths."],
+      diagram:{ left:[{name:"Origin",sub:"S3 or ALB"}], right:[{name:"Edge Location",sub:"near the user"}], bottom:{name:"Invalidation",sub:"force refresh"}, coreSub:"CDN",
+        caption:"The origin holds the real content; the edge location is just the closest place to hand it to the user." } },
   ],
   4: [
-    { n:21, name:"Docker", phase:"Phase 4", what:"Containerization", use:"Package app and dependencies into containers", learn:"Dockerfile, images, containers, volumes, networks, multi-stage builds, Compose", priority:"must", docName:"Docker Get Started", docUrl:"https://docs.docker.com/get-started/",
-      desc:"Docker packages an application together with its dependencies, runtime, and configuration into a single portable image, so it runs identically on a laptop, a CI server, or in production. A Dockerfile defines how the image is built, multi-stage builds keep the final image lean by discarding build-time tooling, and Docker Compose lets you define and run multi-container setups — an app plus a database plus a cache — with one command." },
-    { n:22, name:"CI/CD", phase:"Phase 4", what:"Automated build/test/deploy", use:"Automatically build/test/deploy after Git changes", learn:"GitHub Actions, tests, Docker build, ECR push, ECS deploy, rollback", priority:"must", docName:"GitHub Actions Documentation", docUrl:"https://docs.github.com/actions",
-      desc:"CI/CD automates the path from a Git commit to a running deployment: continuous integration runs tests and builds on every change, continuous deployment pushes the result out automatically. A typical pipeline runs the test suite, builds a Docker image, pushes it to ECR, and triggers an ECS deployment — with a rollback path if something goes wrong. It's what makes frequent, low-risk releases possible." },
-    { n:23, name:"Infrastructure as Code", phase:"Phase 4", what:"Infrastructure automation", use:"Create AWS infrastructure using code", learn:"Terraform/CDK, modules, state, variables, outputs, workspaces", priority:"must", docName:"Terraform Documentation", docUrl:"https://developer.hashicorp.com/terraform/docs",
-      desc:"Infrastructure as Code means defining your AWS resources — VPCs, databases, load balancers — in version-controlled configuration files (Terraform or AWS CDK) instead of clicking through the console. State tracks what's actually deployed, variables and outputs make configurations reusable across environments, and workspaces let you manage separate environments from the same codebase. It turns infrastructure changes into reviewable, repeatable, auditable pull requests." },
-    { n:24, name:"Monitoring &amp; Alerting", phase:"Phase 4", what:"Production observability", use:"Detect errors, performance issues and outages", learn:"Logs, metrics, alarms, dashboards, alerts, Log Insights", priority:"must", docName:"CloudWatch Documentation", docUrl:"https://docs.aws.amazon.com/cloudwatch/",
-      desc:"This is the discipline layer on top of CloudWatch: deciding what to log, which metrics actually indicate a problem, and which of those deserve to wake someone up. Good alerting means dashboards that surface real signal, alarms tuned to avoid both false alarms and missed incidents, and Log Insights queries ready to go before an incident happens — not written for the first time during one." },
-    { n:25, name:"AWS Security Best Practices", phase:"Phase 4", what:"Security architecture", use:"Protect infrastructure, apps and data", learn:"Least privilege, MFA, encryption, secrets, network security, logging, guardrails", priority:"must", docName:"AWS Security Documentation", docUrl:"https://docs.aws.amazon.com/security/",
-      desc:"This ties together everything else on this roadmap into a security posture: least-privilege IAM policies, MFA on every human identity, encryption for data at rest and in transit, secrets kept out of code, networks segmented with VPCs and security groups, and centralized logging so you can reconstruct what happened after the fact. Guardrails, like AWS Organizations service control policies, prevent entire classes of mistakes before they're possible." },
+    { n:21, slug:"svc-docker", name:"Docker", icon:"🐳", what:"Containerization", use:"Package app and dependencies into containers", learn:"Dockerfile, images, containers, volumes, networks, multi-stage builds, Compose", priority:"must", docName:"Docker Get Started", docUrl:"https://docs.docker.com/get-started/",
+      desc:"Docker packages an application together with its dependencies, runtime, and configuration into a single portable image, so it runs identically on a laptop, a CI server, or in production. A Dockerfile defines how the image is built, multi-stage builds keep the final image lean by discarding build-time tooling, and Docker Compose lets you define and run multi-container setups — an app plus a database plus a cache — with one command.",
+      useWhen:"Containerize anything that's going to ECS, Fargate, or EKS — and honestly, almost every backend service today, even ones running on a single EC2 box, for the environment consistency alone.",
+      steps:["Write a Dockerfile starting from a minimal base image.","Use multi-stage builds to keep the final image free of build-time tooling.","Build and tag the image locally to test before it hits CI.","Use Compose to run the app alongside its database/cache for local development.","Push the final image to ECR from CI, not from a laptop."],
+      diagram:{ left:[{name:"Dockerfile",sub:"build instructions"}], right:[{name:"Image",sub:"pushed to ECR"}], coreSub:"containerization",
+        caption:"The Dockerfile is the recipe; the image it produces is what actually gets pushed to ECR and run everywhere else." } },
+    { n:22, slug:"svc-cicd", name:"CI/CD", icon:"🔁", what:"Automated build/test/deploy", use:"Automatically build/test/deploy after Git changes", learn:"GitHub Actions, tests, Docker build, ECR push, ECS deploy, rollback", priority:"must", docName:"GitHub Actions Documentation", docUrl:"https://docs.github.com/actions",
+      desc:"CI/CD automates the path from a Git commit to a running deployment: continuous integration runs tests and builds on every change, continuous deployment pushes the result out automatically. A typical pipeline runs the test suite, builds a Docker image, pushes it to ECR, and triggers an ECS deployment — with a rollback path if something goes wrong. It's what makes frequent, low-risk releases possible.",
+      useWhen:"Set this up as soon as more than one person touches the codebase, or the moment manual deploys start feeling risky — whichever comes first.",
+      steps:["Trigger a workflow on push/PR to main.","Run the test suite and fail fast if anything breaks.","Build the Docker image and push it to ECR with a commit-sha tag.","Update the ECS task definition with the new image and deploy the service.","Automate a rollback to the previous task definition if health checks fail."],
+      diagram:{ left:[{name:"git push",sub:"triggers pipeline"}], right:[{name:"ECS Deployment",sub:"new revision live"}], bottom:{name:"Rollback",sub:"on failed health check"}, coreSub:"GitHub Actions",
+        caption:"A single git push is the only human action — everything from test to deploy (or rollback) happens without anyone touching a console." } },
+    { n:23, slug:"svc-terraform", name:"Infrastructure as Code", icon:"🏗️", what:"Infrastructure automation", use:"Create AWS infrastructure using code", learn:"Terraform/CDK, modules, state, variables, outputs, workspaces", priority:"must", docName:"Terraform Documentation", docUrl:"https://developer.hashicorp.com/terraform/docs",
+      desc:"Infrastructure as Code means defining your AWS resources — VPCs, databases, load balancers — in version-controlled configuration files (Terraform or AWS CDK) instead of clicking through the console. State tracks what's actually deployed, variables and outputs make configurations reusable across environments, and workspaces let you manage separate environments from the same codebase. It turns infrastructure changes into reviewable, repeatable, auditable pull requests.",
+      useWhen:"Use it for anything you'd be upset to lose or unable to recreate from memory — which in practice means everything past your very first prototype.",
+      steps:["Write resource definitions in <code>.tf</code> files instead of clicking through the console.","Store state remotely (e.g., S3 + DynamoDB lock) so a team can share it safely.","Run <code>plan</code> before every <code>apply</code> and actually read the diff.","Use variables and modules to reuse the same config across environments.","Put changes through the same PR review process as application code."],
+      diagram:{ left:[{name:".tf files",sub:"desired state"}], right:[{name:"AWS Resources",sub:"actual state"}], bottom:{name:"State File",sub:"tracks what's deployed"}, coreSub:"Infrastructure as Code", coreLabel:"Terraform / IaC",
+        caption:"The .tf files are the intent; the state file is Terraform's memory of what it already made real in AWS." } },
+    { n:24, slug:"svc-monitoring", name:"Monitoring &amp; Alerting", icon:"🚨", what:"Production observability", use:"Detect errors, performance issues and outages", learn:"Logs, metrics, alarms, dashboards, alerts, Log Insights", priority:"must", docName:"CloudWatch Documentation", docUrl:"https://docs.aws.amazon.com/cloudwatch/",
+      desc:"This is the discipline layer on top of CloudWatch: deciding what to log, which metrics actually indicate a problem, and which of those deserve to wake someone up. Good alerting means dashboards that surface real signal, alarms tuned to avoid both false alarms and missed incidents, and Log Insights queries ready to go before an incident happens — not written for the first time during one.",
+      useWhen:"This is never optional once something is in production — the question is only how much of it you build before the first incident versus during one.",
+      steps:["Pick the handful of metrics that actually predict user-facing problems.","Build alarms with thresholds tested against real traffic, not guesses.","Route alerts to the right channel/person — noisy alerts get ignored.","Write runbooks for your most common alarms before you need them.","Review and prune alerts regularly so alert fatigue doesn't set in."],
+      diagram:{ left:[{name:"Logs & Metrics",sub:"raw signal"}], right:[{name:"On-call Alert",sub:"someone gets paged"}], coreSub:"turning data into action", coreLabel:"Monitoring",
+        caption:"Raw logs and metrics are cheap; the alert that actually reaches someone on-call is the only part that matters at 3am." } },
+    { n:25, slug:"svc-security", name:"AWS Security Best Practices", icon:"🛡️", what:"Security architecture", use:"Protect infrastructure, apps and data", learn:"Least privilege, MFA, encryption, secrets, network security, logging, guardrails", priority:"must", docName:"AWS Security Documentation", docUrl:"https://docs.aws.amazon.com/security/",
+      desc:"This ties together everything else on this roadmap into a security posture: least-privilege IAM policies, MFA on every human identity, encryption for data at rest and in transit, secrets kept out of code, networks segmented with VPCs and security groups, and centralized logging so you can reconstruct what happened after the fact. Guardrails, like AWS Organizations service control policies, prevent entire classes of mistakes before they're possible.",
+      useWhen:"This isn't a service you 'add' at the end — it's a set of defaults you apply to every other service on this page from day one.",
+      steps:["Enforce least-privilege IAM policies and MFA everywhere.","Encrypt data at rest (S3, RDS, EBS) and in transit (TLS everywhere).","Keep secrets out of code and version control, always.","Segment networks with VPCs/security groups so a breach in one place doesn't reach everything.","Turn on centralized logging (CloudTrail) so you can reconstruct any incident.","Use AWS Organizations SCPs to make entire classes of mistakes impossible account-wide."],
+      diagram:{ left:[{name:"Every service above",sub:"IAM, VPC, encryption…"}], right:[{name:"Guardrails",sub:"SCPs, GuardDuty"}], coreSub:"posture, not a product", coreLabel:"Security",
+        caption:"This box has no inputs of its own — it's the discipline applied to every other service already on this page." } },
   ],
 };
 
-function renderTables() {
-  Object.keys(DATA).forEach(phaseKey => {
-    const tbody = document.querySelector(`#table-${phaseKey} tbody`);
-    tbody.innerHTML = DATA[phaseKey].map(item => `
-      <tr>
-        <td class="num-col">${String(item.n).padStart(2,"0")}</td>
-        <td>
-          <div class="service-cell">
-            <span class="name">${item.name}</span>
-            <button class="info-btn" data-phase="${phaseKey}" data-n="${item.n}" aria-label="More info about ${item.name.replace(/&amp;/g,'&')}">i</button>
-          </div>
-        </td>
-        <td class="what-col">${item.what}</td>
-        <td class="use-col">${item.use}</td>
-        <td class="learn-col">${item.learn}</td>
-        <td><span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span></td>
-        <td><a class="doc-link" href="${item.docUrl}" target="_blank" rel="noopener">Docs ↗</a></td>
-      </tr>
-    `).join("");
+/* ---------- Generic per-service architecture diagram renderer ---------- */
+function stackBoxes(items, x, w, centerY, boxH, gap) {
+  const n = items.length;
+  if (!n) return [];
+  const totalH = n * boxH + (n - 1) * gap;
+  const startY = centerY - totalH / 2;
+  return items.map((it, i) => {
+    const y = startY + i * (boxH + gap);
+    return { ...it, x, y, w, h: boxH, cy: y + boxH / 2 };
   });
 }
 
-function findItem(phaseKey, n) {
-  return DATA[phaseKey].find(i => i.n === Number(n));
-}
+function svcDiagramSVG(svc) {
+  const cfg = svc.diagram;
+  const W = 760, H = 420;
+  const coreW = 200, coreH = 90, coreCX = 380, coreCY = 210;
+  const coreX = coreCX - coreW / 2, coreY = coreCY - coreH / 2;
+  const leftX = 20, leftW = 170, rightX = 570, rightW = 170, boxH = 60, gap = 18;
+  const uid = svc.slug;
 
-const overlay = document.getElementById("modalOverlay");
-let lastFocused = null;
+  const lefts = stackBoxes(cfg.left || [], leftX, leftW, coreCY, boxH, gap);
+  const rights = stackBoxes(cfg.right || [], rightX, rightW, coreCY, boxH, gap);
+  const label = cfg.coreLabel || svc.name;
 
-function openModal(phaseKey, n, triggerEl) {
-  const item = findItem(phaseKey, n);
-  if (!item) return;
-  document.getElementById("modalTag").textContent = item.phase;
-  document.getElementById("modalTitle").innerHTML = item.name;
-  document.getElementById("modalDesc").textContent = item.desc;
-  document.getElementById("modalLearn").textContent = item.learn;
-  document.getElementById("modalPriority").innerHTML = `<span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span>`;
-  document.getElementById("modalNum").textContent = `#${String(item.n).padStart(2,"0")}`;
-  document.getElementById("modalDocLink").href = item.docUrl;
-  lastFocused = triggerEl || document.activeElement;
-  overlay.hidden = false;
-  document.body.style.overflow = "hidden";
-  document.getElementById("modalCloseBtn").focus();
-}
+  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${cfg.caption.replace(/"/g,"'")}">`;
+  svg += `<defs>
+    <marker id="m-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)"/></marker>
+    <marker id="ma-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--amber)"/></marker>
+  </defs>`;
 
-function closeModal() {
-  if (overlay.hidden) return;
-  overlay.hidden = true;
-  document.body.style.overflow = "";
-  if (lastFocused && typeof lastFocused.focus === "function") lastFocused.focus();
-}
-
-document.addEventListener("click", (e) => {
-  const btn = e.target.closest(".info-btn");
-  if (btn) {
-    openModal(btn.dataset.phase, btn.dataset.n, btn);
+  if (cfg.top) {
+    svg += `<rect class="d-node-navy" x="${coreX}" y="24" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title-light" x="${coreX+14}" y="47">${cfg.top.name}</text>
+      <text class="d-sub-light" x="${coreX+14}" y="62">${cfg.top.sub||""}</text>
+      <path class="d-arrow" d="M${coreCX} 70 L${coreCX} ${coreY-2}" marker-end="url(#m-${uid})"/>`;
   }
+  if (cfg.bottom) {
+    svg += `<rect class="d-node" x="${coreX}" y="350" width="${coreW}" height="46" rx="10"/>
+      <text class="d-title" x="${coreX+14}" y="373">${cfg.bottom.name}</text>
+      <text class="d-sub" x="${coreX+14}" y="388">${cfg.bottom.sub||""}</text>
+      <path class="d-arrow-accent" d="M${coreCX} ${coreY+coreH+2} L${coreCX} 348" marker-end="url(#ma-${uid})"/>`;
+  }
+
+  svg += `<rect class="d-node-accent" x="${coreX}" y="${coreY}" width="${coreW}" height="${coreH}" rx="12"/>
+    <text class="d-title" x="${coreCX}" y="${coreCY-6}" text-anchor="middle">${label}</text>
+    <text class="d-sub" x="${coreCX}" y="${coreCY+14}" text-anchor="middle">${cfg.coreSub||""}</text>`;
+
+  lefts.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${b.x+b.w} ${b.cy} L${coreX-2} ${coreCY}" marker-end="url(#m-${uid})"/>`;
+  });
+  rights.forEach(b => {
+    svg += `<rect class="d-node" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8"/>
+      <text class="d-title" x="${b.x+12}" y="${b.cy-2}" style="font-size:12.5px;">${b.name}</text>
+      ${b.sub ? `<text class="d-sub" x="${b.x+12}" y="${b.cy+14}">${b.sub}</text>` : ""}
+      <path class="d-arrow" d="M${coreX+coreW+2} ${coreCY} L${b.x} ${b.cy}" marker-end="url(#m-${uid})"/>`;
+  });
+
+  svg += `</svg>`;
+  return svg;
+}
+
+function renderServicePanels() {
+  const host = document.getElementById("service-panels");
+  const html = [];
+  Object.keys(DATA).forEach(phaseKey => {
+    DATA[phaseKey].forEach(item => {
+      html.push(`
+        <section class="topic-panel" id="${item.slug}" hidden>
+          <div class="panel-kicker">${PHASE_LABEL[phaseKey]}</div>
+          <div class="panel-head">
+            <div class="panel-icon">${item.icon}</div>
+            <div>
+              <div class="svc-name-row"><h2>${String(item.n).padStart(2,"0")} · ${item.name}</h2><span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span></div>
+              <p class="panel-tagline">${item.what} — ${item.use}</p>
+            </div>
+          </div>
+          <p class="svc-desc" style="margin-top:20px;">${item.desc}</p>
+
+          <div class="use-callout">
+            <b class="callout-title">Where &amp; when to use it</b>
+            ${item.useWhen}
+          </div>
+
+          <div class="diagram-box">
+            <div class="d-chrome">Diagram · ${item.name}</div>
+            <div class="d-body">${svcDiagramSVG(item)}</div>
+            <p class="d-caption">${item.diagram.caption}</p>
+          </div>
+
+          <h3 class="subhead">How to implement it</h3>
+          <ol class="steps-list">${item.steps.map(s => `<li>${s}</li>`).join("")}</ol>
+
+          <div class="svc-learn">
+            <div class="flabel">What you should learn</div>
+            <div class="tag-list">${item.learn.split(",").map(t => `<span class="tag">${t.trim()}</span>`).join("")}</div>
+          </div>
+
+          <div class="svc-foot">
+            <a class="back-home" style="margin:0;" href="#overview">← All services</a>
+            <a class="doc-link" href="${item.docUrl}" target="_blank" rel="noopener">${item.docName} →</a>
+          </div>
+        </section>
+      `);
+    });
+  });
+  host.innerHTML = html.join("");
+}
+
+function renderSidebarNav() {
+  Object.keys(DATA).forEach(phaseKey => {
+    const group = document.getElementById(`nav-phase-${phaseKey}`);
+    const links = DATA[phaseKey].map(item =>
+      `<a class="nav-link" href="#${item.slug}"><span class="nav-icon">${item.icon}</span> ${item.name}</a>`
+    ).join("");
+    group.insertAdjacentHTML("beforeend", links);
+  });
+}
+
+function renderServiceIndex() {
+  const host = document.getElementById("svc-index");
+  const html = Object.keys(DATA).map(phaseKey => `
+    <div class="svc-index-group">
+      <h4>${PHASE_LABEL[phaseKey]}</h4>
+      ${DATA[phaseKey].map(item => `
+        <a class="svc-index-item" href="#${item.slug}">
+          <span class="svc-index-icon">${item.icon}</span>
+          <span class="svc-index-text"><div class="n">${item.name}</div><div class="t">${item.what} — ${item.use}</div></span>
+          <span class="badge ${PRIORITY_CLASS[item.priority]}">${PRIORITY_LABEL[item.priority]}</span>
+        </a>
+      `).join("")}
+    </div>
+  `).join("");
+  host.innerHTML = html;
+}
+
+/* ---------- Router: show exactly one topic panel at a time ---------- */
+function showTopic(id) {
+  document.querySelectorAll(".topic-panel").forEach(p => { p.hidden = (p.id !== id); });
+  document.querySelectorAll(".nav-link").forEach(a => {
+    a.classList.toggle("active", a.getAttribute("href") === "#" + id);
+  });
+  window.scrollTo(0, 0);
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("sidebarScrim").classList.remove("show");
+}
+
+function routeFromHash() {
+  const id = (location.hash || "#overview").slice(1);
+  showTopic(document.getElementById(id) ? id : "overview");
+}
+
+renderServicePanels();
+renderSidebarNav();
+renderServiceIndex();
+window.addEventListener("hashchange", routeFromHash);
+routeFromHash();
+
+/* ---------- Mobile sidebar toggle ---------- */
+const menuBtn = document.getElementById("menuBtn");
+const sidebarEl = document.getElementById("sidebar");
+const scrimEl = document.getElementById("sidebarScrim");
+if (menuBtn) {
+  menuBtn.addEventListener("click", () => {
+    sidebarEl.classList.toggle("open");
+    scrimEl.classList.toggle("show");
+  });
+}
+scrimEl.addEventListener("click", () => {
+  sidebarEl.classList.remove("open");
+  scrimEl.classList.remove("show");
 });
 
-document.getElementById("modalCloseBtn").addEventListener("click", closeModal);
-overlay.addEventListener("click", (e) => {
-  if (e.target === overlay) closeModal();
-});
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && !overlay.hidden) closeModal();
-});
-
-renderTables();
-
+/* ---------- Summary + references (unchanged data) ---------- */
 const sequence = ["IAM","VPC","EC2","S3","RDS","CloudWatch","Route 53","Docker","ECR","ECS","Fargate","ALB","Secrets Manager","Auto Scaling","Redis","SQS","SNS","CloudFront","Lambda","API Gateway","DynamoDB","CI/CD","Terraform","Monitoring & Alerting","AWS Security"];
 document.getElementById("sequence-flow").innerHTML = sequence.map(s => `<span class="seq-step">${s}</span>`).join('<span class="seq-arrow">→</span>');
 

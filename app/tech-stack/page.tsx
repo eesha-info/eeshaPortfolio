@@ -3,6 +3,7 @@ import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import SectionHeading from "@/app/components/SectionHeading";
 import TechStackGrid from "@/app/components/TechStackGrid";
+import { techStack } from "@/app/lib/techStack";
 
 export const metadata: Metadata = {
   title: "Tech Stack & Learning Resources | Mohammad Eesha",
@@ -84,6 +85,49 @@ export default function TechStackPage() {
             subtitle="Filter by language, database, or cloud — then jump into the details"
           />
           <TechStackGrid />
+        </div>
+      </section>
+
+      <div className="section-divider" />
+
+      <section className="section">
+        <div className="max-w-6xl mx-auto px-6">
+          <SectionHeading
+            title="Official Documentation"
+            subtitle="Every technology on this page, linked straight to its official docs"
+          />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {techStack.map((tech) => (
+              <a
+                key={tech.slug}
+                href={tech.docsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="glass-card flex items-start gap-3"
+                style={{ padding: "16px 20px", textDecoration: "none" }}
+              >
+                <span style={{ fontSize: "1.1rem" }}>{tech.icon}</span>
+                <span className="flex flex-col" style={{ minWidth: 0 }}>
+                  <span
+                    className="font-semibold text-sm"
+                    style={{ color: "var(--text-primary)" }}
+                  >
+                    {tech.name}
+                  </span>
+                  <span
+                    className="text-xs"
+                    style={{
+                      color: "var(--accent-cyan)",
+                      wordBreak: "break-all",
+                      marginTop: 2,
+                    }}
+                  >
+                    {tech.docsUrl.replace(/^https?:\/\//, "")}
+                  </span>
+                </span>
+              </a>
+            ))}
+          </div>
         </div>
       </section>
 

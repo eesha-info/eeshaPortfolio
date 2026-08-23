@@ -574,6 +574,53 @@ pre.pg-console {
 .diagram-body svg .fc-yes { fill: var(--success); font: 700 11.5px "IBM Plex Sans", sans-serif; }
 .diagram-body svg .fc-no { fill: var(--ink-faint); font: 700 11.5px "IBM Plex Sans", sans-serif; }
 
+.topic-doc-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 22px;
+  padding: 9px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--link);
+  text-decoration: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  transition: border-color 0.15s, background 0.15s;
+}
+.topic-doc-link:hover { border-color: var(--accent); background: var(--accent-tint); }
+
+.doc-links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px 20px;
+}
+.doc-links-grid a {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  text-decoration: none;
+  overflow: hidden;
+}
+.doc-links-grid a:hover { border-color: var(--accent); background: var(--surface-2); }
+.doc-links-grid a b {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 13.5px;
+  color: var(--ink);
+}
+.doc-links-grid a span {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  color: var(--link);
+  overflow-wrap: break-word;
+}
+
 footer.doc-footer {
   border-top: 1px solid var(--border);
   margin-top: 60px;
@@ -683,6 +730,11 @@ footer.doc-footer .role { font-size: 12.5px; color: var(--ink-soft); margin-top:
       <a class="nav-link" href="#modules">Modules</a>
       <a class="nav-link" href="#generators">Generators &amp; Iterators</a>
     </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Reference</div>
+      <a class="nav-link" href="#references">Official Docs — All Topics</a>
+    </div>
   </aside>
 
   <main class="content" id="content">
@@ -733,6 +785,7 @@ console.log("2 + 2 =", 2 + 2);</script>
         <span class="callout-label">Tip</span>
         Every playground in this document auto-runs once so you can see the expected output immediately. Edit the code and press <b>Run</b> as many times as you like — nothing you do here affects anything outside this page.
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noopener">📄 Official Docs — Introduction on MDN ↗</a>
     </section>
 
     <section class="topic" id="variables">
@@ -792,6 +845,7 @@ console.log(leaky);       // works — var ignores block scope
         <span class="callout-label">Naming rules</span>
         Variable names must start with a letter, <code class="inline">$</code>, or <code class="inline">_</code>, can't start with a digit, and are case-sensitive (<code class="inline">age</code> and <code class="inline">Age</code> are different variables). By convention, JavaScript uses <code class="inline">camelCase</code> for variables and functions.
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Grammar_and_types" target="_blank" rel="noopener">📄 Official Docs — Variables on MDN ↗</a>
     </section>
 
     <section class="topic" id="data-types">
@@ -854,6 +908,7 @@ console.log(Boolean("0"));   // true — a non-empty string is "truthy", even "0
 console.log(1 == "1");       // true  — loose equality coerces types
 console.log(1 === "1");      // false — strict equality checks type too (always prefer this)</script>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures" target="_blank" rel="noopener">📄 Official Docs — Data Types on MDN ↗</a>
     </section>
 
     <section class="topic" id="operators">
@@ -895,6 +950,7 @@ console.log(user.profile?.email);              // undefined, no crash
         <span class="callout-label">?? vs ||</span>
         <code class="inline">||</code> falls back whenever the left side is any "falsy" value (<code class="inline">0</code>, <code class="inline">""</code>, <code class="inline">null</code>, <code class="inline">undefined</code>, <code class="inline">NaN</code>). <code class="inline">??</code> only falls back for <code class="inline">null</code> or <code class="inline">undefined</code> — use it whenever <code class="inline">0</code> or <code class="inline">""</code> should count as a valid value.
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_operators" target="_blank" rel="noopener">📄 Official Docs — Operators on MDN ↗</a>
     </section>
 
     <section class="topic" id="control-flow">
@@ -1009,6 +1065,7 @@ console.log(dayName(1));
 console.log(dayName(3));
 console.log(dayName(9));</script>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Control_flow_and_error_handling" target="_blank" rel="noopener">📄 Official Docs — Control Flow on MDN ↗</a>
     </section>
 
     <section class="topic" id="loops">
@@ -1124,6 +1181,7 @@ for (const key in car) {
   console.log(i);
 }</script>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Loops_and_iteration" target="_blank" rel="noopener">📄 Official Docs — Loops on MDN ↗</a>
     </section>
 
     <section class="topic" id="functions">
@@ -1243,6 +1301,7 @@ console.log(withReturn(5)); // 10</script>
         <span class="callout-label">When to use which</span>
         Reach for a <b>declaration</b> for top-level, named functions you want available anywhere in the file. Use an <b>arrow function</b> for short callbacks (passed to <code class="inline">map</code>, event handlers, etc.) and anywhere you need to preserve the surrounding <code class="inline">this</code>.
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions" target="_blank" rel="noopener">📄 Official Docs — Functions on MDN ↗</a>
     </section>
 
     <section class="topic" id="strings">
@@ -1284,6 +1343,7 @@ console.log("7".padStart(3, "0"));       // "007"</script>
         <span class="callout-label">Template literals for building strings</span>
         Instead of chaining <code class="inline">+</code>, use backtick strings with <code class="inline">${expression}</code> — see the <a href="#template-literals">Template Literals</a> section.
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank" rel="noopener">📄 Official Docs — Strings on MDN ↗</a>
     </section>
 
     <section class="topic" id="numbers-math">
@@ -1308,6 +1368,7 @@ console.log(Number.isInteger(4.5)); // false
 console.log(Number("3.14"));        // 3.14
 console.log(isNaN("hello" * 2));    // true — "hello" * 2 is Not a Number</script>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math" target="_blank" rel="noopener">📄 Official Docs — Numbers & Math on MDN ↗</a>
     </section>
 
     <section class="topic" id="arrays">
@@ -1337,6 +1398,7 @@ console.log(colors);
 console.log(Array.isArray(colors));   // true — the reliable way to check
 console.log(Array.isArray("red"));    // false</script>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" target="_blank" rel="noopener">📄 Official Docs — Arrays on MDN ↗</a>
     </section>
 
     <section class="topic" id="array-methods">
@@ -1441,6 +1503,7 @@ console.log([...[1, 2], ...[3, 4]]); // same result using spread
 console.log([1, [2, 3], [4, [5, 6]]].flat(2)); // flatten 2 levels deep
 console.log(["2024", "01", "15"].join("-"));   // "2024-01-15"</script>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array#instance_methods" target="_blank" rel="noopener">📄 Official Docs — Array Methods on MDN ↗</a>
     </section>
 
     <section class="topic" id="objects">
@@ -1482,6 +1545,7 @@ console.log(withComputed);</script>
         <span class="callout-label">Equality on objects</span>
         <code class="inline">{} === {}</code> is always <code class="inline">false</code> — two different objects are never equal, even with identical contents, because <code class="inline">===</code> compares references, not structure. Only comparing an object to itself (the same reference) returns true.
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects" target="_blank" rel="noopener">📄 Official Docs — Objects on MDN ↗</a>
     </section>
 
     <section class="topic" id="destructuring">
@@ -1518,6 +1582,7 @@ let a = 1, b = 2;
 [a, b] = [b, a];                        // classic swap, no temp variable
 console.log(a, b);</script>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment" target="_blank" rel="noopener">📄 Official Docs — Destructuring on MDN ↗</a>
     </section>
 
     <section class="topic" id="spread-rest">
@@ -1552,6 +1617,7 @@ console.log(first, rest);
 const { id, ...otherFields } = { id: 1, name: "Kit", role: "admin" };
 console.log(id, otherFields);</script>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax" target="_blank" rel="noopener">📄 Official Docs — Spread & Rest on MDN ↗</a>
     </section>
 
     <section class="topic" id="template-literals">
@@ -1577,6 +1643,7 @@ const address = `123 Main St.
 Springfield, USA`;
 console.log(address);</script>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals" target="_blank" rel="noopener">📄 Official Docs — Template Literals on MDN ↗</a>
     </section>
 
     <section class="topic" id="scope-hoisting">
@@ -1609,6 +1676,7 @@ var varExample = "hi";
 // console.log(letExample); // ReferenceError: Cannot access before initialization
 let letExample = "hi";</script>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Glossary/Hoisting" target="_blank" rel="noopener">📄 Official Docs — Scope & Hoisting on MDN ↗</a>
     </section>
 
     <section class="topic" id="closures">
@@ -1651,6 +1719,7 @@ console.log(triple(5));  // 15</script>
         <span class="callout-label">Why it matters</span>
         Closures are what let a variable stay "alive" and private after its enclosing function returns. Every time you write a callback that references an outer variable, you're using a closure — it's one of the most-asked-about interview topics for a reason.
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures" target="_blank" rel="noopener">📄 Official Docs — Closures on MDN ↗</a>
     </section>
 
     <section class="topic" id="this-keyword">
@@ -1682,6 +1751,7 @@ console.log(detached.call(person)); // .call() lets you explicitly set "this"</s
         <span class="callout-label">Rule of thumb</span>
         Use a regular <code class="inline">function</code> for object methods (so <code class="inline">this</code> refers to the object). Use an <b>arrow function</b> for callbacks nested inside a method, so <code class="inline">this</code> correctly stays pointed at the outer object instead of becoming <code class="inline">undefined</code>.
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this" target="_blank" rel="noopener">📄 Official Docs — The &quot;this&quot; Keyword on MDN ↗</a>
     </section>
 
     <section class="topic" id="higher-order-functions">
@@ -1711,6 +1781,7 @@ processOrder(null, () => {}, (error) => console.log("❌", error));
 const doubled = [1, 2, 3].map(n => n * 2); // map takes a callback
 console.log(doubled);</script>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Glossary/First-class_Function" target="_blank" rel="noopener">📄 Official Docs — Higher-Order Functions on MDN ↗</a>
     </section>
 
     <section class="topic" id="error-handling">
@@ -1761,6 +1832,7 @@ try {
   console.log(`${error.name}: ${error.message}`);
 }</script>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch" target="_blank" rel="noopener">📄 Official Docs — Error Handling on MDN ↗</a>
     </section>
 
     <section class="topic" id="json">
@@ -1783,6 +1855,7 @@ console.log(parsedBack.name, typeof parsedBack);
 // This is exactly what happens under the hood when you call
 // response.json() on a fetch() result — see the Fetch API section.</script>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON" target="_blank" rel="noopener">📄 Official Docs — JSON on MDN ↗</a>
     </section>
 
     <section class="topic" id="date">
@@ -1813,6 +1886,7 @@ console.log(Date.now());              // milliseconds since Jan 1, 1970 (epoch)<
         <span class="callout-label">Heads up</span>
         For anything beyond basic date math (timezones, formatting, durations), most real projects reach for a library like <code class="inline">date-fns</code> or <code class="inline">Intl.DateTimeFormat</code> rather than hand-rolling it.
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" rel="noopener">📄 Official Docs — Date Object on MDN ↗</a>
     </section>
 
     <section class="topic" id="regexp">
@@ -1848,6 +1922,7 @@ console.log("  spaced   out  ".replace(/\s+/g, " ").trim()); // collapse whitesp
           </tbody>
         </table>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions" target="_blank" rel="noopener">📄 Official Docs — Regular Expressions on MDN ↗</a>
     </section>
 
     <section class="topic" id="map-set">
@@ -1882,6 +1957,7 @@ const nums = [1, 2, 2, 3, 3, 3];
 const unique = [...new Set(nums)];
 console.log(unique);</script>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map" target="_blank" rel="noopener">📄 Official Docs — Map & Set on MDN ↗</a>
     </section>
 
     <section class="topic" id="dom">
@@ -1930,6 +2006,7 @@ console.log(link.getAttribute("href"));
 
 link.textContent = "Now linking to example.com";</script>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model" target="_blank" rel="noopener">📄 Official Docs — DOM Manipulation on MDN ↗</a>
     </section>
 
     <section class="topic" id="events">
@@ -1980,6 +2057,7 @@ menu.addEventListener("click", (event) => {
 });
 // one listener handles all three buttons — and any added later</script>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/Events" target="_blank" rel="noopener">📄 Official Docs — Events on MDN ↗</a>
     </section>
 
     <section class="topic" id="storage">
@@ -2009,6 +2087,7 @@ document.getElementById("loadBtn").addEventListener("click", () => {
 // localStorage.removeItem("prefs")  removes one key
 // localStorage.clear()              wipes everything</script>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API" target="_blank" rel="noopener">📄 Official Docs — Local & Session Storage on MDN ↗</a>
     </section>
 
     <section class="topic" id="prototypes">
@@ -2034,6 +2113,7 @@ console.log(dog.hasOwnProperty("eat"));         // false — inherited, not own<
         <span class="callout-label">Why this matters</span>
         When you call a method on an object and JavaScript can't find it directly on that object, it walks up the prototype chain looking for it. This is also how built-ins work — every array inherits <code class="inline">.map()</code>, <code class="inline">.push()</code>, etc. from <code class="inline">Array.prototype</code>.
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain" target="_blank" rel="noopener">📄 Official Docs — Prototypes & Inheritance on MDN ↗</a>
     </section>
 
     <section class="topic" id="classes">
@@ -2095,6 +2175,7 @@ console.log(c.area);
 console.log(Circle.describe());
 // console.log(c.#radius);    // SyntaxError — private fields can't be accessed outside</script>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes" target="_blank" rel="noopener">📄 Official Docs — Classes on MDN ↗</a>
     </section>
 
     <section class="topic" id="promises">
@@ -2144,6 +2225,7 @@ Promise.race([taskA, taskB, taskC]).then((first) => {
         <span class="callout-label">.all vs .race vs .allSettled</span>
         <code class="inline">Promise.all</code> waits for every promise and rejects immediately if any one fails. <code class="inline">Promise.race</code> settles as soon as the first one finishes, win or lose. <code class="inline">Promise.allSettled</code> waits for all of them and never short-circuits, giving you a status report for each.
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" target="_blank" rel="noopener">📄 Official Docs — Promises on MDN ↗</a>
     </section>
 
     <section class="topic" id="async-await">
@@ -2189,6 +2271,7 @@ async function run() {
 
 run();</script>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function" target="_blank" rel="noopener">📄 Official Docs — Async / Await on MDN ↗</a>
     </section>
 
     <section class="topic" id="fetch">
@@ -2246,6 +2329,7 @@ async function loadItems() {
 
 loadItems();</script>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API" target="_blank" rel="noopener">📄 Official Docs — Fetch API on MDN ↗</a>
     </section>
 
     <section class="topic" id="event-loop">
@@ -2365,6 +2449,7 @@ console.log("2: synchronous — runs second");
         <span class="callout-label">Why the order looks strange</span>
         All synchronous code runs first, in order, to completion. Then, before the next "macrotask" (like a <code class="inline">setTimeout</code> callback) is allowed to run, the entire microtask queue (Promise callbacks) is fully drained. That's why a <code class="inline">Promise.then</code> always jumps ahead of a <code class="inline">setTimeout(fn, 0)</code>, no matter the order they were written in.
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Event_loop" target="_blank" rel="noopener">📄 Official Docs — The Event Loop on MDN ↗</a>
     </section>
 
     <section class="topic" id="modules">
@@ -2405,6 +2490,7 @@ console.log(PI);              // 3.14159</pre>
         <span class="callout-label">In the browser</span>
         Load a module with <code class="inline">&lt;script type="module" src="app.js"&gt;&lt;/script&gt;</code>. In Node.js, either use this same <code class="inline">import</code>/<code class="inline">export</code> syntax in a <code class="inline">.mjs</code> file (or a project with <code class="inline">"type": "module"</code> in package.json), or use the older CommonJS <code class="inline">require()</code>/<code class="inline">module.exports</code> style still common in existing codebases.
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules" target="_blank" rel="noopener">📄 Official Docs — Modules on MDN ↗</a>
     </section>
 
     <section class="topic" id="generators">
@@ -2447,9 +2533,53 @@ console.log(ids.next().value); // 3
 // the generator is paused here — it hasn't produced id 4 yet, and never
 // will unless .next() is called again</script>
       </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*" target="_blank" rel="noopener">📄 Official Docs — Generators & Iterators on MDN ↗</a>
     </section>
 
     <!-- SECTIONS_END -->
+
+    <section class="topic" id="references">
+      <div class="topic-kicker">Reference</div>
+      <h2>Official Documentation — All 35 Topics</h2>
+      <p class="lede">Every topic in this guide, linked straight to its official reference on MDN (or the relevant spec) — for when you need more depth than a live example can give you.</p>
+      <div class="doc-links-grid">
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noopener"><b>Introduction</b><span>developer.mozilla.org/…/Web/JavaScript</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Grammar_and_types" target="_blank" rel="noopener"><b>Variables</b><span>developer.mozilla.org/…/Grammar_and_types</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures" target="_blank" rel="noopener"><b>Data Types</b><span>developer.mozilla.org/…/Data_structures</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_operators" target="_blank" rel="noopener"><b>Operators</b><span>developer.mozilla.org/…/Expressions_and_operators</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Control_flow_and_error_handling" target="_blank" rel="noopener"><b>Control Flow</b><span>developer.mozilla.org/…/Control_flow_and_error_handling</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Loops_and_iteration" target="_blank" rel="noopener"><b>Loops</b><span>developer.mozilla.org/…/Loops_and_iteration</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions" target="_blank" rel="noopener"><b>Functions</b><span>developer.mozilla.org/…/Guide/Functions</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String" target="_blank" rel="noopener"><b>Strings</b><span>developer.mozilla.org/…/Global_Objects/String</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math" target="_blank" rel="noopener"><b>Numbers &amp; Math</b><span>developer.mozilla.org/…/Global_Objects/Math</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" target="_blank" rel="noopener"><b>Arrays</b><span>developer.mozilla.org/…/Global_Objects/Array</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array#instance_methods" target="_blank" rel="noopener"><b>Array Methods</b><span>developer.mozilla.org/…/Array#instance_methods</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects" target="_blank" rel="noopener"><b>Objects</b><span>developer.mozilla.org/…/Working_with_objects</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment" target="_blank" rel="noopener"><b>Destructuring</b><span>developer.mozilla.org/…/Destructuring_assignment</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax" target="_blank" rel="noopener"><b>Spread &amp; Rest</b><span>developer.mozilla.org/…/Spread_syntax</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals" target="_blank" rel="noopener"><b>Template Literals</b><span>developer.mozilla.org/…/Template_literals</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Glossary/Hoisting" target="_blank" rel="noopener"><b>Scope &amp; Hoisting</b><span>developer.mozilla.org/…/Glossary/Hoisting</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures" target="_blank" rel="noopener"><b>Closures</b><span>developer.mozilla.org/…/JavaScript/Closures</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this" target="_blank" rel="noopener"><b>The "this" Keyword</b><span>developer.mozilla.org/…/Operators/this</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Glossary/First-class_Function" target="_blank" rel="noopener"><b>Higher-Order Functions</b><span>developer.mozilla.org/…/First-class_Function</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch" target="_blank" rel="noopener"><b>Error Handling</b><span>developer.mozilla.org/…/Statements/try...catch</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON" target="_blank" rel="noopener"><b>JSON</b><span>developer.mozilla.org/…/Global_Objects/JSON</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" rel="noopener"><b>Date Object</b><span>developer.mozilla.org/…/Global_Objects/Date</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions" target="_blank" rel="noopener"><b>Regular Expressions</b><span>developer.mozilla.org/…/Regular_expressions</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map" target="_blank" rel="noopener"><b>Map &amp; Set</b><span>developer.mozilla.org/…/Global_Objects/Map</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model" target="_blank" rel="noopener"><b>DOM Manipulation</b><span>developer.mozilla.org/…/Document_Object_Model</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/Events" target="_blank" rel="noopener"><b>Events</b><span>developer.mozilla.org/en-US/docs/Web/Events</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API" target="_blank" rel="noopener"><b>Local &amp; Session Storage</b><span>developer.mozilla.org/…/Web_Storage_API</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain" target="_blank" rel="noopener"><b>Prototypes &amp; Inheritance</b><span>developer.mozilla.org/…/prototype_chain</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes" target="_blank" rel="noopener"><b>Classes</b><span>developer.mozilla.org/…/Reference/Classes</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" target="_blank" rel="noopener"><b>Promises</b><span>developer.mozilla.org/…/Global_Objects/Promise</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function" target="_blank" rel="noopener"><b>Async / Await</b><span>developer.mozilla.org/…/Statements/async_function</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API" target="_blank" rel="noopener"><b>Fetch API</b><span>developer.mozilla.org/…/Web/API/Fetch_API</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Event_loop" target="_blank" rel="noopener"><b>The Event Loop</b><span>developer.mozilla.org/…/JavaScript/Event_loop</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules" target="_blank" rel="noopener"><b>Modules</b><span>developer.mozilla.org/…/Guide/Modules</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*" target="_blank" rel="noopener"><b>Generators &amp; Iterators</b><span>developer.mozilla.org/…/Statements/function*</span></a>
+      </div>
+    </section>
 
     <footer class="doc-footer">
       <div class="label">Documented By</div>
