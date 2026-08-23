@@ -266,7 +266,7 @@ export const techStack: TechItem[] = [
       "Docker Compose for multi-service setups",
     ],
     docsUrl: "https://docs.docker.com/",
-    comingSoon: true,
+    notesUrl: "/resources/docker-complete-guide.html",
   },
 ];
 
