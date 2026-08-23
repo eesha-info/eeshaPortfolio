@@ -82,7 +82,7 @@ export default function TechStackGrid() {
             </p>
 
             <Link href={`/tech-stack/${tech.slug}`} className="read-docs-link">
-              Read Documentation →
+              Read More →
             </Link>
           </div>
         ))}
