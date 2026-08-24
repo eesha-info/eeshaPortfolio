@@ -47,6 +47,14 @@
   --console-ink: #dcdcd4;
   --console-error: #ff8a71;
   --console-warn: #f7df1e;
+
+  /* code editor: syntax token colors (fixed, same in both themes) */
+  --tok-keyword: #c586c0;
+  --tok-string: #ce9178;
+  --tok-number: #b5cea8;
+  --tok-comment: #7f8570;
+  --tok-builtin-global: #4ec9b0;
+  --tok-builtin-method: #dcdcaa;
   --console-log: #7ec8ff;
 }
 @media (prefers-color-scheme: dark) {
@@ -457,20 +465,44 @@ table.ref-table tr:hover td { background: var(--accent-tint); }
 .pg-btn.run:hover { background: #ffe95c; }
 
 .pg-body { display: block; }
-.pg-editor-wrap { position: relative; }
+.pg-editor-wrap { position: relative; background: var(--code-bg); }
+.pg-highlight,
 textarea.pg-input {
-  display: block;
-  width: 100%;
-  resize: vertical;
-  border: none;
-  outline: none;
-  background: var(--code-bg);
-  color: var(--code-ink);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 13.5px;
   line-height: 1.6;
   padding: 14px 16px;
-  min-height: 60px;
   tab-size: 2;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  border: none;
+}
+.pg-highlight {
+  margin: 0;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  color: var(--code-ink);
+  background: transparent;
+}
+.pg-highlight .tok-keyword { color: var(--tok-keyword); }
+.pg-highlight .tok-string { color: var(--tok-string); }
+.pg-highlight .tok-number { color: var(--tok-number); }
+.pg-highlight .tok-comment { color: var(--tok-comment); font-style: italic; }
+.pg-highlight .tok-builtin-global { color: var(--tok-builtin-global); }
+.pg-highlight .tok-builtin-method { color: var(--tok-builtin-method); font-weight: 600; }
+textarea.pg-input {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  resize: vertical;
+  outline: none;
+  background: transparent;
+  color: transparent;
+  caret-color: var(--code-ink);
+  min-height: 60px;
 }
 .pg-preview-wrap {
   border-top: 1px solid var(--code-border);
@@ -711,7 +743,7 @@ footer.doc-footer .role { font-size: 12.5px; color: var(--ink-soft); margin-top:
       <a class="nav-link" href="#numbers-math">Numbers &amp; Math</a>
       <a class="nav-link" href="#arrays">Arrays</a>
       <a class="nav-link" href="#array-methods">Array Methods</a>
-      <a class="nav-link" href="#objects">Objects</a>
+      <a class="nav-link" href="#objects">Objects &amp; Object Methods</a>
       <a class="nav-link" href="#destructuring">Destructuring</a>
       <a class="nav-link" href="#spread-rest">Spread &amp; Rest</a>
       <a class="nav-link" href="#template-literals">Template Literals</a>
@@ -719,6 +751,7 @@ footer.doc-footer .role { font-size: 12.5px; color: var(--ink-soft); margin-top:
 
     <div class="nav-group">
       <div class="nav-group-label">Intermediate</div>
+      <a class="nav-link" href="#execution-context">Execution Context &amp; Call Stack</a>
       <a class="nav-link" href="#scope-hoisting">Scope &amp; Hoisting</a>
       <a class="nav-link" href="#closures">Closures</a>
       <a class="nav-link" href="#this-keyword">The "this" Keyword</a>
@@ -762,8 +795,8 @@ footer.doc-footer .role { font-size: 12.5px; color: var(--ink-soft); margin-top:
       <h1>The Complete JavaScript Guide</h1>
       <p class="cover-sub">Basic to Advanced — every core language concept explained in detail, with a live, editable code example under each one.</p>
       <div class="cover-stats">
-        <span class="cover-stat"><b>35</b> topics</span>
-        <span class="cover-stat"><b>63</b> live examples</span>
+        <span class="cover-stat"><b>36</b> topics</span>
+        <span class="cover-stat"><b>82</b> live examples</span>
         <span class="cover-stat"><b>5</b> sections</span>
       </div>
       <div class="cover-credit">
@@ -1440,6 +1473,17 @@ console.log(Array.isArray("red"));    // false</script>
             <tr><td>.concat() / spread</td><td>Combine arrays without mutating either one</td></tr>
             <tr><td>.flat()</td><td>Flattens nested arrays by a given depth</td></tr>
             <tr><td>.join()</td><td>Combines items into a single string with a separator</td></tr>
+            <tr><td>.push() / .pop() / .shift() / .unshift()</td><td>Add or remove items from either end — all mutate in place</td></tr>
+            <tr><td>.indexOf() / .lastIndexOf()</td><td>Index of the first (or last) matching value, or -1</td></tr>
+            <tr><td>.at()</td><td>Index from the end with a negative number — no length math</td></tr>
+            <tr><td>.findLast() / .findLastIndex()</td><td>Like find/findIndex, but searches from the end</td></tr>
+            <tr><td>.flatMap()</td><td>map() then flatten one level, in a single pass</td></tr>
+            <tr><td>.reduceRight()</td><td>Like reduce, but walks the array right to left</td></tr>
+            <tr><td>.reverse() / .fill() / .copyWithin()</td><td>Mutate the array's existing slots in place</td></tr>
+            <tr><td>.entries() / .keys() / .values()</td><td>Iterators over [index, value] pairs, indexes, or values</td></tr>
+            <tr><td>.toString() / .toLocaleString()</td><td>Convert to a comma-joined, or locale-formatted, string</td></tr>
+            <tr><td>.toReversed() / .toSorted() / .toSpliced() / .with()</td><td>Non-mutating copies of reverse/sort/splice/index-assign</td></tr>
+            <tr><td>Array.from() / Array.of() / Array.isArray()</td><td>Build or check arrays — called on Array itself, not an instance</td></tr>
           </tbody>
         </table>
       </div>
@@ -1521,14 +1565,162 @@ console.log([...[1, 2], ...[3, 4]]); // same result using spread
 console.log([1, [2, 3], [4, [5, 6]]].flat(2)); // flatten 2 levels deep
 console.log(["2024", "01", "15"].join("-"));   // "2024-01-15"</script>
       </div>
+
+      <h3>push, pop, shift, unshift — add &amp; remove from either end</h3>
+      <p>All four <b>mutate the original array</b> and all four run in constant time at the end, but <code class="inline">shift</code>/<code class="inline">unshift</code> have to re-index every remaining item, so they're slower on large arrays than <code class="inline">push</code>/<code class="inline">pop</code>.</p>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const queue = ["a", "b"];
+
+queue.push("c");             // add to the end -> ["a","b","c"]
+console.log(queue);
+
+const last = queue.pop();    // remove from the end
+console.log(last, queue);
+
+queue.unshift("z");          // add to the start -> ["z","a","b"]
+console.log(queue);
+
+const first = queue.shift(); // remove from the start
+console.log(first, queue);</script>
+      </div>
+
+      <h3>indexOf, lastIndexOf, includes — find a value</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const nums = [10, 20, 30, 20, 10];
+
+console.log(nums.indexOf(20));       // 1 — first match
+console.log(nums.lastIndexOf(20));   // 3 — last match
+console.log(nums.indexOf(99));       // -1 — not found
+console.log(nums.includes(30));      // true — just yes/no, no index needed</script>
+      </div>
+
+      <h3>at() — index from the end, no length math</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const letters = ["a", "b", "c", "d"];
+
+console.log(letters[letters.length - 1]); // "d" — the old way
+console.log(letters.at(-1));              // "d" — same result, cleaner
+console.log(letters.at(-2));              // "c"</script>
+      </div>
+
+      <h3>findLast, findLastIndex — search from the end</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const orders = [
+  { id: 1, status: "shipped" },
+  { id: 2, status: "pending" },
+  { id: 3, status: "shipped" },
+];
+
+console.log(orders.findLast(o => o.status === "shipped"));      // id: 3 — last match, not first
+console.log(orders.findLastIndex(o => o.status === "shipped")); // 2</script>
+      </div>
+
+      <h3>flatMap — map, then flatten one level</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const sentences = ["hello world", "how are you"];
+
+console.log(sentences.map(s => s.split(" ")));      // nested: [["hello","world"], [...]]
+console.log(sentences.flatMap(s => s.split(" ")));  // flattened: ["hello","world","how","are","you"]</script>
+      </div>
+
+      <h3>reduceRight — like reduce, but right to left</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const parts = ["JS", "is", "fun"];
+
+console.log(parts.reduce((acc, p) => acc + " " + p));      // "JS is fun"
+console.log(parts.reduceRight((acc, p) => acc + " " + p)); // "fun is JS" — walked in reverse</script>
+      </div>
+
+      <h3>reverse, fill, copyWithin — mutate existing slots in place</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const arr = [1, 2, 3, 4, 5];
+console.log([...arr].reverse()); // [5,4,3,2,1] — copy first, since reverse() mutates!
+
+const zeros = new Array(4).fill(0);
+console.log(zeros);                          // [0,0,0,0]
+
+console.log([1, 2, 3, 4, 5].fill("x", 1, 3)); // fill "x" from index 1 up to (not including) 3
+
+console.log([1, 2, 3, 4, 5].copyWithin(0, 3)); // copy items from index 3 on, paste starting at index 0</script>
+      </div>
+
+      <h3>entries, keys, values — iterate with more context</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const fruits = ["apple", "banana", "cherry"];
+
+for (const [index, value] of fruits.entries()) {
+  console.log(index, value);
+}
+
+console.log([...fruits.keys()]);    // [0, 1, 2]
+console.log([...fruits.values()]);  // ["apple","banana","cherry"]</script>
+      </div>
+
+      <h3>toString, toLocaleString</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">console.log([1, 2, 3].toString());          // "1,2,3" — same as .join(",")
+console.log([1234.5].toLocaleString());     // locale-formatted, e.g. "1,234.5" in en-US</script>
+      </div>
+
+      <h3>Non-mutating copies (ES2023) — toReversed, toSorted, toSpliced, with</h3>
+      <p>These are the "safe" counterparts to <code class="inline">reverse</code>/<code class="inline">sort</code>/<code class="inline">splice</code> — same result, but they return a <b>new</b> array and leave the original completely untouched.</p>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const original = [3, 1, 2];
+
+console.log(original.toSorted());           // [1,2,3] — sorted COPY
+console.log(original);                      // [3,1,2] — original untouched!
+
+console.log(original.toReversed());         // [2,1,3] — reversed copy
+console.log(original.toSpliced(1, 1, "x")); // spliced copy: remove 1 at index 1, insert "x"
+console.log(original.with(0, 99));          // copy with index 0 replaced by 99
+console.log(original);                      // still [3,1,2] — none of these mutate</script>
+      </div>
+
+      <h3>Array static methods — Array.from, Array.fromAsync, Array.isArray, Array.of</h3>
+      <p>These are called on <code class="inline">Array</code> itself, not on an existing array instance.</p>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">console.log(Array.from("abc"));                          // ["a","b","c"] — any iterable, to a real array
+console.log(Array.from({ length: 3 }, (_, i) => i * 2));  // [0,2,4] — array-like + a mapping function
+
+console.log(Array.isArray([1, 2]));  // true
+console.log(Array.isArray("no"));    // false — the standard guard before calling array methods
+
+console.log(Array.of(7));            // [7]
+console.log(Array(7).length);        // 7 — but empty, NOT [7]! Array.of avoids this single-number gotcha
+
+// Array.fromAsync (newer) awaits an async iterable into a real array:
+// const items = await Array.fromAsync(someAsyncGenerator());</script>
+      </div>
       <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array#instance_methods" target="_blank" rel="noopener">📄 Official Docs — Array Methods on MDN ↗</a>
     </section>
 
     <section class="topic" id="objects">
       <div class="topic-kicker">11 · Core Data Structures</div>
-      <h2>Objects</h2>
-      <p class="lede">An object stores data as key-value pairs. It's the closest thing JavaScript has to a general-purpose "record" — most real-world data (a user, a product, an API response) ends up modeled as one.</p>
+      <h2>Objects &amp; Object Methods</h2>
+      <p class="lede">An object stores data as key-value pairs. It's the closest thing JavaScript has to a general-purpose "record" — most real-world data (a user, a product, an API response) ends up modeled as one. Beyond reading and writing properties, the <code class="inline">Object</code> constructor itself ships a full set of static methods for merging, locking down, and inspecting objects.</p>
 
+      <div class="ref-table-wrap">
+        <table class="ref-table">
+          <thead><tr><th>Method</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td>Object.keys() / .values() / .entries()</td><td>Arrays of an object's own keys, values, or [key, value] pairs</td></tr>
+            <tr><td>Object.fromEntries()</td><td>The reverse of .entries() — builds an object back from pairs</td></tr>
+            <tr><td>Object.assign()</td><td>Shallow-copies properties from one or more sources into a target</td></tr>
+            <tr><td>Object.create()</td><td>Creates a new object with a given prototype</td></tr>
+            <tr><td>Object.freeze() / .seal() / .preventExtensions()</td><td>Lock an object down, with increasing strictness</td></tr>
+            <tr><td>Object.isFrozen() / .isSealed() / .isExtensible()</td><td>Check which lock (if any) is currently applied</td></tr>
+            <tr><td>Object.defineProperty() / .defineProperties()</td><td>Add a property with fine-grained control (getters, enumerability…)</td></tr>
+            <tr><td>Object.getOwnPropertyDescriptor(s)()</td><td>Read that fine-grained configuration back out</td></tr>
+            <tr><td>Object.getPrototypeOf() / .setPrototypeOf()</td><td>Read or change what an object inherits from</td></tr>
+            <tr><td>Object.getOwnPropertyNames() / .getOwnPropertySymbols()</td><td>Own string keys, or own Symbol keys (keys() skips both non-enumerable and Symbol keys)</td></tr>
+            <tr><td>Object.is()</td><td>Like === , but correctly handles NaN and -0/+0</td></tr>
+            <tr><td>Object.hasOwn()</td><td>True if a property exists directly on the object (not inherited)</td></tr>
+            <tr><td>Object.groupBy()</td><td>Groups an array's items into an object, keyed by a callback's result</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Creating &amp; accessing objects</h3>
       <div class="playground" data-mode="console">
         <script type="text/plain" class="pg-code">const user = {
   name: "Priya",
@@ -1563,6 +1755,138 @@ console.log(withComputed);</script>
         <span class="callout-label">Equality on objects</span>
         <code class="inline">{} === {}</code> is always <code class="inline">false</code> — two different objects are never equal, even with identical contents, because <code class="inline">===</code> compares references, not structure. Only comparing an object to itself (the same reference) returns true.
       </div>
+
+      <h3>Object.fromEntries — the reverse of Object.entries</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const params = new URLSearchParams("a=1&b=2"); // any [key, value] iterable works
+
+console.log(Object.fromEntries(params));                 // { a: "1", b: "2" }
+console.log(Object.fromEntries([["x", 10], ["y", 20]])); // { x: 10, y: 20 }
+
+// Round-trip: transform an object's values, then rebuild it as an object
+const prices = { apple: 1, banana: 2 };
+const doubled = Object.fromEntries(
+  Object.entries(prices).map(([key, value]) => [key, value * 2])
+);
+console.log(doubled);</script>
+      </div>
+
+      <h3>Object.assign vs. spread — merging &amp; copying</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const defaults = { theme: "dark", fontSize: 14 };
+const overrides = { fontSize: 18 };
+
+console.log(Object.assign({}, defaults, overrides)); // later sources win: { theme: "dark", fontSize: 18 }
+console.log({ ...defaults, ...overrides });          // spread does the same thing, more common today
+
+// Object.assign MUTATES its first argument — pass {} to avoid mutating a real object:
+const target = { a: 1 };
+Object.assign(target, { b: 2 });
+console.log(target); // { a: 1, b: 2 } — target itself changed</script>
+      </div>
+
+      <h3>Object.create — build from a specific prototype</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const animalProto = {
+  speak() { return `${this.name} makes a sound`; },
+};
+
+const dog = Object.create(animalProto); // dog's prototype is animalProto, not Object.prototype
+dog.name = "Rex";
+console.log(dog.speak());                       // "Rex makes a sound" — inherited method
+console.log(Object.getPrototypeOf(dog) === animalProto); // true
+
+const noProtoObj = Object.create(null); // an object with NO prototype at all — not even toString()
+console.log(noProtoObj.toString);       // undefined</script>
+      </div>
+
+      <h3>freeze, seal, preventExtensions — locking objects down</h3>
+      <p>Three levels, from strictest to loosest: <code class="inline">freeze</code> blocks every change, <code class="inline">seal</code> allows editing existing properties but not adding/removing, <code class="inline">preventExtensions</code> only blocks adding new ones.</p>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const frozen = Object.freeze({ a: 1 });
+frozen.a = 99;                 // silently fails (throws in strict mode)
+frozen.b = 2;                  // also fails — can't add
+console.log(frozen);           // { a: 1 } — completely unchanged
+console.log(Object.isFrozen(frozen)); // true
+
+const sealed = Object.seal({ a: 1 });
+sealed.a = 99;                 // WORKS — editing existing props is allowed
+sealed.b = 2;                  // fails — can't add new ones
+console.log(sealed);           // { a: 99 }
+console.log(Object.isSealed(sealed)); // true
+
+const noExtend = Object.preventExtensions({ a: 1 });
+noExtend.a = 99;               // WORKS
+noExtend.b = 2;                // fails — can't add new ones
+delete noExtend.a;             // WORKS — unlike seal, deletion is still allowed
+console.log(noExtend);         // {}
+console.log(Object.isExtensible(noExtend)); // false</script>
+      </div>
+
+      <h3>defineProperty &amp; property descriptors</h3>
+      <p>Every property has hidden configuration — <code class="inline">writable</code>, <code class="inline">enumerable</code>, <code class="inline">configurable</code> — that plain assignment sets to <code class="inline">true</code> by default. <code class="inline">defineProperty</code> lets you set it explicitly, or attach a getter.</p>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const product = { price: 100 };
+
+Object.defineProperty(product, "id", {
+  value: "sku-42",
+  writable: false,     // can't be reassigned
+  enumerable: false,   // won't show up in Object.keys() or for...in
+});
+
+product.id = "changed"; // silently fails — writable: false
+console.log(product.id);          // "sku-42"
+console.log(Object.keys(product)); // ["price"] — "id" is hidden from enumeration
+
+console.log(Object.getOwnPropertyDescriptor(product, "price"));
+// { value: 100, writable: true, enumerable: true, configurable: true } — the defaults
+
+Object.defineProperties(product, {
+  taxRate: { value: 0.08, enumerable: true },
+  total: { get() { return this.price * (1 + this.taxRate); }, enumerable: true },
+});
+console.log(product.total); // 108 — computed live by the getter</script>
+      </div>
+
+      <h3>Prototype &amp; key introspection</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">const base = { greet() { return "hi"; } };
+const child = Object.create(base);
+child.name = "child";
+
+console.log(Object.getPrototypeOf(child) === base); // true
+Object.setPrototypeOf(child, {});                    // swap its prototype at runtime (rarely needed — slow!)
+console.log(child.greet);                            // undefined — lost the inherited method
+
+const withSymbol = { visible: 1, [Symbol("hidden")]: 2 };
+console.log(Object.keys(withSymbol));                 // ["visible"] — Symbols never show up here
+console.log(Object.getOwnPropertyNames(withSymbol));  // ["visible"] — still no Symbols
+console.log(Object.getOwnPropertySymbols(withSymbol).length); // 1 — this is the only way to see them</script>
+      </div>
+
+      <h3>Object.is, Object.hasOwn, Object.groupBy — modern helpers</h3>
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">console.log(NaN === NaN);        // false — the classic gotcha
+console.log(Object.is(NaN, NaN)); // true — Object.is fixes it
+
+console.log(0 === -0);            // true — === can't tell them apart
+console.log(Object.is(0, -0));    // false — Object.is can
+
+const obj = Object.create({ inherited: true });
+obj.own = true;
+console.log("inherited" in obj);         // true — `in` checks the whole prototype chain
+console.log(Object.hasOwn(obj, "inherited")); // false — hasOwn only checks the object itself
+console.log(Object.hasOwn(obj, "own"));       // true
+
+const people = [
+  { name: "Ann", team: "eng" },
+  { name: "Bo", team: "sales" },
+  { name: "Cy", team: "eng" },
+];
+console.log(Object.groupBy(people, p => p.team));
+// { eng: [Ann, Cy], sales: [Bo] } — one call, no manual reduce needed</script>
+      </div>
+
       <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects" target="_blank" rel="noopener">📄 Official Docs — Objects on MDN ↗</a>
     </section>
 
@@ -1664,8 +1988,113 @@ console.log(address);</script>
       <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals" target="_blank" rel="noopener">📄 Official Docs — Template Literals on MDN ↗</a>
     </section>
 
-    <section class="topic" id="scope-hoisting">
+    <section class="topic" id="execution-context">
       <div class="topic-kicker">15 · Intermediate</div>
+      <h2>Execution Context &amp; the Call Stack</h2>
+      <p class="lede">Before JavaScript runs a single line of your code, it builds a container called an <b>execution context</b> — one for the top-level (global) code, and a brand new one every time a function is called. Every execution context, no matter which one, is built in exactly the same two phases — and understanding those two phases is what makes hoisting, <code class="inline">this</code>, and stack overflows stop feeling like magic.</p>
+
+      <h3>Phase 1: Memory Creation, Phase 2: Code Execution</h3>
+      <p>JavaScript never just runs your file top to bottom in one pass. For every execution context it creates, it does two full passes over that context's code:</p>
+      <p><b>① Memory Creation Phase</b> — JS scans the code <i>without running any of it</i> and sets up memory in advance: every <code class="inline">var</code> is registered and initialized to <code class="inline">undefined</code>, every <code class="inline">function</code> declaration is stored <i>in full</i> (the whole function body, not just its name), and <code class="inline">this</code> gets bound. This scan is exactly what "hoisting" is — it's not variables physically moving to the top of the file, it's JavaScript pre-allocating memory for them before execution starts.</p>
+      <p><b>② Code Execution Phase</b> — only now does JavaScript run your code line by line, top to bottom, for real: variables are assigned their actual values (overwriting the <code class="inline">undefined</code> placeholder from Phase 1), expressions are evaluated, and every function call pushes a <i>brand new</i> execution context — with its own Phase 1 and Phase 2 — onto the call stack.</p>
+
+      <div class="playground" data-mode="console">
+        <script type="text/plain" class="pg-code">function greet() {
+  console.log(message);        // undefined — Phase 1 already hoisted "message"
+  var message = "hi";          // Phase 2 assigns the real value, right here
+  return message;
+}
+
+console.log(greet());          // undefined, then "hi"
+
+// hoistedFn() works even though it's CALLED before it's DEFINED below —
+// Phase 1 stores the entire function, not just a reference to its name.
+console.log(hoistedFn());
+function hoistedFn() {
+  return "Fully hoisted in Phase 1, ready before Phase 2 even starts";
+}</script>
+      </div>
+
+      <div class="diagram-card">
+        <div class="pg-chrome">
+          <div class="pg-dots"><span></span><span></span><span></span></div>
+          <div class="pg-filename">execution-context.svg</div>
+        </div>
+        <div class="diagram-body">
+          <svg viewBox="0 0 920 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram showing the two-phase structure of an execution context — memory creation then code execution — and how each function call pushes a new execution context onto the call stack">
+            <defs>
+              <marker id="ecArrowNeutral" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 Z" fill="var(--ink-faint)" />
+              </marker>
+              <marker id="ecArrowAccent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 Z" fill="var(--link)" />
+              </marker>
+            </defs>
+
+            <!-- Left: anatomy of ONE execution context -->
+            <rect class="el-box" x="40" y="30" width="420" height="360" rx="14" />
+            <text class="el-title" x="60" y="58">Execution Context</text>
+            <text class="el-sub" x="60" y="74">BUILT FOR GLOBAL CODE &amp; EVERY FUNCTION CALL</text>
+
+            <text class="el-label-accent" x="60" y="102">① MEMORY CREATION PHASE</text>
+            <rect class="el-frame" x="60" y="112" width="380" height="30" rx="6" />
+            <text class="el-frame-text" x="72" y="132">var message  →  undefined</text>
+            <rect class="el-frame" x="60" y="150" width="380" height="30" rx="6" />
+            <text class="el-frame-text" x="72" y="170">function greet  →  stored in full</text>
+            <rect class="el-frame" x="60" y="188" width="380" height="30" rx="6" />
+            <text class="el-frame-text" x="72" y="208">this  →  bound</text>
+
+            <path class="el-arrow" d="M 250 218 L 250 236" marker-end="url(#ecArrowNeutral)" />
+
+            <text class="el-label-accent" x="60" y="256">② CODE EXECUTION PHASE</text>
+            <rect class="el-frame" x="60" y="266" width="380" height="30" rx="6" />
+            <text class="el-frame-text" x="72" y="286">message = "hi"  →  real value assigned</text>
+            <rect class="el-frame" x="60" y="304" width="380" height="30" rx="6" />
+            <text class="el-frame-text" x="72" y="324">greet()  →  a NEW execution context is created</text>
+            <rect class="el-frame" x="60" y="342" width="380" height="30" rx="6" />
+            <text class="el-frame-text" x="72" y="362">console.log(...)  →  actually runs</text>
+
+            <!-- Right: the call stack this feeds into -->
+            <rect class="el-box" x="540" y="30" width="340" height="360" rx="14" />
+            <text class="el-title" x="560" y="58">Call Stack</text>
+            <text class="el-sub" x="560" y="74">LIFO · LAST IN, FIRST OUT</text>
+
+            <rect class="el-frame" x="560" y="270" width="280" height="50" rx="6" />
+            <text class="el-frame-text" x="572" y="292">greet() Execution Context</text>
+            <text class="el-frame-text" x="572" y="308">runs its own Phase ① then ②</text>
+            <circle class="el-step" cx="855" cy="295" r="12" />
+            <text class="el-step-text" x="855" y="299">2</text>
+
+            <rect class="el-frame" x="560" y="340" width="280" height="50" rx="6" />
+            <text class="el-frame-text" x="572" y="362">Global Execution Context</text>
+            <text class="el-frame-text" x="572" y="378">created first, before any code runs</text>
+            <circle class="el-step" cx="855" cy="365" r="12" />
+            <text class="el-step-text" x="855" y="369">1</text>
+
+            <path class="el-arrow-accent" d="M 700 250 L 700 228" marker-end="url(#ecArrowAccent)" />
+            <text class="el-label-accent" x="712" y="238">pops off when</text>
+            <text class="el-label-accent" x="712" y="252">greet() returns</text>
+
+            <!-- Connect the anatomy box to the stack frame it produces -->
+            <path class="el-arrow-accent" d="M 460 324 C 495 324, 520 300, 555 295" marker-end="url(#ecArrowAccent)" />
+            <text class="el-label" x="462" y="410">Every stack frame is really this same</text>
+            <text class="el-label" x="462" y="426">2-phase box — global code included.</text>
+          </svg>
+        </div>
+        <p class="diagram-caption">
+          The left box is the anatomy of a <i>single</i> execution context — Phase ① always finishes completely before Phase ② begins. The right box is the call stack: the <b>Global Execution Context</b> goes in first, and calling <code class="inline">greet()</code> pushes a second execution context on top of it — one that runs through the exact same two phases on its own code. When <code class="inline">greet()</code> returns, its context is popped off and control drops back to the one underneath.
+        </p>
+      </div>
+
+      <div class="callout">
+        <span class="callout-label">Why it matters</span>
+        Hoisting isn't a special rule to memorize — it's just a visible side effect of Phase 1. And a "Maximum call stack size exceeded" error (usually from runaway recursion) is exactly what it sounds like: too many execution contexts pushed on top of each other with nothing popping them back off. See <a href="#scope-hoisting">Scope &amp; Hoisting</a> next for how <code class="inline">let</code>/<code class="inline">const</code> behave differently in Phase 1 via the Temporal Dead Zone.
+      </div>
+      <a class="topic-doc-link" href="https://developer.mozilla.org/en-US/docs/Glossary/Execution_context" target="_blank" rel="noopener">📄 Official Docs — Execution Context on MDN ↗</a>
+    </section>
+
+    <section class="topic" id="scope-hoisting">
+      <div class="topic-kicker">16 · Intermediate</div>
       <h2>Scope &amp; Hoisting</h2>
       <p class="lede">Scope determines where a variable is visible. Hoisting describes how JavaScript sets up variables and functions <i>before</i> running your code line-by-line — which explains some surprising ordering behavior.</p>
 
@@ -1698,7 +2127,7 @@ let letExample = "hi";</script>
     </section>
 
     <section class="topic" id="closures">
-      <div class="topic-kicker">16 · Intermediate</div>
+      <div class="topic-kicker">17 · Intermediate</div>
       <h2>Closures</h2>
       <p class="lede">A closure is a function that "remembers" the variables from the scope it was created in, even after that outer function has finished running. It's how JavaScript implements private state without classes — and it powers patterns like counters, memoization, and event handler factories.</p>
 
@@ -1741,7 +2170,7 @@ console.log(triple(5));  // 15</script>
     </section>
 
     <section class="topic" id="this-keyword">
-      <div class="topic-kicker">17 · Intermediate</div>
+      <div class="topic-kicker">18 · Intermediate</div>
       <h2>The "this" Keyword</h2>
       <p class="lede"><code class="inline">this</code> refers to "whatever object is calling the function" — and unlike most languages, that's determined by <i>how a function is called</i>, not where it's defined. This is the single most common source of JavaScript bugs for people coming from other languages.</p>
 
@@ -1773,7 +2202,7 @@ console.log(detached.call(person)); // .call() lets you explicitly set "this"</s
     </section>
 
     <section class="topic" id="higher-order-functions">
-      <div class="topic-kicker">18 · Intermediate</div>
+      <div class="topic-kicker">19 · Intermediate</div>
       <h2>Higher-Order Functions &amp; Callbacks</h2>
       <p class="lede">In JavaScript, functions are values — they can be stored in variables, passed as arguments, and returned from other functions. A <b>higher-order function</b> is any function that does at least one of those things. A <b>callback</b> is simply a function passed in to be called later.</p>
 
@@ -1803,7 +2232,7 @@ console.log(doubled);</script>
     </section>
 
     <section class="topic" id="error-handling">
-      <div class="topic-kicker">19 · Intermediate</div>
+      <div class="topic-kicker">20 · Intermediate</div>
       <h2>Error Handling</h2>
       <p class="lede"><code class="inline">try/catch</code> lets your program recover from a runtime error instead of crashing entirely. Use it around code that can realistically fail — parsing data, calling an API, reading user input — not around every single line.</p>
 
@@ -1854,7 +2283,7 @@ try {
     </section>
 
     <section class="topic" id="json">
-      <div class="topic-kicker">20 · Intermediate</div>
+      <div class="topic-kicker">21 · Intermediate</div>
       <h2>JSON</h2>
       <p class="lede">JSON (JavaScript Object Notation) is the universal text format for exchanging data between a browser and a server. It looks almost identical to a JS object literal, but it's a separate format with stricter rules (keys must be double-quoted strings, no functions or <code class="inline">undefined</code> allowed).</p>
 
@@ -1877,7 +2306,7 @@ console.log(parsedBack.name, typeof parsedBack);
     </section>
 
     <section class="topic" id="date">
-      <div class="topic-kicker">21 · Intermediate</div>
+      <div class="topic-kicker">22 · Intermediate</div>
       <h2>Date Object</h2>
       <p class="lede">The built-in <code class="inline">Date</code> object handles dates and times. Its API predates modern conventions in a few places (months are zero-indexed!), which is worth knowing before it surprises you.</p>
 
@@ -1908,7 +2337,7 @@ console.log(Date.now());              // milliseconds since Jan 1, 1970 (epoch)<
     </section>
 
     <section class="topic" id="regexp">
-      <div class="topic-kicker">22 · Intermediate</div>
+      <div class="topic-kicker">23 · Intermediate</div>
       <h2>Regular Expressions</h2>
       <p class="lede">A regular expression (regex) is a pattern for matching text — used for validation (is this a valid email?), searching, and find-and-replace operations that are too flexible for plain string methods.</p>
 
@@ -1944,7 +2373,7 @@ console.log("  spaced   out  ".replace(/\s+/g, " ").trim()); // collapse whitesp
     </section>
 
     <section class="topic" id="map-set">
-      <div class="topic-kicker">23 · Intermediate</div>
+      <div class="topic-kicker">24 · Intermediate</div>
       <h2>Map &amp; Set</h2>
       <p class="lede">Two collection types introduced in ES6 that solve problems plain objects and arrays handle awkwardly: <code class="inline">Map</code> is a key-value store that allows <i>any</i> value as a key, and <code class="inline">Set</code> is a list that automatically enforces uniqueness.</p>
 
@@ -1979,7 +2408,7 @@ console.log(unique);</script>
     </section>
 
     <section class="topic" id="dom">
-      <div class="topic-kicker">24 · Browser &amp; DOM</div>
+      <div class="topic-kicker">25 · Browser &amp; DOM</div>
       <h2>DOM Manipulation</h2>
       <p class="lede">The DOM (Document Object Model) is the browser's live, in-memory representation of your HTML page as a tree of objects. JavaScript's DOM API lets you read and change that tree — which is how a page updates without a full reload. These examples run in a real mini-page below the editor, not just the console.</p>
 
@@ -2028,7 +2457,7 @@ link.textContent = "Now linking to example.com";</script>
     </section>
 
     <section class="topic" id="events">
-      <div class="topic-kicker">25 · Browser &amp; DOM</div>
+      <div class="topic-kicker">26 · Browser &amp; DOM</div>
       <h2>Events</h2>
       <p class="lede">Events are how a page responds to what a user does — clicks, typing, scrolling, submitting a form. <code class="inline">addEventListener</code> is the standard way to react to them: it attaches a callback that runs whenever the event fires.</p>
 
@@ -2079,7 +2508,7 @@ menu.addEventListener("click", (event) => {
     </section>
 
     <section class="topic" id="storage">
-      <div class="topic-kicker">26 · Browser &amp; DOM</div>
+      <div class="topic-kicker">27 · Browser &amp; DOM</div>
       <h2>Local &amp; Session Storage</h2>
       <p class="lede">Both let you save key-value data directly in the browser, no server needed. <code class="inline">localStorage</code> persists until explicitly cleared (even after closing the tab); <code class="inline">sessionStorage</code> disappears when the tab closes. Both only store strings — objects must be serialized with <code class="inline">JSON.stringify</code>.</p>
 
@@ -2109,7 +2538,7 @@ document.getElementById("loadBtn").addEventListener("click", () => {
     </section>
 
     <section class="topic" id="prototypes">
-      <div class="topic-kicker">27 · Advanced &amp; Async</div>
+      <div class="topic-kicker">28 · Advanced &amp; Async</div>
       <h2>Prototypes &amp; Inheritance</h2>
       <p class="lede">Every JavaScript object has a hidden link to another object called its <b>prototype</b>, which it can borrow properties and methods from. This "prototype chain" is how inheritance worked in JavaScript long before the <code class="inline">class</code> keyword existed — and classes (next section) are really just a friendlier syntax built on top of it.</p>
 
@@ -2135,7 +2564,7 @@ console.log(dog.hasOwnProperty("eat"));         // false — inherited, not own<
     </section>
 
     <section class="topic" id="classes">
-      <div class="topic-kicker">28 · Advanced &amp; Async</div>
+      <div class="topic-kicker">29 · Advanced &amp; Async</div>
       <h2>Classes</h2>
       <p class="lede">ES6 classes are syntax sugar over prototypal inheritance — a cleaner, more familiar way (especially if you know other languages) to define a blueprint for creating objects with shared behavior.</p>
 
@@ -2197,7 +2626,7 @@ console.log(Circle.describe());
     </section>
 
     <section class="topic" id="promises">
-      <div class="topic-kicker">29 · Advanced &amp; Async</div>
+      <div class="topic-kicker">30 · Advanced &amp; Async</div>
       <h2>Promises</h2>
       <p class="lede">A Promise represents a value that isn't ready yet but will be — the result of something asynchronous like a network request or a timer. It's always in one of three states: <i>pending</i>, <i>fulfilled</i>, or <i>rejected</i>, and it replaced the deeply-nested "callback hell" pattern from early JavaScript.</p>
 
@@ -2247,7 +2676,7 @@ Promise.race([taskA, taskB, taskC]).then((first) => {
     </section>
 
     <section class="topic" id="async-await">
-      <div class="topic-kicker">30 · Advanced &amp; Async</div>
+      <div class="topic-kicker">31 · Advanced &amp; Async</div>
       <h2>Async / Await</h2>
       <p class="lede"><code class="inline">async</code>/<code class="inline">await</code> is syntax that lets promise-based code read top-to-bottom like synchronous code, instead of a chain of <code class="inline">.then()</code> calls. Under the hood it's still promises — this is just a more readable way to write them.</p>
 
@@ -2293,7 +2722,7 @@ run();</script>
     </section>
 
     <section class="topic" id="fetch">
-      <div class="topic-kicker">31 · Advanced &amp; Async</div>
+      <div class="topic-kicker">32 · Advanced &amp; Async</div>
       <h2>Fetch API</h2>
       <p class="lede"><code class="inline">fetch()</code> is the standard browser function for making HTTP requests — calling an API, loading data, submitting a form without a page reload. It returns a Promise that resolves to a <code class="inline">Response</code> object, which you then read with <code class="inline">.json()</code> (also a Promise, since parsing the body is async).</p>
 
@@ -2351,7 +2780,7 @@ loadItems();</script>
     </section>
 
     <section class="topic" id="event-loop">
-      <div class="topic-kicker">32 · Advanced &amp; Async</div>
+      <div class="topic-kicker">33 · Advanced &amp; Async</div>
       <h2>The Event Loop</h2>
       <p class="lede">JavaScript runs on a single thread, so it can't truly do two things at once — yet it handles timers, network requests, and UI events without freezing. The <b>event loop</b> is the mechanism that makes this possible: it constantly checks whether the call stack is empty, and if so, pulls the next queued callback in to run.</p>
 
@@ -2471,7 +2900,7 @@ console.log("2: synchronous — runs second");
     </section>
 
     <section class="topic" id="modules">
-      <div class="topic-kicker">33 · Advanced &amp; Async</div>
+      <div class="topic-kicker">34 · Advanced &amp; Async</div>
       <h2>Modules</h2>
       <p class="lede">Modules let you split code across multiple files and explicitly choose what each file shares (<code class="inline">export</code>) and pulls in from elsewhere (<code class="inline">import</code>), instead of everything living in one giant global scope. Because modules only work across real files loaded by a browser or Node (not inside a single embedded sandbox like this document), the example below is a reference, not a live playground.</p>
 
@@ -2512,7 +2941,7 @@ console.log(PI);              // 3.14159</pre>
     </section>
 
     <section class="topic" id="generators">
-      <div class="topic-kicker">34 · Advanced &amp; Async</div>
+      <div class="topic-kicker">35 · Advanced &amp; Async</div>
       <h2>Generators &amp; Iterators</h2>
       <p class="lede">A generator is a special function that can pause itself with <code class="inline">yield</code> and resume later, producing a sequence of values on demand instead of computing them all up front. They're the mechanism <code class="inline">for...of</code> loops rely on under the hood, and they're handy for lazy sequences and custom iteration.</p>
 
@@ -2558,7 +2987,7 @@ console.log(ids.next().value); // 3
 
     <section class="topic" id="references">
       <div class="topic-kicker">Reference</div>
-      <h2>Official Documentation — All 35 Topics</h2>
+      <h2>Official Documentation — All 36 Topics</h2>
       <p class="lede">Every topic in this guide, linked straight to its official reference on MDN (or the relevant spec) — for when you need more depth than a live example can give you.</p>
       <div class="doc-links-grid">
         <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noopener"><b>Introduction</b><span>developer.mozilla.org/…/Web/JavaScript</span></a>
@@ -2572,10 +3001,11 @@ console.log(ids.next().value); // 3
         <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math" target="_blank" rel="noopener"><b>Numbers &amp; Math</b><span>developer.mozilla.org/…/Global_Objects/Math</span></a>
         <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" target="_blank" rel="noopener"><b>Arrays</b><span>developer.mozilla.org/…/Global_Objects/Array</span></a>
         <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array#instance_methods" target="_blank" rel="noopener"><b>Array Methods</b><span>developer.mozilla.org/…/Array#instance_methods</span></a>
-        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects" target="_blank" rel="noopener"><b>Objects</b><span>developer.mozilla.org/…/Working_with_objects</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects" target="_blank" rel="noopener"><b>Objects &amp; Object Methods</b><span>developer.mozilla.org/…/Working_with_objects</span></a>
         <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment" target="_blank" rel="noopener"><b>Destructuring</b><span>developer.mozilla.org/…/Destructuring_assignment</span></a>
         <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax" target="_blank" rel="noopener"><b>Spread &amp; Rest</b><span>developer.mozilla.org/…/Spread_syntax</span></a>
         <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals" target="_blank" rel="noopener"><b>Template Literals</b><span>developer.mozilla.org/…/Template_literals</span></a>
+        <a href="https://developer.mozilla.org/en-US/docs/Glossary/Execution_context" target="_blank" rel="noopener"><b>Execution Context &amp; Call Stack</b><span>developer.mozilla.org/…/Glossary/Execution_context</span></a>
         <a href="https://developer.mozilla.org/en-US/docs/Glossary/Hoisting" target="_blank" rel="noopener"><b>Scope &amp; Hoisting</b><span>developer.mozilla.org/…/Glossary/Hoisting</span></a>
         <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures" target="_blank" rel="noopener"><b>Closures</b><span>developer.mozilla.org/…/JavaScript/Closures</span></a>
         <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this" target="_blank" rel="noopener"><b>The "this" Keyword</b><span>developer.mozilla.org/…/Operators/this</span></a>
@@ -2618,6 +3048,66 @@ function escapeHtml(str) {
   return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
+/* ============================================================
+   SYNTAX HIGHLIGHTING (regex-based, no dependencies)
+   ============================================================ */
+const JS_KEYWORDS = new Set([
+  "const","let","var","function","return","if","else","for","while","do","switch","case","break","continue",
+  "class","extends","super","new","this","typeof","instanceof","in","of","try","catch","finally","throw",
+  "async","await","yield","import","export","from","default","static","get","set","delete","void",
+  "null","undefined","true","false","NaN","Infinity",
+]);
+
+const JS_BUILTIN_GLOBALS = new Set([
+  "Object","Array","String","Number","Boolean","Math","JSON","Promise","Date","Symbol","Map","Set",
+  "WeakMap","WeakSet","RegExp","Error","console","Reflect","Proxy","globalThis","window","document",
+  "URLSearchParams",
+]);
+
+// Any of these, when immediately followed by "(", is colored as a predefined/built-in method call —
+// whether it's an array method, an Object static method, a string method, console, JSON, Math, etc.
+const JS_BUILTIN_METHODS = new Set([
+  "map","filter","reduce","reduceRight","forEach","find","findIndex","findLast","findLastIndex","some","every",
+  "sort","slice","splice","concat","flat","flatMap","join","push","pop","shift","unshift","includes","indexOf",
+  "lastIndexOf","at","reverse","fill","copyWithin","entries","keys","values","toReversed","toSorted","toSpliced",
+  "with","from","fromAsync","isArray","of",
+  "assign","create","defineProperty","defineProperties","freeze","seal","preventExtensions","isFrozen","isSealed",
+  "isExtensible","getOwnPropertyDescriptor","getOwnPropertyDescriptors","getPrototypeOf","setPrototypeOf",
+  "getOwnPropertyNames","getOwnPropertySymbols","is","hasOwn","groupBy","fromEntries","hasOwnProperty",
+  "split","replace","replaceAll","trim","trimStart","trimEnd","toUpperCase","toLowerCase","padStart","padEnd",
+  "repeat","startsWith","endsWith","charAt","charCodeAt","codePointAt","match","matchAll","search","substring",
+  "toString","toLocaleString","normalize","valueOf",
+  "toFixed","toPrecision","parseFloat","parseInt","isNaN","isFinite","isInteger","floor","ceil","round","random",
+  "max","min","abs","pow","sqrt","cbrt","sign","stringify","parse",
+  "then","catch","finally","resolve","reject","all","race","allSettled","any",
+  "log","warn","error","info","debug","table","group","groupEnd","assert","time","timeEnd",
+  "getTime","getFullYear","getMonth","getDate","getDay","getHours","getMinutes","getSeconds","toISOString","now",
+  "addEventListener","removeEventListener","querySelector","querySelectorAll","getElementById","createElement",
+  "appendChild","removeChild","setAttribute","getAttribute","preventDefault","stopPropagation",
+  "setTimeout","setInterval","clearTimeout","clearInterval","fetch","json","text","test","exec",
+]);
+
+const JS_TOKEN_RE = /(\/\/[^\n]*)|(\/\*[\s\S]*?\*\/)|(`(?:\\.|[^`\\])*`)|("(?:\\.|[^"\\])*")|('(?:\\.|[^'\\])*')|(\b\d+\.?\d*\b)|([A-Za-z_$][\w$]*)/g;
+
+function highlightJs(code) {
+  return code.replace(JS_TOKEN_RE, (match, lineComment, blockComment, template, dquote, squote, number, ident, offset, str) => {
+    if (lineComment || blockComment) return `<span class="tok-comment">${escapeHtml(match)}</span>`;
+    if (template || dquote || squote) return `<span class="tok-string">${escapeHtml(match)}</span>`;
+    if (number) return `<span class="tok-number">${escapeHtml(match)}</span>`;
+    if (ident) {
+      if (JS_KEYWORDS.has(ident)) return `<span class="tok-keyword">${escapeHtml(match)}</span>`;
+      if (JS_BUILTIN_GLOBALS.has(ident)) return `<span class="tok-builtin-global">${escapeHtml(match)}</span>`;
+      let i = offset + match.length;
+      while (i < str.length && /\s/.test(str[i])) i++;
+      if (str[i] === "(" && JS_BUILTIN_METHODS.has(ident)) {
+        return `<span class="tok-builtin-method">${escapeHtml(match)}</span>`;
+      }
+      return escapeHtml(match);
+    }
+    return escapeHtml(match);
+  });
+}
+
 function buildPlaygroundMarkup(mode) {
   const isDom = mode === "dom";
   return `
@@ -2631,6 +3121,7 @@ function buildPlaygroundMarkup(mode) {
     </div>
     <div class="pg-body">
       <div class="pg-editor-wrap">
+        <pre class="pg-highlight" aria-hidden="true"><code></code></pre>
         <textarea class="pg-input" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
       </div>
       ${isDom ? `
@@ -2659,9 +3150,16 @@ function initPlayground(el) {
   el.innerHTML = buildPlaygroundMarkup(mode);
 
   const textarea = el.querySelector(".pg-input");
+  const highlightPre = el.querySelector(".pg-highlight");
+  const highlightCode = highlightPre.querySelector("code");
   textarea.value = initialCode;
   const lines = Math.min(Math.max(countLines(initialCode), 4), 18);
   textarea.rows = lines;
+
+  function updateHighlight() {
+    highlightCode.innerHTML = highlightJs(textarea.value);
+  }
+  updateHighlight();
 
   const consoleEl = el.querySelector(".pg-console");
   const visibleFrame = mode === "dom" ? el.querySelector(".pg-frame") : null;
@@ -2669,14 +3167,20 @@ function initPlayground(el) {
   const frame = mode === "dom" ? visibleFrame : hiddenFrame;
   if (mode === "dom") { hiddenFrame.remove(); }
 
-  PLAYGROUNDS[id] = { textarea, consoleEl, frame, initialCode, starterHtml, mode };
+  PLAYGROUNDS[id] = { textarea, consoleEl, frame, initialCode, starterHtml, mode, updateHighlight };
 
+  textarea.addEventListener("input", updateHighlight);
+  textarea.addEventListener("scroll", () => {
+    highlightPre.scrollTop = textarea.scrollTop;
+    highlightPre.scrollLeft = textarea.scrollLeft;
+  });
   textarea.addEventListener("keydown", (e) => {
     if (e.key === "Tab") {
       e.preventDefault();
       const start = textarea.selectionStart, end = textarea.selectionEnd;
       textarea.value = textarea.value.slice(0, start) + "  " + textarea.value.slice(end);
       textarea.selectionStart = textarea.selectionEnd = start + 2;
+      updateHighlight();
     }
   });
 
@@ -2723,6 +3227,7 @@ function resetPlayground(id) {
   const state = PLAYGROUNDS[id];
   if (!state) return;
   state.textarea.value = state.initialCode;
+  state.updateHighlight();
   runPlayground(id);
 }
 
