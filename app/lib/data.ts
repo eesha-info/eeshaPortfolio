@@ -11,6 +11,20 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    title: "DeepCarve — Memorial Design Platform",
+    description:
+      "A cloud-based memorial design platform that empowers memorial professionals and families to craft enduring tributes with real-time design tools, collaboration features, and production-ready file exports.",
+    tech: ["Next.js", "Node.js", "Express.js", "PostgreSQL", "AWS", "Docker"],
+    url: "https://deepcarve.online/home",
+    live: "https://deepcarve.online/home",
+    highlights: [
+      "Leading full-stack development of the platform",
+      "Building real-time design and customization tools for memorials",
+      "Implementing collaboration features for sharing and approving designs",
+      "Generating industry-ready files for engraving and production",
+    ],
+  },
+  {
     title: "NextGen — Internal IQVIA Platform",
     description:
       "An internal IQVIA platform developed to manage and streamline client-related operations across healthcare and life sciences services. It centralizes client data, automates workflows, and ensures regulatory compliance — enhancing visibility, coordination, and operational efficiency for client engagement and service delivery.",
