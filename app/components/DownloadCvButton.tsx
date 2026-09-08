@@ -207,7 +207,7 @@ export default function DownloadCvButton({ resumeUrl, className }: Props) {
                     animationDelay: "0.5s",
                   }}
                 >
-                  Access Granted 🎉
+                  Access Granted
                 </h3>
                 <p
                   className="pin-modal-subtitle animate-fade-in-up"
