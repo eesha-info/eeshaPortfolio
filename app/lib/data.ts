@@ -288,7 +288,7 @@ export const socialLinks = {
   phone: "+91-9463258394",
   location: "Hyderabad, Telangana (India)",
   resume:
-    "https://drive.google.com/file/d/1Nr8JtvrSJ7gYgOJ-NWTZ1eXoId62Xfmd/view?usp=sharing",
+    "https://drive.google.com/file/d/1rcSAGADfYysAC5f9qsdtSyMN7lfKYbpn/view?usp=sharing",
 };
 
 const careerStartDate = new Date(2021, 8); // September 2021
