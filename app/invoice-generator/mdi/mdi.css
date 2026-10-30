@@ -1,0 +1,680 @@
+/* ─────────────────────────────────────────────
+   Modern Delhi Infotech fee invoice
+   Builds on invoice.css (workspace + print rules);
+   everything here is the institute-branded sheet
+   plus a few extra form controls.
+   ───────────────────────────────────────────── */
+
+.mdi-root {
+  /* Taken from the institute logo. */
+  --mdi-navy: #1d2b7c;
+  --mdi-navy-deep: #121c58;
+  --mdi-orange: #f39419;
+  --mdi-red: #e0261b;
+  --mdi-sky: #2f8fd8;
+  --mdi-cream: #fff8ec;
+  --mdi-green: #0f7b4f;
+}
+
+/* ─── Workspace extras ─── */
+.mdi-topbar-logo {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+.mdi-toast-wrap {
+  max-width: 1500px;
+  margin: 0.9rem auto -0.4rem;
+  padding: 0 1.5rem;
+}
+
+.mdi-note-text {
+  margin: 0;
+}
+
+.mdi-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.mdi-chip {
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.42rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.mdi-chip:hover {
+  border-color: var(--mdi-orange);
+  color: var(--text-primary);
+}
+.mdi-chip.on {
+  background: linear-gradient(135deg, var(--mdi-orange), #f7b24a);
+  border-color: transparent;
+  color: #1a1206;
+}
+
+/* Plain number boxes: no up/down spinner on any numeric field. */
+.mdi-root input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.mdi-root input[type="number"]::-webkit-outer-spin-button,
+.mdi-root input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.mdi-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 96px 26px;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.mdi-mini-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.mdi-mini-total strong {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.mdi-inst.due {
+  border-style: dashed;
+}
+.mdi-seg {
+  display: inline-flex;
+  margin-left: auto;
+  margin-right: 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.mdi-seg button {
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.mdi-seg button.on.paid {
+  background: rgba(52, 211, 153, 0.18);
+  color: var(--accent-emerald);
+}
+.mdi-seg button.on.due {
+  background: rgba(251, 191, 36, 0.18);
+  color: #fbbf24;
+}
+
+.mdi-plan {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+.mdi-plan .ig-input {
+  width: 58px;
+  padding: 0.3rem 0.45rem;
+}
+
+.mdi-ledger {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 10px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+}
+.mdi-ledger > div {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.mdi-ledger b {
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+.mdi-ledger b.ok {
+  color: var(--accent-emerald);
+}
+.mdi-ledger b.bad {
+  color: #fbbf24;
+}
+.mdi-ledger-status {
+  align-self: flex-start;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  margin-bottom: 0.2rem;
+}
+.mdi-ledger-status.paid {
+  color: var(--accent-emerald);
+}
+.mdi-ledger-status.part {
+  color: #fbbf24;
+}
+.mdi-ledger-status.unpaid {
+  color: #f87171;
+}
+.ig-stat.mdi-stat-due strong {
+  color: #fbbf24;
+}
+
+/* ─────────────────────────────────────────────
+   THE SHEET
+   ───────────────────────────────────────────── */
+.mdi-sheet {
+  position: relative;
+  overflow: hidden;
+  padding: 0 0 5mm;
+  font-size: 9pt;
+  line-height: 1.32;
+  color: #1a1d2e;
+}
+.mdi-sheet > *:not(.mdi-watermark) {
+  position: relative;
+  z-index: 1;
+}
+
+.mdi-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 118mm;
+  transform: translate(-50%, -42%);
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Header */
+.mdi-head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12pt;
+  align-items: center;
+  padding: 5mm 10mm 4mm;
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(47, 143, 216, 0.1), transparent 55%),
+    linear-gradient(180deg, #fbfcff, #f2f5ff);
+}
+.mdi-logo {
+  width: 74pt;
+  height: 74pt;
+  object-fit: contain;
+}
+.mdi-brand {
+  text-align: center;
+  padding-right: 32pt; /* optically centre against the logo */
+}
+.mdi-brand h1 {
+  margin: 0;
+  font-family: var(--font-mdi-display), "Trajan Pro", Georgia, serif;
+  font-weight: 900;
+  font-size: 25pt;
+  line-height: 1.05;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mdi-navy);
+  /* Solid colour on purpose: gradient-clipped text prints as a filled box. */
+  text-shadow: 0 1.2pt 0 rgba(243, 148, 25, 0.35);
+}
+.mdi-flourish {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7pt;
+  margin: 3pt 0 5pt;
+}
+.mdi-flourish i {
+  flex: 0 1 46pt;
+  height: 1.4pt;
+  background: linear-gradient(90deg, transparent, var(--mdi-orange));
+}
+.mdi-flourish i:last-child {
+  background: linear-gradient(90deg, var(--mdi-orange), transparent);
+}
+.mdi-flourish span {
+  font-size: 8.4pt;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--mdi-red);
+  white-space: nowrap;
+}
+.mdi-branch {
+  display: inline-flex;
+  align-items: stretch;
+  border-radius: 999px;
+  overflow: hidden;
+  font-size: 8.2pt;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: 0 0 0 1pt var(--mdi-navy);
+}
+.mdi-branch span {
+  background: var(--mdi-navy);
+  color: #fff;
+  padding: 2.5pt 10pt;
+}
+.mdi-branch em {
+  font-style: normal;
+  background: var(--mdi-orange);
+  color: #1a1206;
+  padding: 2.5pt 10pt;
+}
+.mdi-contact {
+  margin: 5pt 0 0;
+  font-size: 8pt;
+  color: #4a4f66;
+}
+.mdi-contact b {
+  color: #1a1d2e;
+}
+
+.mdi-ribbon {
+  height: 5pt;
+  background: linear-gradient(
+    90deg,
+    var(--mdi-navy) 0 62%,
+    var(--mdi-orange) 62% 88%,
+    var(--mdi-red) 88% 100%
+  );
+}
+
+/* Title + meta */
+.mdi-titlebar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12pt;
+  margin: 3.5mm 10mm 3mm;
+}
+.mdi-titlebar h2 {
+  margin: 0;
+  font-family: var(--font-mdi-display), Georgia, serif;
+  font-size: 17pt;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mdi-navy);
+}
+.mdi-titlebar p {
+  margin: 1pt 0 0;
+  font-size: 7.8pt;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6a6f86;
+}
+.mdi-meta {
+  display: flex;
+  margin: 0;
+  border: 1pt solid #d5dbef;
+  border-radius: 6pt;
+  overflow: hidden;
+}
+.mdi-meta > div {
+  padding: 4pt 10pt;
+  background: #f6f8ff;
+}
+.mdi-meta > div + div {
+  border-left: 1pt solid #d5dbef;
+}
+.mdi-meta dt {
+  font-size: 6.8pt;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6a6f86;
+}
+.mdi-meta dd {
+  margin: 1pt 0 0;
+  font-weight: 800;
+  font-size: 9pt;
+  color: #1a1d2e;
+  white-space: nowrap;
+}
+
+/* Student + course cards */
+.mdi-cards {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 10pt;
+  margin: 0 10mm 3.5mm;
+}
+.mdi-card {
+  border: 1pt solid #d5dbef;
+  border-radius: 7pt;
+  padding: 5pt 10pt 6pt;
+  background: rgba(255, 255, 255, 0.85);
+}
+.mdi-card h3,
+.mdi-h,
+.mdi-words h3 {
+  margin: 0 0 5pt;
+  font-size: 7.4pt;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mdi-red);
+}
+.mdi-kv {
+  width: 100%;
+  border-collapse: collapse;
+}
+.mdi-kv td {
+  padding: 1.1pt 0;
+  vertical-align: top;
+}
+.mdi-kv td:first-child {
+  width: 58pt;
+  color: #6a6f86;
+}
+.mdi-student {
+  font-size: 11pt;
+  color: var(--mdi-navy);
+}
+.mdi-card-course {
+  background: linear-gradient(160deg, #fff8ec, #ffffff 70%);
+  border-color: #f5d4a1;
+}
+.mdi-course {
+  display: flex;
+  align-items: center;
+  gap: 8pt;
+  margin-bottom: 5pt;
+}
+.mdi-course-code {
+  font-family: var(--font-mdi-display), Georgia, serif;
+  font-size: 15pt;
+  font-weight: 900;
+  color: #fff;
+  background: linear-gradient(135deg, var(--mdi-navy), var(--mdi-sky));
+  padding: 2pt 9pt;
+  border-radius: 5pt;
+  letter-spacing: 0.04em;
+}
+.mdi-course-name {
+  font-weight: 700;
+  font-size: 8.6pt;
+  line-height: 1.3;
+  color: #1a1d2e;
+}
+
+/* Tables */
+.mdi-section {
+  margin: 0 10mm 3.5mm;
+}
+.mdi-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1pt solid #d5dbef;
+  border-radius: 7pt;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.85);
+}
+.mdi-table th {
+  background: var(--mdi-navy);
+  color: #fff;
+  font-size: 7.4pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 4pt 8pt;
+}
+.mdi-table td {
+  padding: 2.6pt 8pt;
+  border-top: 1pt solid #e7ebf6;
+  vertical-align: top;
+}
+.mdi-table tbody tr:nth-child(even) td {
+  background: #f8f9fe;
+}
+.mdi-table small {
+  display: block;
+  font-size: 7.4pt;
+  color: #6a6f86;
+}
+.mdi-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.mdi-table .ctr {
+  text-align: center;
+}
+.mdi-table tfoot td {
+  padding: 1.6pt 8pt;
+  border-top: 0;
+  color: #4a4f66;
+  font-variant-numeric: tabular-nums;
+}
+.mdi-table tfoot tr:first-child td {
+  border-top: 1pt solid #d5dbef;
+  padding-top: 3.5pt;
+}
+.mdi-table tfoot tr.grand td {
+  background: linear-gradient(90deg, #fff3df, #ffe6c2);
+  color: var(--mdi-navy-deep);
+  font-weight: 900;
+  font-size: 10.5pt;
+  padding: 4.5pt 8pt;
+  border-top: 1pt solid #f5d4a1;
+}
+.mdi-table tfoot tr.mdi-actual td {
+  font-weight: 700;
+  color: #1a1d2e;
+}
+.mdi-inst-table tr.is-due td {
+  color: #6a6f86;
+}
+.mdi-empty {
+  color: #8a8fa6;
+  font-style: italic;
+}
+.mdi-tag {
+  display: inline-block;
+  font-size: 6.8pt;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 1pt 6pt;
+  border-radius: 999px;
+}
+.mdi-tag.paid {
+  background: #dcf5e9;
+  color: var(--mdi-green);
+}
+.mdi-tag.due {
+  background: #fff1d6;
+  color: #a45a00;
+}
+
+/* Summary */
+.mdi-lower {
+  display: grid;
+  grid-template-columns: 1fr 72mm;
+  gap: 10pt;
+  margin: 0 10mm 3mm;
+  align-items: start;
+}
+.mdi-words p {
+  margin: 0 0 7pt;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--mdi-navy);
+}
+.mdi-words ol {
+  margin: 0;
+  padding-left: 12pt;
+  font-size: 7.6pt;
+  color: #4a4f66;
+  line-height: 1.4;
+}
+.mdi-summary {
+  position: relative;
+  border: 1pt solid #d5dbef;
+  border-radius: 8pt;
+  background: #fff;
+}
+.mdi-summary .row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5pt 10pt;
+  border-bottom: 1pt solid #e7ebf6;
+  font-variant-numeric: tabular-nums;
+}
+.mdi-summary .row.ok b {
+  color: var(--mdi-green);
+}
+.mdi-summary .dues {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 8pt 10pt;
+  background: linear-gradient(135deg, var(--mdi-navy-deep), var(--mdi-navy) 60%, #2b3ea3);
+  color: #fff;
+}
+.mdi-summary .dues span {
+  font-size: 7.6pt;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #ffd79a;
+}
+.mdi-summary .dues b {
+  font-size: 14pt;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+.mdi-summary .dues.clear {
+  background: linear-gradient(135deg, #0b5e3c, var(--mdi-green));
+}
+.mdi-summary .dues.clear span {
+  color: #c9f5df;
+}
+.mdi-stamp {
+  position: absolute;
+  top: -2pt;
+  right: 8pt;
+  transform: rotate(-10deg) translateY(-60%);
+  font-size: 7.6pt;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 2pt 7pt;
+  border: 1.4pt solid currentColor;
+  border-radius: 4pt;
+  background: #fff;
+}
+.mdi-summary .row:first-child {
+  border-radius: 8pt 8pt 0 0;
+}
+.mdi-summary .dues {
+  border-radius: 0 0 7pt 7pt;
+}
+.mdi-stamp.paid {
+  color: var(--mdi-green);
+}
+.mdi-stamp.part {
+  color: #b86a00;
+}
+.mdi-stamp.unpaid {
+  color: var(--mdi-red);
+}
+
+/* Authorised signatory (optional) */
+.mdi-sign {
+  width: 62mm;
+  margin: auto 10mm 3mm auto;
+  text-align: center;
+}
+.mdi-sign img {
+  display: block;
+  max-width: 100%;
+  height: 34pt;
+  margin: 0 auto 2pt;
+  object-fit: contain;
+}
+.mdi-sign .line {
+  border-top: 1pt solid #1a1d2e;
+  margin: 26pt 0 3pt;
+}
+.mdi-sign img + .line {
+  margin-top: 0;
+}
+.mdi-sign span {
+  display: block;
+  font-weight: 700;
+  font-size: 8.4pt;
+}
+.mdi-sign small {
+  display: block;
+  font-size: 7.2pt;
+  color: #6a6f86;
+}
+/* With a signature above it, the footer no longer needs to claim the gap. */
+.mdi-sign + .mdi-foot {
+  margin-top: 0;
+}
+
+.mdi-foot {
+  margin: auto 10mm 0; /* pinned to the bottom of the page */
+  padding-top: 4pt;
+  border-top: 2pt solid var(--mdi-orange);
+  text-align: center;
+  font-size: 7.4pt;
+  color: #4a4f66;
+}
+.mdi-foot p {
+  margin: 2pt 0 0;
+}
+.mdi-foot .soft {
+  color: #8a8fa6;
+  letter-spacing: 0.04em;
+}
+
+@media print {
+  /* Keep the exact on-screen A4 layout and scale it into the 8mm page
+     margins, so the PDF matches the preview instead of reflowing. */
+  .mdi-sheet {
+    width: 210mm !important;
+    min-height: 303mm !important;
+    padding: 0 0 5mm !important;
+    zoom: calc(194 / 210);
+  }
+  .mdi-table tr,
+  .mdi-lower,
+  .mdi-sign,
+  .mdi-cards {
+    page-break-inside: avoid;
+  }
+}
