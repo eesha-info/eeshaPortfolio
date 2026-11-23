@@ -459,15 +459,31 @@
 
 .inv-scene-names {
   padding-top: clamp(40px, 8vw, 64px);
+  isolation: isolate;
+}
+.inv-scene-names > .inv-scene-no {
+  position: relative;
+}
+/* carved-lattice wall behind the arch, fading into the page below */
+.inv-scene-names::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cg fill='none' stroke='%23c9a46a' stroke-opacity='.32' stroke-width='1'%3E%3Crect x='16' y='16' width='24' height='24'/%3E%3Crect x='16' y='16' width='24' height='24' transform='rotate(45 28 28)'/%3E%3Ccircle cx='28' cy='28' r='4'/%3E%3Cpath d='M0 0L9 9M56 0L47 9M0 56L9 47M56 56L47 47'/%3E%3C/g%3E%3C/svg%3E"),
+    radial-gradient(ellipse 55% 45% at 50% 42%, #fff7ec 0%, #f8e7dc 55%, #efd6cb 100%);
+  -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent);
+  mask-image: linear-gradient(180deg, #000 78%, transparent);
 }
 .inv-arch-frame {
-  --crown: calc(min(520px, 100vw - 32px) * 0.5333); /* 160/300 of the frame width */
+  --fw: min(600px, 100vw - 32px);
+  --crown: calc(var(--fw) * 0.5333); /* 160/300 of the frame width */
+  --arch-fill: rgba(255, 252, 245, 0.97);
   position: relative;
-  max-width: 520px;
-  padding: calc(var(--crown) * 0.62) clamp(34px, 9.5vw, 64px) clamp(40px, 8vw, 56px);
+  max-width: 600px;
+  padding: calc(var(--crown) * 0.74) calc(var(--fw) * 0.13) calc(var(--fw) * 0.12);
   color: var(--ink);
-  background:
-    radial-gradient(ellipse 80% 60% at 50% 45%, rgba(255, 253, 247, 0.95), rgba(255, 250, 238, 0.7) 70%, transparent);
 }
 .inv-arch-svg {
   position: absolute;
@@ -477,6 +493,15 @@
   height: var(--crown);
   color: var(--gold);
   overflow: visible;
+  filter: drop-shadow(0 -6px 24px rgba(150, 100, 60, 0.12));
+}
+.inv-arch-fill {
+  fill: var(--arch-fill);
+  opacity: 0;
+}
+.stage-opening .inv-arch-fill,
+.stage-open .inv-arch-fill {
+  animation: inv-fade 1.2s ease var(--t0) forwards;
 }
 .inv-arch-side,
 .inv-arch-side::before {
@@ -487,6 +512,9 @@
   right: 4.667%;
   border-left: 2px solid var(--gold);
   border-right: 2px solid var(--gold);
+  border-bottom: 2px solid var(--gold);
+  background: var(--arch-fill);
+  box-shadow: 0 30px 50px -24px rgba(150, 100, 60, 0.28);
   transform-origin: top;
   transform: scaleY(0);
   pointer-events: none;
@@ -496,10 +524,12 @@
   top: 0;
   left: 4.4%;
   right: 4.4%;
+  bottom: 8px;
   border-width: 1px;
   border-style: dashed;
   border-top: 0;
-  border-bottom: 0;
+  background: none;
+  box-shadow: none;
   transform: none;
 }
 .stage-opening .inv-arch-side,
@@ -544,49 +574,52 @@
 .inv-bismillah {
   font-family: var(--f-arabic);
   font-weight: 700;
-  font-size: clamp(1.7rem, 6.5vw, 2.5rem);
+  font-size: max(1.6rem, calc(var(--fw) * 0.068));
   line-height: 1.6;
   color: var(--emerald);
 }
 .inv-bismillah-en {
   font-style: italic;
   color: var(--gold);
-  font-size: clamp(0.86rem, 2.6vw, 1.1rem);
-  line-height: 1.3;
-  margin-top: -4px;
-  max-width: 88%;
+  font-size: clamp(0.86rem, 2.6vw, 1.08rem);
+  line-height: 1.35;
+  margin-top: -2px;
+  max-width: 78%;
   margin-inline: auto;
+  text-wrap: balance;
 }
 .inv-ayah {
   font-family: var(--f-arabic);
   font-size: clamp(1.3rem, 4.5vw, 1.7rem);
   color: var(--gold);
-  margin-top: 6px;
+  margin-top: clamp(8px, 2vw, 14px);
   line-height: 1.7;
 }
 .inv-ayah-en {
   font-style: italic;
   color: var(--ink-soft);
   font-size: clamp(0.84rem, 2.3vw, 0.96rem);
+  text-wrap: balance;
 }
 .inv-lead {
   font-style: italic;
   font-size: clamp(1.05rem, 3.2vw, 1.3rem);
-  line-height: 1.45;
-  margin-top: clamp(18px, 4vw, 26px);
+  line-height: 1.5;
+  margin-top: clamp(20px, 5vw, 30px);
+  text-wrap: balance;
 }
 .inv-names {
   display: flex;
   flex-direction: column;
   align-items: center;
   font-weight: 400;
-  margin-top: 4px;
+  margin-top: clamp(6px, 2vw, 12px);
 }
 .inv-name {
   display: inline-block;
   font-family: var(--f-script);
-  font-size: clamp(2.1rem, 9vw, 4.2rem);
-  line-height: 1.25;
+  font-size: calc(var(--fw) * 0.095);
+  line-height: 1.3;
   padding: 0 0.15em;
   white-space: nowrap;
   background: linear-gradient(100deg, var(--emerald) 0%, var(--emerald) 40%, #4f9a7d 50%, var(--emerald) 60%, var(--emerald) 100%);
@@ -611,16 +644,22 @@
 }
 .inv-origin {
   font-family: var(--f-caps);
-  font-size: clamp(0.56rem, 2vw, 0.74rem);
-  letter-spacing: clamp(0.1em, 0.6vw, 0.22em);
+  font-size: clamp(0.6rem, calc(var(--fw) * 0.021), 0.76rem);
+  letter-spacing: 0.16em;
+  line-height: 1.6;
   color: var(--gold);
   text-transform: uppercase;
+  text-wrap: balance;
+  margin-top: 2px;
+}
+.inv-origin > span {
+  white-space: nowrap;
 }
 .inv-with {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin: clamp(8px, 3vw, 16px) 0 -4px;
+  margin: clamp(14px, 4vw, 22px) 0 2px;
 }
 .inv-with-line {
   width: clamp(40px, 12vw, 84px);
@@ -637,7 +676,7 @@
   line-height: 1;
 }
 .inv-inshallah {
-  margin-top: clamp(16px, 4vw, 22px);
+  margin-top: clamp(20px, 5vw, 30px);
   font-family: var(--f-caps);
   font-weight: 600;
   letter-spacing: 0.4em;
@@ -1670,8 +1709,8 @@ button.tag-paper:focus-visible {
   50% { background-position: 0% 0; }
 }
 @keyframes inv-twinkle {
-  0%, 100% { transform: scale(1) rotate(0); opacity: 1; }
-  50% { transform: scale(1.35) rotate(45deg); opacity: 0.6; }
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.55; }
 }
 @keyframes inv-star {
   0%, 100% { opacity: 0.25; transform: scale(0.8); }

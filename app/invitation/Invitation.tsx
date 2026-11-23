@@ -293,6 +293,7 @@ function NamesScene() {
       <SceneNo n={1} />
       <div className="inv-arch-frame">
         <svg className="inv-arch-svg" viewBox="0 0 300 160" aria-hidden="true">
+          <path className="inv-arch-fill" d="M14 160 V150 C14 90 92 46 150 8 C208 46 286 90 286 150 V160 Z" />
           <path
             className="inv-arch-path"
             d="M14 160 V150 C14 90 92 46 150 8 C208 46 286 90 286 150 V160"
@@ -335,14 +336,18 @@ function NamesScene() {
 
           <h1 className="inv-names">
             <span className="inv-name inv-name-1">{GROOM}</span>
-            <span className="inv-origin anim-6">Ward No. 14, Maheshua · Madhepura, Bihar</span>
+            <span className="inv-origin anim-6">
+              <span>Ward No. 14, Maheshua ·</span> <span>Madhepura, Bihar</span>
+            </span>
             <span className="inv-with anim-7">
               <span className="inv-with-line" />
               <span className="inv-with-word">with</span>
               <span className="inv-with-line" />
             </span>
             <span className="inv-name inv-name-2">{BRIDE}</span>
-            <span className="inv-origin anim-9">Phulwari Sharif · Patna, Bihar</span>
+            <span className="inv-origin anim-9">
+              <span>Phulwari Sharif ·</span> <span>Patna, Bihar</span>
+            </span>
           </h1>
 
           <p className="inv-inshallah anim-10">
