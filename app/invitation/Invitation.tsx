@@ -393,10 +393,11 @@ function LetterScene({ guest }: { guest: string }) {
         {!open && <p className="inv-tap-hint">Tap the seal to open</p>}
 
         <div className="inv-letter-paper" aria-hidden={!open}>
+          <span className="inv-letter-seal" aria-hidden="true">E&nbsp;S</span>
           <p className="inv-letter-salam" lang="ar" dir="rtl">
             ٱلسَّلَامُ عَلَيْكُمْ
           </p>
-          <p className="inv-letter-dear">Dear {guest},</p>
+          <p className="inv-letter-dear">{guest === DEFAULT_GUEST ? "Dear Guest," : `Dear ${guest},`}</p>
           <p>
             With hearts full of gratitude to Almighty Allah, we joyfully invite you and your
             family to share in a moment we have long prayed for — the Nikah of our beloved{" "}
