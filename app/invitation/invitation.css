@@ -1617,7 +1617,10 @@ button.tag-paper:focus-visible {
   font-family: var(--f-script);
   font-weight: 400;
   font-size: clamp(3.4rem, 15vw, 5.2rem);
-  line-height: 1.1;
+  /* room for the tall script swashes — text-clipped gradients can't paint outside the box */
+  line-height: 1.45;
+  padding: 0.12em 0.3em 0.05em;
+  margin-block: -0.2em -0.1em;
   background: linear-gradient(100deg, #e9cd8b 20%, #fff3cf 50%, #e9cd8b 80%);
   background-size: 250% 100%;
   -webkit-background-clip: text;
