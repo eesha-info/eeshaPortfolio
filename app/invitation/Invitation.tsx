@@ -16,18 +16,27 @@ const GROOM = "Mohammad Eesha";
 const BRIDE = "Shabistan Shahin";
 const DEFAULT_GUEST = "Our Dear Guest";
 
+type Flora = "rose" | "mixed";
+type Ribbon = "blush" | "maroon";
+
 type InvEvent = {
   id: string;
   title: string;
+  day: string;
   date: string;
   time: string;
-  place: string;
+  /** one-line description on the back of the tag */
+  about: string;
+  venueLabel: string;
+  venueName: string;
+  venueArea: string;
   /** UTC start (IST = UTC+5:30) */
   startUtc: string;
   hours: number;
   /** Google Maps link */
   map: string;
-  highlight?: boolean;
+  flora: Flora;
+  ribbon: Ribbon;
 };
 
 /** Nikah venue — Deewan E Khas Marriage Hall, Phulwari Sharif */
@@ -39,46 +48,36 @@ const NIKAH_START = "2027-03-15T13:30:00Z";
 
 const EVENTS: InvEvent[] = [
   {
-    id: "baraat-departure",
-    title: "Baraat Departure",
-    date: "Mon, 15th March 2027",
-    time: "10:00 a.m.",
-    place: "From Ward No. 14, Maheshua, Madhepura",
-    startUtc: "2027-03-15T04:30:00Z",
-    hours: 1,
-    map: MAP_HOME,
-  },
-  {
     id: "nikah",
     title: "Nikah Ceremony",
-    date: "Monday, 15th March 2027",
-    time: "7:00 p.m.",
-    place: "Deewan E Khas Marriage Hall, Sadar Colony, Phulwari Sharif, Patna, Bihar 801505",
+    day: "Monday",
+    date: "15 March 2027",
+    time: "7:00 pm",
+    about: "The blessed union, solemnised with duas and joy",
+    venueLabel: "Venue",
+    venueName: "Deewan E Khas Marriage Hall",
+    venueArea: "Sadar Colony, Phulwari Sharif, Patna, Bihar 801505",
     startUtc: NIKAH_START,
     hours: 3,
     map: MAP_VENUE,
-    highlight: true,
-  },
-  {
-    id: "baraat-return",
-    title: "Baraat Return",
-    date: "Tue, 16th March 2027",
-    time: "6:00 a.m.",
-    place: "From Phulwari Sharif, Patna",
-    startUtc: "2027-03-16T00:30:00Z",
-    hours: 1,
-    map: MAP_VENUE,
+    flora: "rose",
+    ribbon: "blush",
   },
   {
     id: "reception",
     title: "Reception",
-    date: "Thursday, 18th March 2027",
-    time: "7:00 p.m.",
-    place: "Ward No. 14, Maheshua, District Madhepura, Bihar",
+    day: "Thursday",
+    date: "18 March 2027",
+    time: "7:00 pm",
+    about: "An evening of dinner and celebration with family & friends",
+    venueLabel: "Venue",
+    venueName: "Ward No. 14, Maheshua",
+    venueArea: "District Madhepura, Bihar",
     startUtc: "2027-03-18T13:30:00Z",
     hours: 3,
     map: MAP_HOME,
-    highlight: true,
+    flora: "mixed",
+    ribbon: "maroon",
   },
 ];
 
@@ -101,7 +100,7 @@ function downloadIcs(ev: InvEvent) {
     `DTSTART:${icsStamp(start)}`,
     `DTEND:${icsStamp(end)}`,
     `SUMMARY:${ev.title} — ${GROOM} & ${BRIDE}`,
-    `LOCATION:${ev.place.replace(/,/g, "\\,")}`,
+    `LOCATION:${`${ev.venueName}, ${ev.venueArea}`.replace(/,/g, "\\,")}`,
     "END:VEVENT",
     "END:VCALENDAR",
   ].join("\r\n");
@@ -111,15 +110,6 @@ function downloadIcs(ev: InvEvent) {
   a.download = `${ev.id}.ics`;
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
-function OrdinalText({ text }: { text: string }) {
-  const parts = text.split(/(\d+)(st|nd|rd|th)/);
-  return (
-    <>
-      {parts.map((p, i) => (i % 3 === 2 ? <sup key={i}>{p}</sup> : <span key={i}>{p}</span>))}
-    </>
-  );
 }
 
 /* ═══════════════ Ornaments (original SVG art) ═══════════════ */
@@ -478,35 +468,283 @@ function PinIcon() {
 }
 
 function EventsScene() {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [idx, setIdx] = useState(0);
+
+  const go = (i: number) => {
+    const t = trackRef.current;
+    if (!t) return;
+    const next = Math.max(0, Math.min(EVENTS.length - 1, i));
+    t.scrollTo({ left: next * t.clientWidth, behavior: "smooth" });
+  };
+  const onScroll = () => {
+    const t = trackRef.current;
+    if (t) setIdx(Math.round(t.scrollLeft / t.clientWidth));
+  };
+
   return (
     <section className="inv-scene inv-scene-events" id="scene-4">
       <SceneNo n={4} />
       <p className="inv-kicker" data-reveal>Please join us for</p>
       <h2 className="inv-scene-title" data-reveal>The Celebrations</h2>
-      <ol className="inv-timeline">
-        {EVENTS.map((ev) => (
-          <li key={ev.id} className={`inv-tl-item ${ev.highlight ? "is-major" : ""}`} data-reveal>
-            <span className="inv-tl-dot" aria-hidden="true" />
-            <article className="inv-event">
-              <h3 className="inv-event-title">{ev.title}</h3>
-              <p className="inv-event-date">
-                <OrdinalText text={ev.date} />
+
+      <div className="tags" data-reveal>
+        <div
+          className="tags-track"
+          ref={trackRef}
+          onScroll={onScroll}
+          role="region"
+          aria-roledescription="carousel"
+          aria-label="Events — swipe to see each one"
+        >
+          {EVENTS.map((ev, i) => (
+            <EventTag key={ev.id} ev={ev} seed={i + 1} label={`${i + 1} of ${EVENTS.length}`} />
+          ))}
+        </div>
+
+        <div className="tags-nav">
+          <button type="button" className="tags-arrow" onClick={() => go(idx - 1)} disabled={idx === 0} aria-label="Previous event">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" strokeWidth="1.8" />
+            </svg>
+          </button>
+          <div className="tags-status" aria-live="polite">
+            <span className="tags-status-name">{EVENTS[idx]?.title}</span>
+            <span className="tags-dots" aria-hidden="true">
+              {EVENTS.map((ev, i) => (
+                <i key={ev.id} className={i === idx ? "is-on" : ""} />
+              ))}
+            </span>
+          </div>
+          <button
+            type="button"
+            className="tags-arrow"
+            onClick={() => go(idx + 1)}
+            disabled={idx === EVENTS.length - 1}
+            aria-label="Next event"
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="1.8" />
+            </svg>
+          </button>
+        </div>
+        <p className="tags-hint">Swipe for each event · tap a tag for details</p>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Gift-tag pieces ─── */
+
+/** Deterministic LCG → identical on server and client. */
+function rng(seed: number) {
+  let x = seed * 9301 + 49297;
+  return () => {
+    x = (x * 9301 + 49297) % 233280;
+    return x / 233280;
+  };
+}
+
+/** Torn, hand-made paper outline with a chamfered top (CSS polygon). */
+function deckle(seed: number) {
+  const r = rng(seed);
+  const j = (amt: number) => ((r() - 0.5) * 2 * amt).toFixed(2);
+  const pts: string[] = [];
+  const C = 11; // chamfer depth in % of height
+  // top edge
+  for (let x = 24; x <= 76; x += 4) pts.push(`${x}% ${Math.abs(+j(0.35))}%`);
+  // chamfer right
+  for (let k = 1; k <= 6; k++) pts.push(`${(76 + (24 * k) / 6 - +Math.abs(+j(0.8))).toFixed(2)}% ${((C * k) / 6).toFixed(2)}%`);
+  // right edge
+  for (let y = C + 3; y <= 100; y += 3) pts.push(`${(100 - Math.abs(+j(1.4))).toFixed(2)}% ${y}%`);
+  // bottom edge
+  for (let x = 96; x >= 4; x -= 4) pts.push(`${x}% ${(100 - Math.abs(+j(0.5))).toFixed(2)}%`);
+  // left edge
+  for (let y = 98; y >= C + 3; y -= 3) pts.push(`${Math.abs(+j(1.4)).toFixed(2)}% ${y}%`);
+  // chamfer left
+  for (let k = 0; k < 6; k++) pts.push(`${((24 * k) / 6 + Math.abs(+j(0.8))).toFixed(2)}% ${(C - (C * k) / 6).toFixed(2)}%`);
+  return `polygon(${pts.join(",")})`;
+}
+
+function Bloom({
+  x,
+  y,
+  r,
+  petals = 12,
+  fill,
+  inner,
+  center,
+  round = false,
+}: {
+  x: number;
+  y: number;
+  r: number;
+  petals?: number;
+  fill: string;
+  inner?: string;
+  center: string;
+  round?: boolean;
+}) {
+  const ring = (n: number, rad: number, color: string, off: number) =>
+    Array.from({ length: n }, (_, i) => (
+      <ellipse
+        key={`${rad}-${i}`}
+        cx={0}
+        cy={-rad * 0.55}
+        rx={rad * (round ? 0.42 : 0.26)}
+        ry={rad * 0.55}
+        fill={color}
+        transform={`rotate(${(i * 360) / n + off})`}
+      />
+    ));
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      {ring(petals, r, fill, 0)}
+      {inner && ring(Math.max(5, petals - 3), r * 0.68, inner, 360 / petals / 2)}
+      <circle r={r * (round ? 0.3 : 0.22)} fill={center} />
+    </g>
+  );
+}
+
+function Sprig({ x, y, rot, len = 46, color = "#6f9474" }: { x: number; y: number; rot: number; len?: number; color?: string }) {
+  const leaves = [0.25, 0.45, 0.65, 0.85];
+  return (
+    <g transform={`translate(${x} ${y}) rotate(${rot})`}>
+      <path d={`M0 0 Q4 ${-len / 2} 0 ${-len}`} stroke={color} strokeWidth="1.4" fill="none" />
+      {leaves.map((t, i) => (
+        <ellipse
+          key={t}
+          cx={i % 2 ? 5 : -5}
+          cy={-len * t}
+          rx="3.4"
+          ry="7.5"
+          fill={color}
+          transform={`rotate(${i % 2 ? 40 : -40} ${i % 2 ? 5 : -5} ${-len * t})`}
+        />
+      ))}
+      <ellipse cx="0" cy={-len - 4} rx="3" ry="6.5" fill={color} />
+    </g>
+  );
+}
+
+function Petal({ x, y, rot, color }: { x: number; y: number; rot: number; color: string }) {
+  return <path d="M0 0 C5 -6 5 -14 0 -20 C-5 -14 -5 -6 0 0 Z" fill={color} transform={`translate(${x} ${y}) rotate(${rot})`} opacity=".9" />;
+}
+
+function Florals({ kind }: { kind: Flora }) {
+  return (
+    <svg className="tag-florals" viewBox="0 0 200 150" aria-hidden="true">
+      {kind === "rose" && (
+        <>
+          <Sprig x={58} y={124} rot={-55} len={58} />
+          <Sprig x={146} y={124} rot={55} len={58} />
+          <Sprig x={100} y={140} rot={4} len={36} color="#86a886" />
+          <Bloom x={100} y={72} r={32} petals={9} fill="#e9a5b4" inner="#f4c6cf" center="#d17f95" round />
+          <Bloom x={62} y={96} r={20} petals={8} fill="#f1bfca" inner="#f8dbe1" center="#d891a4" round />
+          <Bloom x={140} y={98} r={20} petals={8} fill="#eeb2bf" inner="#f6d2da" center="#d4889c" round />
+          <Petal x={36} y={50} rot={-60} color="#f1bfca" />
+          <Petal x={166} y={56} rot={60} color="#e9a5b4" />
+          <Petal x={150} y={30} rot={10} color="#f4c6cf" />
+        </>
+      )}
+      {kind === "mixed" && (
+        <>
+          <Sprig x={54} y={126} rot={-52} len={58} />
+          <Sprig x={148} y={126} rot={52} len={58} />
+          <Sprig x={100} y={142} rot={0} len={40} color="#86a886" />
+          <Bloom x={76} y={70} r={26} petals={9} fill="#c96b82" inner="#e299ab" center="#9e3f58" round />
+          <Bloom x={128} y={74} r={24} petals={15} fill="#f2b232" inner="#f7c95a" center="#c98a1c" />
+          <Bloom x={102} y={110} r={16} petals={6} fill="#fffdf6" inner="#f4efe2" center="#f0d27a" round />
+          <Petal x={36} y={40} rot={-40} color="#e299ab" />
+          <Petal x={166} y={44} rot={40} color="#f2b232" />
+          <Petal x={160} y={116} rot={150} color="#c96b82" />
+        </>
+      )}
+    </svg>
+  );
+}
+
+function TagRibbon() {
+  return (
+    <svg className="tag-ribbon" viewBox="0 0 120 120" aria-hidden="true">
+      {/* hanging loop */}
+      <path d="M52 92 C44 50 46 8 60 4 C74 8 76 50 68 92" fill="none" stroke="var(--rb)" strokeWidth="7" strokeLinecap="round" />
+      <path d="M52 92 C44 50 46 8 60 4 C74 8 76 50 68 92" fill="none" stroke="var(--rb-hi)" strokeWidth="2" strokeLinecap="round" opacity=".6" />
+      {/* tails */}
+      <path d="M58 70 L40 112 L47 108 L52 116 L62 74 Z" fill="var(--rb-dk)" />
+      <path d="M62 70 L80 112 L73 108 L68 116 L58 74 Z" fill="var(--rb)" />
+      {/* loops */}
+      <path d="M60 68 C46 48 16 46 18 62 C20 78 46 76 60 68 Z" fill="var(--rb)" stroke="var(--rb-dk)" strokeWidth="1" />
+      <path d="M60 68 C74 48 104 46 102 62 C100 78 74 76 60 68 Z" fill="var(--rb)" stroke="var(--rb-dk)" strokeWidth="1" />
+      <path d="M58 66 C46 58 30 56 26 61" fill="none" stroke="var(--rb-hi)" strokeWidth="2" opacity=".7" />
+      <path d="M62 66 C74 58 90 56 94 61" fill="none" stroke="var(--rb-hi)" strokeWidth="2" opacity=".7" />
+      <rect x="53" y="61" width="14" height="14" rx="5" fill="var(--rb-dk)" />
+      <rect x="55" y="62" width="10" height="5" rx="2.5" fill="var(--rb-hi)" opacity=".6" />
+    </svg>
+  );
+}
+
+function EventTag({ ev, seed, label }: { ev: InvEvent; seed: number; label: string }) {
+  const [flipped, setFlipped] = useState(false);
+  const clip = deckle(seed * 7);
+  const clipBack = deckle(seed * 13);
+  return (
+    <div className="tag-slide" aria-roledescription="slide" aria-label={`${ev.title}, ${label}`}>
+      <div className={`tag-hanger rb-${ev.ribbon}`}>
+        <TagRibbon />
+        <div className={`tag-flip ${flipped ? "is-flipped" : ""}`}>
+          {/* front */}
+          <div className="tag-face tag-front" inert={flipped}>
+            <button
+              type="button"
+              className="tag-paper"
+              style={{ clipPath: clip }}
+              onClick={() => setFlipped(true)}
+              aria-label={`${ev.title} — ${ev.day}, ${ev.date}, ${ev.time}. Show details`}
+            >
+              <span className="tag-eyelet" />
+              <Florals kind={ev.flora} />
+              <span className={`tag-title ${ev.title.length > 10 ? "long" : ""}`}>{ev.title}</span>
+              <span className="tag-rule" />
+              <span className="tag-day">{ev.day}</span>
+              <span className="tag-date">{ev.date}</span>
+              <span className="tag-time">{ev.time}</span>
+              <span className="tag-more">Tap for details</span>
+            </button>
+          </div>
+
+          {/* back */}
+          <div className="tag-face tag-back" inert={!flipped}>
+            <div className="tag-paper" style={{ clipPath: clipBack }}>
+              <span className="tag-eyelet" />
+              <button type="button" className="tag-close" onClick={() => setFlipped(false)} aria-label="Close details">
+                <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                  <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="1.8" />
+                </svg>
+              </button>
+              <h3 className="tag-title sm">{ev.title}</h3>
+              <p className="tag-when">
+                {ev.day} {ev.date}
               </p>
-              <p className="inv-event-time">at {ev.time}</p>
-              <p className="inv-event-place">{ev.place}</p>
-              <div className="inv-event-actions">
-                <a className="inv-btn" href={ev.map} target="_blank" rel="noopener noreferrer">
+              <p className="tag-when-time">{ev.time} onwards</p>
+              <span className="tag-rule" />
+              <p className="tag-about">{ev.about}</p>
+              <p className="tag-label">{ev.venueLabel}</p>
+              <p className="tag-venue">{ev.venueName}</p>
+              <p className="tag-area">{ev.venueArea}</p>
+              <div className="tag-actions">
+                <a className="tag-btn" href={ev.map} target="_blank" rel="noopener noreferrer">
                   <PinIcon /> Directions
                 </a>
-                <button className="inv-btn" type="button" onClick={() => downloadIcs(ev)}>
-                  <CalendarIcon /> Save date
+                <button type="button" className="tag-btn" onClick={() => downloadIcs(ev)}>
+                  <CalendarIcon /> Add to calendar
                 </button>
               </div>
-            </article>
-          </li>
-        ))}
-      </ol>
-    </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
