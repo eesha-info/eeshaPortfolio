@@ -716,10 +716,88 @@
 .inv-guest {
   font-family: var(--f-script);
   font-weight: 400;
-  font-size: clamp(2.6rem, 11vw, 4rem);
+  font-size: clamp(2.8rem, 12vw, 4.4rem);
   line-height: 1.15;
   color: var(--maroon);
   overflow-wrap: anywhere;
+}
+
+/* Multi-tone metallic foil — gold → rose gold → copper, like a foil-pen name card */
+.inv-foil {
+  /* layer 1: travelling white sheen · layer 2: jewel-tone gel-pen spectrum */
+  background:
+    linear-gradient(110deg, transparent 38%, rgba(255, 255, 255, 0.6) 48%, rgba(255, 255, 255, 0.15) 54%, transparent 62%),
+    linear-gradient(
+      100deg,
+      #b5476b 0%,
+      #c9733f 12%,
+      #d4a03a 24%,
+      #5f9e6e 36%,
+      #2f8a8a 48%,
+      #4a6fb5 60%,
+      #8a5ab8 72%,
+      #c2508a 86%,
+      #b5476b 100%
+    );
+  background-size: 250% 100%, 200% 100%;
+  background-position: 130% 0, 0% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* room for script swashes — a text-clipped gradient can't paint outside the box */
+  padding: 0.12em 0.22em 0.08em;
+  margin: -0.12em -0.22em -0.08em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  animation: inv-foil 9s ease-in-out infinite;
+}
+.inv-guest-ink {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+.inv-guest-text {
+  display: inline-block;
+  filter: drop-shadow(0 1px 0 rgba(60, 30, 60, 0.25));
+  clip-path: inset(-20% 100% -20% -10%);
+}
+.inv-pen {
+  position: absolute;
+  top: -0.35em;
+  left: 0;
+  width: 0.42em;
+  transform: rotate(28deg);
+  transform-origin: 50% 95%;
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(2px 4px 4px rgba(80, 30, 20, 0.3));
+}
+.is-visible .inv-guest-text {
+  animation:
+    inv-ink-write 2.4s cubic-bezier(0.55, 0.05, 0.35, 1) 0.4s forwards,
+    inv-foil 9s ease-in-out 2.8s infinite;
+}
+.is-visible .inv-pen {
+  animation: inv-pen-write 2.4s cubic-bezier(0.55, 0.05, 0.35, 1) 0.4s forwards;
+}
+@keyframes inv-ink-write {
+  from { clip-path: inset(-20% 100% -20% -10%); }
+  to { clip-path: inset(-20% -10% -20% -10%); }
+}
+@keyframes inv-pen-write {
+  0% { left: 0; opacity: 0; transform: rotate(28deg) translateY(-6px); }
+  8% { opacity: 1; transform: rotate(28deg); }
+  20% { transform: rotate(22deg) translateY(4px); }
+  35% { transform: rotate(32deg) translateY(-4px); }
+  50% { transform: rotate(24deg) translateY(5px); }
+  65% { transform: rotate(31deg) translateY(-3px); }
+  80% { transform: rotate(25deg) translateY(3px); opacity: 1; }
+  100% { left: 100%; opacity: 0; transform: rotate(40deg) translate(10px, -16px); }
+}
+@keyframes inv-foil {
+  0% { background-position: 130% 0, 0% 0; }
+  50% { background-position: -30% 0, 100% 0; }
+  100% { background-position: 130% 0, 0% 0; }
 }
 /* Envelope and letter share one grid cell: on open the envelope
    sinks away and the letter unfolds in exactly the same spot. */
@@ -1657,9 +1735,124 @@ button.tag-paper:focus-visible {
   color: #f0d998;
   line-height: 1.2;
 }
+/* personalised share panel */
+.inv-share {
+  width: 100%;
+  max-width: 460px;
+  margin-top: clamp(8px, 2vw, 14px);
+  padding: clamp(20px, 5vw, 28px) clamp(16px, 5vw, 28px) 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(233, 205, 139, 0.45);
+  background: linear-gradient(180deg, rgba(255, 246, 220, 0.09), rgba(255, 246, 220, 0.04));
+  box-shadow: inset 0 0 0 4px rgba(13, 26, 58, 0.6), inset 0 0 0 5px rgba(233, 205, 139, 0.18),
+    0 30px 60px -30px rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.inv-share-title {
+  font-family: var(--f-caps);
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: #f0d998;
+}
+.inv-share-sub {
+  margin-top: 4px;
+  font-style: italic;
+  font-size: 1rem;
+  color: #d9ccb0;
+}
+.inv-share-field {
+  position: relative;
+  display: block;
+  margin-top: 14px;
+}
+.inv-share-field input {
+  width: 100%;
+  font: inherit;
+  font-size: 1.1rem; /* ≥16px avoids iOS zoom */
+  text-align: center;
+  color: #fff6dc;
+  padding: 11px 40px;
+  border-radius: 999px;
+  border: 1px solid rgba(233, 205, 139, 0.5);
+  background: rgba(5, 11, 29, 0.55);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.inv-share-field input::placeholder {
+  color: rgba(217, 204, 176, 0.55);
+  font-style: italic;
+}
+.inv-share-field input:focus {
+  outline: none;
+  border-color: #e9cd8b;
+  box-shadow: 0 0 0 3px rgba(233, 205, 139, 0.18);
+}
+.inv-share-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  width: 28px;
+  height: 28px;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 50%;
+  background: rgba(233, 205, 139, 0.15);
+  color: #f0d998;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.inv-share-link {
+  margin-top: 10px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  background: rgba(5, 11, 29, 0.4);
+  border: 1px dashed rgba(233, 205, 139, 0.3);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: #cdbf9f;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  user-select: all;
+}
+.inv-share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+.inv-share-actions .inv-btn {
+  flex: 1 1 auto;
+  min-height: 42px;
+}
+.inv-btn-ghost {
+  background: transparent;
+  border-color: rgba(233, 205, 139, 0.55);
+  color: #f0d998;
+}
+.inv-btn-ghost:hover,
+.inv-btn-ghost:focus-visible {
+  background: rgba(233, 205, 139, 0.16);
+  border-color: #e9cd8b;
+  color: #fff3cf;
+}
 .inv-share-msg {
+  min-height: 1.4em;
+  margin-top: 8px;
   font-size: 0.95rem;
   color: var(--gold-soft);
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 /* ─────────────── Keyframes ─────────────── */

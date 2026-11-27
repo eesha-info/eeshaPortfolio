@@ -14,7 +14,7 @@ const CONTACT_PHONE = "+91 94312 58394";
 
 const GROOM = "Mohammad Eesha";
 const BRIDE = "Shabistan Shahin";
-const DEFAULT_GUEST = "Our Dear Guest";
+const DEFAULT_GUEST = "Guest";
 
 type Flora = "rose" | "mixed";
 type Ribbon = "blush" | "maroon";
@@ -372,7 +372,30 @@ function LetterScene({ guest }: { guest: string }) {
       <SceneNo n={2} />
       <div className="inv-letter-head" data-reveal>
         <p className="inv-kicker">A letter for</p>
-        <h2 className="inv-guest">{guest}</h2>
+        <h2 className="inv-guest">
+          <span className="inv-guest-ink">
+            <span className="inv-foil inv-guest-text">{guest}</span>
+            <svg className="inv-pen" viewBox="0 0 40 80" aria-hidden="true">
+              <defs>
+                <linearGradient id="penBody" x1="0" x2="1">
+                  <stop offset="0" stopColor="#5b1426" />
+                  <stop offset=".5" stopColor="#9b3550" />
+                  <stop offset="1" stopColor="#5b1426" />
+                </linearGradient>
+                <linearGradient id="penNib" x1="0" x2="1">
+                  <stop offset="0" stopColor="#a8762a" />
+                  <stop offset=".5" stopColor="#f6e3a1" />
+                  <stop offset="1" stopColor="#a8762a" />
+                </linearGradient>
+              </defs>
+              <rect x="12" y="0" width="16" height="44" rx="5" fill="url(#penBody)" />
+              <rect x="11" y="40" width="18" height="6" rx="2" fill="#d4a53c" />
+              <path d="M12 46 H28 L22 74 Q20 80 18 74 Z" fill="url(#penNib)" />
+              <path d="M20 54 V72" stroke="#7a5418" strokeWidth="1" />
+              <circle cx="20" cy="54" r="1.6" fill="#7a5418" />
+            </svg>
+          </span>
+        </h2>
       </div>
 
       <div data-reveal>
@@ -402,7 +425,9 @@ function LetterScene({ guest }: { guest: string }) {
           <p className="inv-letter-salam" lang="ar" dir="rtl">
             ٱلسَّلَامُ عَلَيْكُمْ
           </p>
-          <p className="inv-letter-dear">{guest === DEFAULT_GUEST ? "Dear Guest," : `Dear ${guest},`}</p>
+          <p className="inv-letter-dear">
+            Dear <span className="inv-foil">{guest}</span>,
+          </p>
           <p>
             With hearts full of gratitude to Almighty Allah, we joyfully invite you and your
             family to share in a moment we have long prayed for — the Nikah of our beloved{" "}
@@ -893,23 +918,115 @@ function RsvpScene({ guest }: { guest: string }) {
   );
 }
 
-function DuaScene() {
-  const [shareMsg, setShareMsg] = useState("");
-  const share = async () => {
-    const url = window.location.origin + window.location.pathname;
-    const text = `You are cordially invited to the Nikah of ${GROOM} with ${BRIDE} — Monday, 15th March 2027, Insha Allah.`;
+/* ─── Personalised sharing ─── */
+
+const SITE_FALLBACK = "https://mdeesha.in/invitation";
+const pageUrl = () => window.location.origin + window.location.pathname;
+
+function inviteLink(base: string, name: string) {
+  const n = name.replace(/\s+/g, " ").trim();
+  return n ? `${base}?to=${encodeURIComponent(n)}` : base;
+}
+
+function inviteText(name: string) {
+  const n = name.trim();
+  const hello = n ? `Assalamu Alaikum ${n}! ` : "Assalamu Alaikum! ";
+  return `${hello}You are cordially invited to the Nikah of ${GROOM} with ${BRIDE} — Monday, 15th March 2027, Insha Allah. Open your invitation:`;
+}
+
+function SharePanel() {
+  const base = useSyncExternalStore(noopSubscribe, pageUrl, () => SITE_FALLBACK);
+  const [name, setName] = useState("");
+  const [status, setStatus] = useState("");
+  const link = inviteLink(base, name);
+  const text = inviteText(name);
+
+  const flash = (msg: string) => {
+    setStatus(msg);
+    window.setTimeout(() => setStatus(""), 2500);
+  };
+
+  const copy = async () => {
     try {
-      if (navigator.share) {
-        await navigator.share({ title: "Nikah Invitation", text, url });
-        return;
-      }
-      await navigator.clipboard.writeText(`${text}\n${url}`);
-      setShareMsg("Invitation link copied!");
+      await navigator.clipboard.writeText(link);
+      flash("Link copied!");
+    } catch {
+      flash("Couldn’t copy — select the link above instead.");
+    }
+  };
+
+  const share = async () => {
+    if (!navigator.share) return copy();
+    try {
+      await navigator.share({ title: "Nikah Invitation", text, url: link });
     } catch {
       /* share sheet dismissed */
     }
   };
 
+  const whatsapp = `https://wa.me/?text=${encodeURIComponent(`${text}\n${link}`)}`;
+
+  return (
+    <div className="inv-share" data-reveal>
+      <p className="inv-share-title">Forward this invitation</p>
+      <p className="inv-share-sub">Add the guest’s name to personalise their letter</p>
+
+      <label className="inv-share-field">
+        <span className="sr-only">Guest name</span>
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          maxLength={40}
+          placeholder="Guest name, e.g. Shaheen Khala"
+          autoComplete="off"
+          enterKeyHint="done"
+        />
+        {name && (
+          <button type="button" className="inv-share-clear" onClick={() => setName("")} aria-label="Clear name">
+            ×
+          </button>
+        )}
+      </label>
+
+      <p className="inv-share-link" title={link}>
+        <span>{link.replace(/^https?:\/\//, "")}</span>
+      </p>
+
+      <div className="inv-share-actions">
+        <button type="button" className="inv-btn inv-btn-gold" onClick={share}>
+          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+            <path fill="currentColor" d="M14 5l7 7-7 7v-4c-6 0-9 2-11 6 1-6 4-11 11-12V5z" />
+          </svg>
+          Share
+        </button>
+        <a className="inv-btn inv-btn-ghost" href={whatsapp} target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+            <path
+              fill="currentColor"
+              d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2.1 1-2.4c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l2 .9c.3.1.5.2.5.3.1.1.1.7-.2 1.3z"
+            />
+          </svg>
+          WhatsApp
+        </a>
+        <button type="button" className="inv-btn inv-btn-ghost" onClick={copy}>
+          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+            <path
+              fill="currentColor"
+              d="M8 7V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3zm2 0h3a2 2 0 0 1 2 2v5h3V4h-8v3zM5 9v10h8V9H5z"
+            />
+          </svg>
+          Copy link
+        </button>
+      </div>
+      <p className="inv-share-msg" aria-live="polite">
+        {status}
+      </p>
+    </div>
+  );
+}
+
+/** `showShare` is false on personalised links — guests shouldn’t see the host’s share tools. */
+function DuaScene({ showShare }: { showShare: boolean }) {
   return (
     <section className="inv-scene inv-scene-dua" id="scene-6">
       <div className="inv-sky" aria-hidden="true">
@@ -945,13 +1062,7 @@ function DuaScene() {
           With best compliments from
           <span>Family &amp; Friends</span>
         </p>
-        <button type="button" className="inv-btn inv-btn-gold" data-reveal onClick={share}>
-          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
-            <path fill="currentColor" d="M14 5l7 7-7 7v-4c-6 0-9 2-11 6 1-6 4-11 11-12V5z" />
-          </svg>
-          Forward this invitation
-        </button>
-        {shareMsg && <p className="inv-share-msg">{shareMsg}</p>}
+        {showShare && <SharePanel />}
       </div>
     </section>
   );
@@ -961,8 +1072,14 @@ function DuaScene() {
 
 /** Personalised guest name from the link: /invitation?to=Shaheen%20Khala */
 function guestFromUrl() {
-  const p = new URLSearchParams(window.location.search);
-  return (p.get("to") ?? p.get("guest") ?? "").trim().slice(0, 40) || DEFAULT_GUEST;
+  // also accept params placed after the hash, e.g. /invitation#scene-2?to=Name
+  const hashQuery = window.location.hash.split("?")[1] ?? "";
+  const read = (q: string) => {
+    const p = new URLSearchParams(q);
+    return p.get("to") ?? p.get("guest") ?? p.get("name");
+  };
+  const raw = read(window.location.search) ?? read(hashQuery) ?? "";
+  return raw.replace(/\s+/g, " ").trim().slice(0, 40) || DEFAULT_GUEST;
 }
 const noopSubscribe = () => () => {};
 
@@ -1043,7 +1160,7 @@ export default function Invitation() {
         <DateScene />
         <EventsScene />
         <RsvpScene guest={guest} />
-        <DuaScene />
+        <DuaScene showShare={guest === DEFAULT_GUEST} />
       </main>
     </div>
   );
