@@ -1,6 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { createContext, useContext, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { COPY, en, type Copy, type EventCopy, type Lang } from "./copy";
+import { toDevanagari } from "./translit";
+
+const CopyCtx = createContext<Copy>(en);
+const useT = () => useContext(CopyCtx);
 
 /* ═══════════════ Configuration ═══════════════ */
 
@@ -12,24 +17,12 @@ const RSVP_WHATSAPP = "919431258394";
 /** Shown for calls / queries */
 const CONTACT_PHONE = "+91 94312 58394";
 
-const GROOM = "Mohammad Eesha";
-const BRIDE = "Shabistan Shahin";
-const DEFAULT_GUEST = "Guest";
 
 type Flora = "rose" | "mixed";
 type Ribbon = "blush" | "maroon";
 
-type InvEvent = {
-  id: string;
-  title: string;
-  day: string;
-  date: string;
-  time: string;
-  /** one-line description on the back of the tag */
-  about: string;
-  venueLabel: string;
-  venueName: string;
-  venueArea: string;
+type EventBase = {
+  id: "nikah" | "reception";
   /** UTC start (IST = UTC+5:30) */
   startUtc: string;
   hours: number;
@@ -38,6 +31,7 @@ type InvEvent = {
   flora: Flora;
   ribbon: Ribbon;
 };
+type InvEvent = EventBase & EventCopy;
 
 /** Nikah venue — Deewan E Khas Marriage Hall, Phulwari Sharif */
 const MAP_VENUE = "https://maps.app.goo.gl/9ipW48q5oGVD2ZiU9";
@@ -46,48 +40,23 @@ const MAP_HOME = "https://maps.app.goo.gl/DReaLDiK4ABrCxHHA";
 
 const NIKAH_START = "2027-03-15T13:30:00Z";
 
-const EVENTS: InvEvent[] = [
-  {
-    id: "nikah",
-    title: "Nikah Ceremony",
-    day: "Monday",
-    date: "15 March 2027",
-    time: "7:00 pm",
-    about: "The blessed union, solemnised with duas and joy",
-    venueLabel: "Venue",
-    venueName: "Deewan E Khas Marriage Hall",
-    venueArea: "Sadar Colony, Phulwari Sharif, Patna, Bihar 801505",
-    startUtc: NIKAH_START,
-    hours: 3,
-    map: MAP_VENUE,
-    flora: "rose",
-    ribbon: "blush",
-  },
-  {
-    id: "reception",
-    title: "Reception",
-    day: "Thursday",
-    date: "18 March 2027",
-    time: "7:00 pm",
-    about: "An evening of dinner and celebration with family & friends",
-    venueLabel: "Venue",
-    venueName: "Ward No. 14, Maheshua",
-    venueArea: "District Madhepura, Bihar",
-    startUtc: "2027-03-18T13:30:00Z",
-    hours: 3,
-    map: MAP_HOME,
-    flora: "mixed",
-    ribbon: "maroon",
-  },
+const EVENT_BASE: EventBase[] = [
+  { id: "nikah", startUtc: NIKAH_START, hours: 3, map: MAP_VENUE, flora: "rose", ribbon: "blush" },
+  { id: "reception", startUtc: "2027-03-18T13:30:00Z", hours: 3, map: MAP_HOME, flora: "mixed", ribbon: "maroon" },
 ];
 
-const SCENES = ["Names", "Letter", "Date", "Events", "RSVP", "Dua"];
+function useEvents(): InvEvent[] {
+  const t = useT();
+  return EVENT_BASE.map((b) => ({ ...b, ...t.events.items[b.id] }));
+}
+
+const SCENE_COUNT = 6;
 
 /* ═══════════════ Helpers ═══════════════ */
 
 const icsStamp = (d: Date) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 
-function downloadIcs(ev: InvEvent) {
+function downloadIcs(ev: InvEvent, t: Copy) {
   const start = new Date(ev.startUtc);
   const end = new Date(start.getTime() + ev.hours * 3600_000);
   const body = [
@@ -99,7 +68,7 @@ function downloadIcs(ev: InvEvent) {
     `DTSTAMP:${icsStamp(new Date())}`,
     `DTSTART:${icsStamp(start)}`,
     `DTEND:${icsStamp(end)}`,
-    `SUMMARY:${ev.title} — ${GROOM} & ${BRIDE}`,
+    `SUMMARY:${ev.title} — ${t.groom} & ${t.bride}`,
     `LOCATION:${`${ev.venueName}, ${ev.venueArea}`.replace(/,/g, "\\,")}`,
     "END:VEVENT",
     "END:VCALENDAR",
@@ -169,7 +138,7 @@ function SceneNo({ n }: { n: number }) {
   return (
     <p className="inv-scene-no" aria-hidden="true">
       {String(n).padStart(2, "0")}
-      <small> / {String(SCENES.length).padStart(2, "0")}</small>
+      <small> / {String(SCENE_COUNT).padStart(2, "0")}</small>
     </p>
   );
 }
@@ -217,6 +186,7 @@ function Petals() {
 /* ═══════════════ Countdown ═══════════════ */
 
 function Countdown() {
+  const t = useT();
   const [now, setNow] = useState<number | null>(null);
   useEffect(() => {
     const tick = () => setNow(Date.now());
@@ -229,16 +199,16 @@ function Countdown() {
   }, []);
   const diff = now === null ? null : Math.max(0, new Date(NIKAH_START).getTime() - now);
   if (diff === 0) {
-    return <p className="inv-countdown-done">Alhamdulillah — the blessed day is here!</p>;
+    return <p className="inv-countdown-done">{t.date.done}</p>;
   }
   const units: [string, number | undefined][] = [
-    ["Days", diff === null ? undefined : Math.floor(diff / 86_400_000)],
-    ["Hours", diff === null ? undefined : Math.floor(diff / 3_600_000) % 24],
-    ["Minutes", diff === null ? undefined : Math.floor(diff / 60_000) % 60],
-    ["Seconds", diff === null ? undefined : Math.floor(diff / 1000) % 60],
+    [t.date.units[0], diff === null ? undefined : Math.floor(diff / 86_400_000)],
+    [t.date.units[1], diff === null ? undefined : Math.floor(diff / 3_600_000) % 24],
+    [t.date.units[2], diff === null ? undefined : Math.floor(diff / 60_000) % 60],
+    [t.date.units[3], diff === null ? undefined : Math.floor(diff / 1000) % 60],
   ];
   return (
-    <div className="inv-countdown" role="timer" aria-label="Time remaining until the Nikah">
+    <div className="inv-countdown" role="timer" aria-label={t.date.timerAria}>
       {units.map(([label, v]) => (
         <div className="inv-count-cell" key={label}>
           <span className="inv-count-num" key={v}>
@@ -254,15 +224,16 @@ function Countdown() {
 /* ═══════════════ Scenes ═══════════════ */
 
 function Gate({ stage, onOpen }: { stage: string; onOpen: () => void }) {
+  const t = useT();
   return (
     <div className="inv-gate" aria-hidden={stage !== "sealed"}>
       <div className="inv-gate-bg" />
-      <button type="button" className="inv-gate-arch" onClick={onOpen} aria-label="Open the invitation">
+      <button type="button" className="inv-gate-arch" onClick={onOpen} aria-label={t.gate.aria}>
         <span className="inv-gate-light">
           <span className="inv-gate-light-names">
-            Eesha
+            {t.gate.nameA}
             <br />&amp;<br />
-            Shabistan
+            {t.gate.nameB}
           </span>
         </span>
         <span className="inv-door inv-door-l">
@@ -281,13 +252,14 @@ function Gate({ stage, onOpen }: { stage: string; onOpen: () => void }) {
       <Rose className="inv-gate-rose g4" />
       <p className="inv-gate-hint">
         <span className="inv-gate-hint-ar" lang="ar">بِسْمِ ٱللَّٰهِ</span>
-        Tap the doors to open
+        {t.gate.hint}
       </p>
     </div>
   );
 }
 
 function NamesScene() {
+  const t = useT();
   return (
     <section className="inv-scene inv-scene-names" id="scene-1">
       <SceneNo n={1} />
@@ -321,42 +293,37 @@ function NamesScene() {
           <p className="inv-bismillah anim-1" lang="ar" dir="rtl">
             بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
           </p>
-          <p className="inv-bismillah-en anim-2">
-            In the name of Allah, the Most Beneficent, the Most Merciful
-          </p>
+          <p className="inv-bismillah-en anim-2">{t.names.bismillahTr}</p>
           <p className="inv-ayah anim-3" lang="ar" dir="rtl">
             وَخَلَقْنَاكُمْ أَزْوَاجًا
           </p>
-          <p className="inv-ayah-en anim-3">“And We created you in pairs.” — Surah An-Naba, 78:8</p>
+          <p className="inv-ayah-en anim-3">{t.names.ayahTr}</p>
 
-          <p className="inv-lead anim-4">
-            With the blessings of Almighty Allah, we cordially invite you to grace the auspicious
-            Nikah ceremony of
-          </p>
+          <p className="inv-lead anim-4">{t.names.lead}</p>
 
           <h1 className="inv-names">
-            <span className="inv-name inv-name-1">{GROOM}</span>
+            <span className="inv-name inv-name-1">{t.groom}</span>
             <span className="inv-origin anim-6">
-              <span>Ward No. 14, Maheshua ·</span> <span>Madhepura, Bihar</span>
+              <span>{t.names.groomOrigin[0]}</span> <span>{t.names.groomOrigin[1]}</span>
             </span>
             <span className="inv-with anim-7">
               <span className="inv-with-line" />
-              <span className="inv-with-word">with</span>
+              <span className="inv-with-word">{t.names.with}</span>
               <span className="inv-with-line" />
             </span>
-            <span className="inv-name inv-name-2">{BRIDE}</span>
+            <span className="inv-name inv-name-2">{t.bride}</span>
             <span className="inv-origin anim-9">
-              <span>Phulwari Sharif ·</span> <span>Patna, Bihar</span>
+              <span>{t.names.brideOrigin[0]}</span> <span>{t.names.brideOrigin[1]}</span>
             </span>
           </h1>
 
           <p className="inv-inshallah anim-10">
-            <span className="inv-star">✦</span> Insha Allah <span className="inv-star">✦</span>
+            <span className="inv-star">✦</span> {t.names.inshallah} <span className="inv-star">✦</span>
           </p>
         </div>
       </div>
-      <a className="inv-scroll-cue anim-10" href="#scene-2" aria-label="Continue to your letter">
-        <span>Scroll</span>
+      <a className="inv-scroll-cue anim-10" href="#scene-2" aria-label={t.names.scrollAria}>
+        <span>{t.names.scroll}</span>
         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
           <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="1.8" />
         </svg>
@@ -366,12 +333,14 @@ function NamesScene() {
 }
 
 function LetterScene({ guest }: { guest: string }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
+  const [dearBefore, dearAfter] = t.letter.dear(guest);
   return (
     <section className="inv-scene inv-scene-letter" id="scene-2">
       <SceneNo n={2} />
       <div className="inv-letter-head" data-reveal>
-        <p className="inv-kicker">A letter for</p>
+        <p className="inv-kicker">{t.letter.kicker}</p>
         <h2 className="inv-guest">
           <span className="inv-guest-ink">
             <span className="inv-foil inv-guest-text">{guest}</span>
@@ -404,13 +373,15 @@ function LetterScene({ guest }: { guest: string }) {
           type="button"
           className="inv-envelope"
           onClick={() => setOpen(true)}
-          aria-label="Open your letter"
+          aria-label={t.letter.openAria}
           aria-expanded={open}
           disabled={open}
         >
           <span className="inv-env-back" />
           <span className="inv-env-letter">
-            <span className="inv-env-letter-text">Bismillah</span>
+            <span className="inv-env-letter-text" lang="ar" dir="rtl">
+              بِسْمِ ٱللَّٰهِ
+            </span>
           </span>
           <span className="inv-env-front" />
           <span className="inv-env-flap" />
@@ -418,7 +389,7 @@ function LetterScene({ guest }: { guest: string }) {
             <span className="inv-seal-text">E&nbsp;S</span>
           </span>
         </button>
-        {!open && <p className="inv-tap-hint">Tap the seal to open</p>}
+        {!open && <p className="inv-tap-hint">{t.letter.tapSeal}</p>}
 
         <div className="inv-letter-paper" aria-hidden={!open}>
           <span className="inv-letter-seal" aria-hidden="true">E&nbsp;S</span>
@@ -426,20 +397,21 @@ function LetterScene({ guest }: { guest: string }) {
             ٱلسَّلَامُ عَلَيْكُمْ
           </p>
           <p className="inv-letter-dear">
-            Dear <span className="inv-foil">{guest}</span>,
+            {dearBefore}
+            <span className="inv-foil">{guest}</span>
+            {dearAfter}
           </p>
           <p>
-            With hearts full of gratitude to Almighty Allah, we joyfully invite you and your
-            family to share in a moment we have long prayed for — the Nikah of our beloved{" "}
-            <strong>{GROOM}</strong> with <strong>{BRIDE}</strong>.
+            {t.letter.body1[0]}
+            <strong>{t.groom}</strong>
+            {t.letter.body1[1]}
+            <strong>{t.bride}</strong>
+            {t.letter.body1[2]}
           </p>
-          <p>
-            Your presence will bring us joy, and your duas will be the most precious gift as two
-            hearts and two families become one.
-          </p>
+          <p>{t.letter.body2}</p>
           <p className="inv-letter-sign">
-            With love &amp; duas,
-            <span>Family &amp; Friends</span>
+            {t.letter.signOff}
+            <span>{t.letter.family}</span>
           </p>
         </div>
       </div>
@@ -449,13 +421,14 @@ function LetterScene({ guest }: { guest: string }) {
 }
 
 function DateScene() {
-  const nikah = EVENTS.find((e) => e.id === "nikah")!;
+  const t = useT();
+  const nikah = useEvents().find((e) => e.id === "nikah")!;
   return (
     <section className="inv-scene inv-scene-date" id="scene-3">
       <SceneNo n={3} />
-      <p className="inv-kicker" data-reveal>Save the date</p>
+      <p className="inv-kicker" data-reveal>{t.date.kicker}</p>
       <div className="inv-bigdate" data-reveal>
-        <span className="inv-bigdate-day">Monday</span>
+        <span className="inv-bigdate-day">{t.date.day}</span>
         <span className="inv-bigdate-row">
           <span>15</span>
           <i />
@@ -463,14 +436,14 @@ function DateScene() {
           <i />
           <span>2027</span>
         </span>
-        <span className="inv-bigdate-time">at 7:00 p.m. · Insha Allah</span>
+        <span className="inv-bigdate-time">{t.date.time}</span>
       </div>
       <div data-reveal>
-        <p className="inv-countdown-title">Counting the moments until the Nikah</p>
+        <p className="inv-countdown-title">{t.date.countdownTitle}</p>
         <Countdown />
       </div>
-      <button type="button" className="inv-btn inv-btn-solid" data-reveal onClick={() => downloadIcs(nikah)}>
-        <CalendarIcon /> Add to my calendar
+      <button type="button" className="inv-btn inv-btn-solid" data-reveal onClick={() => downloadIcs(nikah, t)}>
+        <CalendarIcon /> {t.date.addToCalendar}
       </button>
     </section>
   );
@@ -499,6 +472,8 @@ function PinIcon() {
 }
 
 function EventsScene() {
+  const t = useT();
+  const EVENTS = useEvents();
   const trackRef = useRef<HTMLDivElement>(null);
   const [idx, setIdx] = useState(0);
 
@@ -516,8 +491,8 @@ function EventsScene() {
   return (
     <section className="inv-scene inv-scene-events" id="scene-4">
       <SceneNo n={4} />
-      <p className="inv-kicker" data-reveal>Please join us for</p>
-      <h2 className="inv-scene-title" data-reveal>The Celebrations</h2>
+      <p className="inv-kicker" data-reveal>{t.events.kicker}</p>
+      <h2 className="inv-scene-title" data-reveal>{t.events.title}</h2>
 
       <div className="tags" data-reveal>
         <div
@@ -526,15 +501,15 @@ function EventsScene() {
           onScroll={onScroll}
           role="region"
           aria-roledescription="carousel"
-          aria-label="Events — swipe to see each one"
+          aria-label={t.events.carouselAria}
         >
           {EVENTS.map((ev, i) => (
-            <EventTag key={ev.id} ev={ev} seed={i + 1} label={`${i + 1} of ${EVENTS.length}`} />
+            <EventTag key={ev.id} ev={ev} seed={i + 1} label={t.events.slideLabel(i + 1, EVENTS.length)} />
           ))}
         </div>
 
         <div className="tags-nav">
-          <button type="button" className="tags-arrow" onClick={() => go(idx - 1)} disabled={idx === 0} aria-label="Previous event">
+          <button type="button" className="tags-arrow" onClick={() => go(idx - 1)} disabled={idx === 0} aria-label={t.events.prevAria}>
             <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
               <path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" strokeWidth="1.8" />
             </svg>
@@ -552,14 +527,14 @@ function EventsScene() {
             className="tags-arrow"
             onClick={() => go(idx + 1)}
             disabled={idx === EVENTS.length - 1}
-            aria-label="Next event"
+            aria-label={t.events.nextAria}
           >
             <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
               <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="1.8" />
             </svg>
           </button>
         </div>
-        <p className="tags-hint">Swipe for each event · tap a tag for details</p>
+        <p className="tags-hint">{t.events.hint}</p>
       </div>
     </section>
   );
@@ -716,6 +691,7 @@ function TagRibbon() {
 }
 
 function EventTag({ ev, seed, label }: { ev: InvEvent; seed: number; label: string }) {
+  const t = useT();
   const [flipped, setFlipped] = useState(false);
   const clip = deckle(seed * 7);
   const clipBack = deckle(seed * 13);
@@ -731,7 +707,7 @@ function EventTag({ ev, seed, label }: { ev: InvEvent; seed: number; label: stri
               className="tag-paper"
               style={{ clipPath: clip }}
               onClick={() => setFlipped(true)}
-              aria-label={`${ev.title} — ${ev.day}, ${ev.date}, ${ev.time}. Show details`}
+              aria-label={`${ev.title} — ${ev.day}, ${ev.date}, ${ev.time}. ${t.events.showDetails}`}
             >
               <span className="tag-eyelet" />
               <Florals kind={ev.flora} />
@@ -740,7 +716,7 @@ function EventTag({ ev, seed, label }: { ev: InvEvent; seed: number; label: stri
               <span className="tag-day">{ev.day}</span>
               <span className="tag-date">{ev.date}</span>
               <span className="tag-time">{ev.time}</span>
-              <span className="tag-more">Tap for details</span>
+              <span className="tag-more">{t.events.tapForDetails}</span>
             </button>
           </div>
 
@@ -748,7 +724,7 @@ function EventTag({ ev, seed, label }: { ev: InvEvent; seed: number; label: stri
           <div className="tag-face tag-back" inert={!flipped}>
             <div className="tag-paper" style={{ clipPath: clipBack }}>
               <span className="tag-eyelet" />
-              <button type="button" className="tag-close" onClick={() => setFlipped(false)} aria-label="Close details">
+              <button type="button" className="tag-close" onClick={() => setFlipped(false)} aria-label={t.events.closeAria}>
                 <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
                   <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="1.8" />
                 </svg>
@@ -757,7 +733,7 @@ function EventTag({ ev, seed, label }: { ev: InvEvent; seed: number; label: stri
               <p className="tag-when">
                 {ev.day} {ev.date}
               </p>
-              <p className="tag-when-time">{ev.time} onwards</p>
+              <p className="tag-when-time">{t.events.onwards(ev.time)}</p>
               <span className="tag-rule" />
               <p className="tag-about">{ev.about}</p>
               <p className="tag-label">{ev.venueLabel}</p>
@@ -765,10 +741,10 @@ function EventTag({ ev, seed, label }: { ev: InvEvent; seed: number; label: stri
               <p className="tag-area">{ev.venueArea}</p>
               <div className="tag-actions">
                 <a className="tag-btn" href={ev.map} target="_blank" rel="noopener noreferrer">
-                  <PinIcon /> Directions
+                  <PinIcon /> {t.events.directions}
                 </a>
-                <button type="button" className="tag-btn" onClick={() => downloadIcs(ev)}>
-                  <CalendarIcon /> Add to calendar
+                <button type="button" className="tag-btn" onClick={() => downloadIcs(ev, t)}>
+                  <CalendarIcon /> {t.events.addToCalendar}
                 </button>
               </div>
             </div>
@@ -780,9 +756,10 @@ function EventTag({ ev, seed, label }: { ev: InvEvent; seed: number; label: stri
 }
 
 function RsvpScene({ guest }: { guest: string }) {
+  const t = useT();
   /** null until the guest edits it — falls back to the name from the link */
   const [nameInput, setName] = useState<string | null>(null);
-  const name = nameInput ?? (guest !== DEFAULT_GUEST ? guest : "");
+  const name = nameInput ?? guest;
   const [attending, setAttending] = useState<"yes" | "no">("yes");
   const [count, setCount] = useState(1);
   const [note, setNote] = useState("");
@@ -790,16 +767,8 @@ function RsvpScene({ guest }: { guest: string }) {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    const lines = [
-      "Assalamu Alaikum! 🌙",
-      `RSVP — Nikah of ${GROOM} & ${BRIDE}`,
-      "",
-      `Name: ${name.trim()}`,
-      `Attending: ${attending === "yes" ? "Joyfully accepts ✅" : "Regretfully declines"}`,
-      ...(attending === "yes" ? [`Number of guests: ${count}`] : []),
-      ...(note.trim() ? ["", `Dua / message: ${note.trim()}`] : []),
-    ];
-    const text = encodeURIComponent(lines.join("\n"));
+    const message = t.rsvp.message({ name: name.trim(), yes: attending === "yes", count, note: note.trim() });
+    const text = encodeURIComponent(message);
     window.open(`https://wa.me/${RSVP_WHATSAPP}?text=${text}`, "_blank", "noopener");
     setSent(true);
   };
@@ -807,54 +776,54 @@ function RsvpScene({ guest }: { guest: string }) {
   return (
     <section className="inv-scene inv-scene-rsvp" id="scene-5">
       <SceneNo n={5} />
-      <p className="inv-kicker" data-reveal>Kindly reply</p>
-      <h2 className="inv-scene-title" data-reveal>Will you join us?</h2>
+      <p className="inv-kicker" data-reveal>{t.rsvp.kicker}</p>
+      <h2 className="inv-scene-title" data-reveal>{t.rsvp.title}</h2>
 
       <div className="inv-rsvp-card" data-reveal>
         {sent ? (
           <div className="inv-rsvp-thanks">
             <p className="inv-rsvp-thanks-ar" lang="ar">جَزَاكَ ٱللَّٰهُ خَيْرًا</p>
-            <p className="inv-rsvp-thanks-title">Thank you, {name.trim() || "dear guest"}!</p>
-            <p>Your reply has been prepared in WhatsApp — just press send.</p>
+            <p className="inv-rsvp-thanks-title">{t.rsvp.thanks(name.trim() || t.rsvp.thanksFallback)}</p>
+            <p>{t.rsvp.thanksBody}</p>
             <button type="button" className="inv-btn" onClick={() => setSent(false)}>
-              Edit reply
+              {t.rsvp.edit}
             </button>
           </div>
         ) : (
           <form onSubmit={submit} className="inv-rsvp-form">
             <label className="inv-field">
-              <span>Your name</span>
+              <span>{t.rsvp.nameLabel}</span>
               <input
                 required
                 maxLength={60}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Full name"
+                placeholder={t.rsvp.namePlaceholder}
                 autoComplete="name"
               />
             </label>
 
             <fieldset className="inv-choice">
-              <legend>Will you attend?</legend>
+              <legend>{t.rsvp.attendLegend}</legend>
               <label className={attending === "yes" ? "is-on" : ""}>
                 <input type="radio" name="att" checked={attending === "yes"} onChange={() => setAttending("yes")} />
-                Joyfully accept
+                {t.rsvp.yes}
               </label>
               <label className={attending === "no" ? "is-on" : ""}>
                 <input type="radio" name="att" checked={attending === "no"} onChange={() => setAttending("no")} />
-                Regretfully decline
+                {t.rsvp.no}
               </label>
             </fieldset>
 
             {attending === "yes" && (
               <div className="inv-field">
-                <span>Number of guests</span>
+                <span>{t.rsvp.guests}</span>
                 <div className="inv-stepper">
-                  <button type="button" onClick={() => setCount((c) => Math.max(1, c - 1))} aria-label="Fewer guests">
+                  <button type="button" onClick={() => setCount((c) => Math.max(1, c - 1))} aria-label={t.rsvp.fewerAria}>
                     −
                   </button>
                   <output aria-live="polite">{count}</output>
-                  <button type="button" onClick={() => setCount((c) => Math.min(20, c + 1))} aria-label="More guests">
+                  <button type="button" onClick={() => setCount((c) => Math.min(20, c + 1))} aria-label={t.rsvp.moreAria}>
                     +
                   </button>
                 </div>
@@ -862,13 +831,13 @@ function RsvpScene({ guest }: { guest: string }) {
             )}
 
             <label className="inv-field">
-              <span>A dua or message for the couple (optional)</span>
+              <span>{t.rsvp.noteLabel}</span>
               <textarea
                 rows={3}
                 maxLength={400}
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                placeholder="May Allah bless you both…"
+                placeholder={t.rsvp.notePlaceholder}
               />
             </label>
 
@@ -879,14 +848,14 @@ function RsvpScene({ guest }: { guest: string }) {
                   d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2.1 1-2.4c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l2 .9c.3.1.5.2.5.3.1.1.1.7-.2 1.3z"
                 />
               </svg>
-              Send RSVP
+              {t.rsvp.send}
             </button>
           </form>
         )}
       </div>
 
       <div className="inv-contact" data-reveal>
-        <p className="inv-contact-label">For any queries, reach us at</p>
+        <p className="inv-contact-label">{t.rsvp.contactLabel}</p>
         <p className="inv-contact-number">{CONTACT_PHONE}</p>
         <div className="inv-event-actions">
           <a className="inv-btn" href={`tel:+${RSVP_WHATSAPP}`}>
@@ -896,11 +865,11 @@ function RsvpScene({ guest }: { guest: string }) {
                 d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"
               />
             </svg>
-            Call
+            {t.rsvp.call}
           </a>
           <a
             className="inv-btn"
-            href={`https://wa.me/${RSVP_WHATSAPP}?text=${encodeURIComponent(`Assalamu Alaikum! Regarding the Nikah of ${GROOM} & ${BRIDE} —`)}`}
+            href={`https://wa.me/${RSVP_WHATSAPP}?text=${encodeURIComponent(t.rsvp.contactMessage)}`}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -920,26 +889,35 @@ function RsvpScene({ guest }: { guest: string }) {
 
 /* ─── Personalised sharing ─── */
 
-const SITE_FALLBACK = "https://mdeesha.in/invitation";
 const pageUrl = () => window.location.origin + window.location.pathname;
+
+/** For display only: drop the scheme and show encoded names (e.g. Hindi) as text. */
+function readableLink(link: string) {
+  const bare = link.replace(/^https?:\/\//, "");
+  try {
+    return decodeURIComponent(bare);
+  } catch {
+    return bare;
+  }
+}
 
 function inviteLink(base: string, name: string) {
   const n = name.replace(/\s+/g, " ").trim();
   return n ? `${base}?to=${encodeURIComponent(n)}` : base;
 }
 
-function inviteText(name: string) {
-  const n = name.trim();
-  const hello = n ? `Assalamu Alaikum ${n}! ` : "Assalamu Alaikum! ";
-  return `${hello}You are cordially invited to the Nikah of ${GROOM} with ${BRIDE} — Monday, 15th March 2027, Insha Allah. Open your invitation:`;
-}
-
 function SharePanel() {
-  const base = useSyncExternalStore(noopSubscribe, pageUrl, () => SITE_FALLBACK);
+  const t = useT();
+  const base = useSyncExternalStore(noopSubscribe, pageUrl, () => t.siteUrl);
   const [name, setName] = useState("");
+  /** Hindi page: the host's correction of the auto-converted Devanagari spelling */
+  const [hiEdit, setHiEdit] = useState<string | null>(null);
   const [status, setStatus] = useState("");
-  const link = inviteLink(base, name);
-  const text = inviteText(name);
+  const isHi = t.lang === "hi";
+  const hiName = hiEdit ?? toDevanagari(name);
+  const linkName = (isHi ? hiName : name).trim();
+  const link = inviteLink(base, linkName);
+  const text = t.share.text(linkName);
 
   const flash = (msg: string) => {
     setStatus(msg);
@@ -949,16 +927,16 @@ function SharePanel() {
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(link);
-      flash("Link copied!");
+      flash(t.share.copied);
     } catch {
-      flash("Couldn’t copy — select the link above instead.");
+      flash(t.share.copyFailed);
     }
   };
 
   const share = async () => {
     if (!navigator.share) return copy();
     try {
-      await navigator.share({ title: "Nikah Invitation", text, url: link });
+      await navigator.share({ title: t.share.sheetTitle, text, url: link });
     } catch {
       /* share sheet dismissed */
     }
@@ -968,28 +946,46 @@ function SharePanel() {
 
   return (
     <div className="inv-share" data-reveal>
-      <p className="inv-share-title">Forward this invitation</p>
-      <p className="inv-share-sub">Add the guest’s name to personalise their letter</p>
+      <p className="inv-share-title">{t.share.title}</p>
+      <p className="inv-share-sub">{t.share.sub}</p>
 
       <label className="inv-share-field">
-        <span className="sr-only">Guest name</span>
+        <span className="sr-only">{t.share.label}</span>
         <input
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => {
+            setName(e.target.value);
+            setHiEdit(null);
+          }}
           maxLength={40}
-          placeholder="Guest name, e.g. Shaheen Khala"
+          placeholder={t.share.placeholder}
           autoComplete="off"
           enterKeyHint="done"
         />
         {name && (
-          <button type="button" className="inv-share-clear" onClick={() => setName("")} aria-label="Clear name">
+          <button
+            type="button"
+            className="inv-share-clear"
+            onClick={() => {
+              setName("");
+              setHiEdit(null);
+            }}
+            aria-label={t.share.clearAria}
+          >
             ×
           </button>
         )}
       </label>
 
+      {isHi && name.trim() && (
+        <label className="inv-share-field inv-share-hi">
+          <span className="inv-share-hi-label">{t.share.hiNameLabel}</span>
+          <input value={hiName} onChange={(e) => setHiEdit(e.target.value)} maxLength={40} lang="hi" autoComplete="off" />
+        </label>
+      )}
+
       <p className="inv-share-link" title={link}>
-        <span>{link.replace(/^https?:\/\//, "")}</span>
+        <span>{readableLink(link)}</span>
       </p>
 
       <div className="inv-share-actions">
@@ -997,7 +993,7 @@ function SharePanel() {
           <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
             <path fill="currentColor" d="M14 5l7 7-7 7v-4c-6 0-9 2-11 6 1-6 4-11 11-12V5z" />
           </svg>
-          Share
+          {t.share.share}
         </button>
         <a className="inv-btn inv-btn-ghost" href={whatsapp} target="_blank" rel="noopener noreferrer">
           <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
@@ -1015,7 +1011,7 @@ function SharePanel() {
               d="M8 7V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3zm2 0h3a2 2 0 0 1 2 2v5h3V4h-8v3zM5 9v10h8V9H5z"
             />
           </svg>
-          Copy link
+          {t.share.copy}
         </button>
       </div>
       <p className="inv-share-msg" aria-live="polite">
@@ -1027,6 +1023,7 @@ function SharePanel() {
 
 /** `showShare` is false on personalised links — guests shouldn’t see the host’s share tools. */
 function DuaScene({ showShare }: { showShare: boolean }) {
+  const t = useT();
   return (
     <section className="inv-scene inv-scene-dua" id="scene-6">
       <div className="inv-sky" aria-hidden="true">
@@ -1048,19 +1045,17 @@ function DuaScene({ showShare }: { showShare: boolean }) {
 
       <div className="inv-dua-content">
         <SceneNo n={6} />
-        <p className="inv-kicker light" data-reveal>With love and gratitude</p>
-        <h2 className="inv-shukriya" data-reveal>Shukriya</h2>
+        <p className="inv-kicker light" data-reveal>{t.dua.kicker}</p>
+        <h2 className="inv-shukriya" data-reveal>{t.dua.shukriya}</h2>
         <p className="inv-dua-ar" lang="ar" dir="rtl" data-reveal>
           بَارَكَ ٱللَّٰهُ لَكُمَا وَبَارَكَ عَلَيْكُمَا وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ
         </p>
-        <p className="inv-dua-en" data-reveal>
-          “May Allah bless you both, shower His blessings upon you, and unite you in goodness.”
-        </p>
+        <p className="inv-dua-en" data-reveal>{t.dua.translation}</p>
         <Divider />
-        <p className="inv-dua-note" data-reveal>Your presence and duas will make our joy complete</p>
+        <p className="inv-dua-note" data-reveal>{t.dua.note}</p>
         <p className="inv-dua-from" data-reveal>
-          With best compliments from
-          <span>Family &amp; Friends</span>
+          {t.dua.from}
+          <span>{t.dua.family}</span>
         </p>
         {showShare && <SharePanel />}
       </div>
@@ -1079,13 +1074,18 @@ function guestFromUrl() {
     return p.get("to") ?? p.get("guest") ?? p.get("name");
   };
   const raw = read(window.location.search) ?? read(hashQuery) ?? "";
-  return raw.replace(/\s+/g, " ").trim().slice(0, 40) || DEFAULT_GUEST;
+  return raw.replace(/\s+/g, " ").trim().slice(0, 40);
 }
 const noopSubscribe = () => () => {};
 
-export default function Invitation() {
+export default function Invitation({ lang = "en" }: { lang?: Lang }) {
+  const t = COPY[lang];
   const [stage, setStage] = useState<"sealed" | "opening" | "open">("sealed");
-  const guest = useSyncExternalStore(noopSubscribe, guestFromUrl, () => DEFAULT_GUEST);
+  /** "" when the link carries no guest name */
+  const linkGuest = useSyncExternalStore(noopSubscribe, guestFromUrl, () => "");
+  /** On the Hindi page, a name typed in English is shown in Devanagari. */
+  const shownGuest = lang === "hi" ? toDevanagari(linkGuest) : linkGuest;
+  const guest = shownGuest || t.defaultGuest;
   const [active, setActive] = useState(1);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -1138,12 +1138,13 @@ export default function Invitation() {
   };
 
   return (
+    <CopyCtx.Provider value={t}>
     <div ref={rootRef} className={`inv-page stage-${stage}`}>
       {stage !== "open" && <Gate stage={stage} onOpen={openGate} />}
       <Petals />
 
-      <nav className="inv-dots" aria-label="Invitation sections">
-        {SCENES.map((label, i) => (
+      <nav className="inv-dots" aria-label={t.scenes.join(" · ")}>
+        {t.scenes.map((label, i) => (
           <a
             key={label}
             href={`#scene-${i + 1}`}
@@ -1159,9 +1160,10 @@ export default function Invitation() {
         <LetterScene guest={guest} />
         <DateScene />
         <EventsScene />
-        <RsvpScene guest={guest} />
-        <DuaScene showShare={guest === DEFAULT_GUEST} />
+        <RsvpScene guest={shownGuest} />
+        <DuaScene showShare={!linkGuest} />
       </main>
     </div>
+    </CopyCtx.Provider>
   );
 }

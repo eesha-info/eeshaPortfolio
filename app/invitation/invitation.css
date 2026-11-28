@@ -863,8 +863,11 @@
   transition: transform 1s var(--ease-out) 0.5s;
 }
 .inv-env-letter-text {
-  font-family: var(--f-script);
-  font-size: calc(var(--w) * 0.09);
+  /* the note inside the envelope is always "بِسْمِ ٱللَّٰهِ" in Arabic script */
+  font-family: var(--f-arabic);
+  font-weight: 700;
+  font-size: calc(var(--w) * 0.085);
+  line-height: 1.6;
   color: var(--emerald);
 }
 .inv-env-front {
@@ -1276,6 +1279,10 @@ button.tag-paper:focus-visible {
 }
 .tag-title.long {
   font-size: calc(var(--tw) * 0.15);
+}
+.tag-back .tag-title.sm {
+  /* keep clear of the × button in the top-right corner */
+  padding-inline: calc(var(--tw) * 0.1);
 }
 .tag-title.sm {
   font-size: calc(var(--tw) * 0.15);
@@ -1789,6 +1796,22 @@ button.tag-paper:focus-visible {
   border-color: #e9cd8b;
   box-shadow: 0 0 0 3px rgba(233, 205, 139, 0.18);
 }
+.inv-share-hi {
+  margin-top: 10px;
+}
+.inv-share-hi-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  color: #d9ccb0;
+}
+.inv-share-hi input {
+  padding-inline: 16px;
+  border-style: dashed;
+  font-family: var(--f-script);
+  font-size: 1.35rem;
+  color: #f0d998;
+}
 .inv-share-clear {
   position: absolute;
   right: 8px;
@@ -1960,4 +1983,65 @@ button.tag-paper:focus-visible {
 }
 .inv-contact .inv-event-actions {
   margin-top: 10px;
+}
+
+/* ═══════════════ Hindi (/invitation/hin) ═══════════════
+   Latin faces stay first so Latin text (guest names, numbers) keeps the
+   original look; Devanagari glyphs fall through to the Hindi faces. */
+.inv-root.is-hi {
+  --f-script: var(--inv-script), var(--inv-hi-script), cursive;
+  --f-serif: var(--inv-serif), var(--inv-hi-serif), Georgia, serif;
+  --f-caps: var(--inv-caps), var(--inv-hi-serif), Georgia, serif;
+}
+/* letter-spacing breaks the joined headline stroke (shirorekha) of Devanagari */
+.inv-root.is-hi *,
+.inv-root.is-hi *::before,
+.inv-root.is-hi *::after {
+  letter-spacing: 0 !important;
+}
+/* Devanagari matras need a little more vertical room */
+.inv-root.is-hi .inv-lead,
+.inv-root.is-hi .inv-letter-paper,
+.inv-root.is-hi .inv-dua-en,
+.inv-root.is-hi .inv-bismillah-en,
+.inv-root.is-hi .tag-about,
+.inv-root.is-hi .tag-area {
+  line-height: 1.65;
+}
+.inv-root.is-hi .inv-kicker,
+.inv-root.is-hi .inv-inshallah,
+.inv-root.is-hi .tags-status-name,
+.inv-root.is-hi .tag-label,
+.inv-root.is-hi .tag-day,
+.inv-root.is-hi .inv-count-label,
+.inv-root.is-hi .inv-share-title {
+  font-size: 1.08em;
+  font-weight: 400;
+}
+/* script headings: Amita is wider than Great Vibes, so ease the size */
+.inv-root.is-hi .inv-name {
+  font-size: calc(var(--fw) * 0.085);
+  line-height: 1.5;
+}
+.inv-root.is-hi .inv-scene-title,
+.inv-root.is-hi .inv-shukriya {
+  font-size: clamp(2.3rem, 10vw, 3.6rem);
+  line-height: 1.5;
+}
+.inv-root.is-hi .inv-gate-light-names {
+  font-size: calc(var(--w) * 0.12);
+  line-height: 1.35;
+}
+.inv-root.is-hi .inv-with-word,
+.inv-root.is-hi .inv-letter-dear,
+.inv-root.is-hi .inv-letter-sign span,
+.inv-root.is-hi .inv-dua-from span,
+.inv-root.is-hi .inv-bigdate-day,
+.inv-root.is-hi .tag-title,
+.inv-root.is-hi .inv-rsvp-thanks-title {
+  line-height: 1.5;
+}
+.inv-root.is-hi .tag-title.long,
+.inv-root.is-hi .tag-title.sm {
+  font-size: calc(var(--tw) * 0.12);
 }
